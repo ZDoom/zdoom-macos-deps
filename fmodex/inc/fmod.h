@@ -305,7 +305,7 @@ struct FMOD_ASYNCREADINFO
 
     void           *userdata;       /* [r] User data pointer. */
 
-    const void    (*done)(FMOD_ASYNCREADINFO *info, FMOD_RESULT result);    /* FMOD file system wake up function.  Use instead of 'result' with FMOD_INIT_ASYNCREAD_FAST to get semaphore based performance improvement.  Call this when user file read is finished.  Pass result of file read as a parameter. */
+    void          (*done)(FMOD_ASYNCREADINFO *info, FMOD_RESULT result);    /* FMOD file system wake up function.  Use instead of 'result' with FMOD_INIT_ASYNCREAD_FAST to get semaphore based performance improvement.  Call this when user file read is finished.  Pass result of file read as a parameter. */
 };
 
 
