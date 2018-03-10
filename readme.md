@@ -10,4 +10,3 @@ export CPPFLAGS="-I/usr/local/include -mmacosx-version-min=10.7 -isysroot MacOSX
 export  LDFLAGS="-L/usr/local/lib -mmacosx-version-min=10.7 -isysroot MacOSX10.7.sdk"
 ```
 Mac OS X 10.7 SDK was obtained from Xcode 4.6.3 which is the last version with Lion support.
-LLVM requires features of C++ standard library added in OS X 10.8 and the corresponding SDK was obtained from Xcode 5.1.1 which is the last version with Mountain Lion support.
