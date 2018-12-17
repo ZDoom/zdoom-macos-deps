@@ -4,22 +4,22 @@
 #define JPEG_LIB_VERSION  62
 
 /* libjpeg-turbo version */
-#define LIBJPEG_TURBO_VERSION  2.0.0
+#define LIBJPEG_TURBO_VERSION  2.0.1
 
 /* libjpeg-turbo version in integer form */
-#define LIBJPEG_TURBO_VERSION_NUMBER  2000000
+#define LIBJPEG_TURBO_VERSION_NUMBER  2000001
 
 /* Support arithmetic encoding */
-#define C_ARITH_CODING_SUPPORTED
+#define C_ARITH_CODING_SUPPORTED 1
 
 /* Support arithmetic decoding */
-#define D_ARITH_CODING_SUPPORTED
+#define D_ARITH_CODING_SUPPORTED 1
 
 /* Support in-memory source/destination managers */
-#define MEM_SRCDST_SUPPORTED
+#define MEM_SRCDST_SUPPORTED 1
 
 /* Use accelerated SIMD routines. */
-#define WITH_SIMD
+#define WITH_SIMD 1
 
 /*
  * Define BITS_IN_JSAMPLE as either
@@ -33,26 +33,26 @@
 #define BITS_IN_JSAMPLE  8      /* use 8 or 12 */
 
 /* Define to 1 if you have the <locale.h> header file. */
-#define HAVE_LOCALE_H
+#define HAVE_LOCALE_H 1
 
 /* Define to 1 if you have the <stddef.h> header file. */
-#define HAVE_STDDEF_H
+#define HAVE_STDDEF_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H
+#define HAVE_STDLIB_H 1
 
 /* Define if you need to include <sys/types.h> to get size_t. */
-#define NEED_SYS_TYPES_H
+#define NEED_SYS_TYPES_H 1
 
 /* Define if you have BSD-like bzero and bcopy in <strings.h> rather than
    memset/memcpy in <string.h>. */
 /* #undef NEED_BSD_STRINGS */
 
 /* Define to 1 if the system has the type `unsigned char'. */
-#define HAVE_UNSIGNED_CHAR
+#define HAVE_UNSIGNED_CHAR 1
 
 /* Define to 1 if the system has the type `unsigned short'. */
-#define HAVE_UNSIGNED_SHORT
+#define HAVE_UNSIGNED_SHORT 1
 
 /* Compiler does not support pointers to undefined structures. */
 /* #undef INCOMPLETE_TYPES_BROKEN */
