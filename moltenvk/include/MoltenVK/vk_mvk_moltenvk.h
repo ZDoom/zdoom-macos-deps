@@ -50,12 +50,12 @@ typedef unsigned long MTLLanguageVersion;
  */
 #define MVK_VERSION_MAJOR   1
 #define MVK_VERSION_MINOR   0
-#define MVK_VERSION_PATCH   33
+#define MVK_VERSION_PATCH   34
 
 #define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
 #define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
 
-#define VK_MVK_MOLTENVK_SPEC_VERSION            18
+#define VK_MVK_MOLTENVK_SPEC_VERSION            19
 #define VK_MVK_MOLTENVK_EXTENSION_NAME          "VK_MVK_moltenvk"
 
 /**
@@ -102,9 +102,11 @@ typedef unsigned long MTLLanguageVersion;
  *      2: Log errors and informational messages.
  *    If neither is set, errors and informational messages are logged.
  *
- * 2. Setting the MVK_CONFIG_FORCE_LOW_POWER_GPU runtime environment variable or MoltenVK compile-time
- *    build setting to 1 will force MoltenVK to use a low-power GPU, if one is availble on the device.
+ * 2. Setting the MVK_CONFIG_TRACE_VULKAN_CALLS runtime environment variable or MoltenVK compile-time
+ *    build setting to 1 will cause MoltenVK to log the name of each Vulkan call made by the application.
  *
+ * 3. Setting the MVK_CONFIG_FORCE_LOW_POWER_GPU runtime environment variable or MoltenVK compile-time
+ *    build setting to 1 will force MoltenVK to use a low-power GPU, if one is availble on the device.
  */
 typedef struct {
 
@@ -288,9 +290,11 @@ typedef struct {
 	uint64_t metalCompileTimeout;
 
 	/**
-	 * If enabled, per-frame performance statistics are tracked, optionally logged, and can be
-	 * retrieved via the vkGetSwapchainPerformanceMVK() function, and various performance statistics
-	 * are tracked, logged, and can be retrieved via the vkGetPerformanceStatisticsMVK() function.
+	 * If enabled, performance statistics, as defined by the MVKPerformanceStatistics structure,
+	 * are collected, and can be retrieved via the vkGetPerformanceStatisticsMVK() function.
+	 *
+	 * You can also use the performanceLoggingFrameCount parameter to automatically log the
+	 * performance statistics collected by this parameter.
 	 *
 	 * The value of this parameter may be changed at any time during application runtime,
 	 * and the changed value will immediately effect subsequent MoltenVK behaviour.
@@ -303,8 +307,12 @@ typedef struct {
 	VkBool32 performanceTracking;
 
 	/**
-	 * If non-zero, performance statistics will be periodically logged to the console, on a repeating
-	 * cycle of this many frames per swapchain. The performanceTracking capability must also be enabled.
+	 * If non-zero, performance statistics, as defined by the MVKPerformanceStatistics structure,
+	 * will be logged to the console. Frame-based statistics will be logged, on a repeating cycle,
+	 * once per this many frames. Non-frame-based statistics will be logged as they occur.
+	 *
+	 * The performanceTracking parameter must also be enabled. If this parameter is zero, or
+	 * the performanceTracking parameter is disabled, no performance statistics will be logged.
 	 *
 	 * The value of this parameter may be changed at any time during application runtime,
 	 * and the changed value will immediately effect subsequent MoltenVK behaviour.
@@ -515,6 +523,7 @@ typedef struct {
 	VkBool32 arrayOfTextures;			 	  	/**< If true, arrays of textures is supported. */
 	VkBool32 arrayOfSamplers;			 	  	/**< If true, arrays of texture samplers is supported. */
 	MTLLanguageVersion mslVersionEnum;			/**< The version of the Metal Shading Language available on this device, as a Metal enumeration. */
+	VkBool32 depthSampleCompare;				/**< If true, depth texture samplers support the comparison of the pixel value against a reference value. */
 } MVKPhysicalDeviceMetalFeatures;
 
 /**
