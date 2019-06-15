@@ -50,12 +50,12 @@ typedef unsigned long MTLLanguageVersion;
  */
 #define MVK_VERSION_MAJOR   1
 #define MVK_VERSION_MINOR   0
-#define MVK_VERSION_PATCH   34
+#define MVK_VERSION_PATCH   35
 
 #define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
 #define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
 
-#define VK_MVK_MOLTENVK_SPEC_VERSION            19
+#define VK_MVK_MOLTENVK_SPEC_VERSION            20
 #define VK_MVK_MOLTENVK_EXTENSION_NAME          "VK_MVK_moltenvk"
 
 /**
@@ -107,6 +107,10 @@ typedef unsigned long MTLLanguageVersion;
  *
  * 3. Setting the MVK_CONFIG_FORCE_LOW_POWER_GPU runtime environment variable or MoltenVK compile-time
  *    build setting to 1 will force MoltenVK to use a low-power GPU, if one is availble on the device.
+ *
+ * 4. Setting the MVK_ALLOW_METAL_EVENTS runtime environment variable or MoltenVK compile-time build
+ *    setting to 1 will cause MoltenVK to use Metal events, if they are available on the device, for
+ *    Vulkan sychronization components such as VkSemaphore. This is disabled by default.
  */
 typedef struct {
 
@@ -524,6 +528,9 @@ typedef struct {
 	VkBool32 arrayOfSamplers;			 	  	/**< If true, arrays of texture samplers is supported. */
 	MTLLanguageVersion mslVersionEnum;			/**< The version of the Metal Shading Language available on this device, as a Metal enumeration. */
 	VkBool32 depthSampleCompare;				/**< If true, depth texture samplers support the comparison of the pixel value against a reference value. */
+	VkBool32 events;							/**< If true, Metal synchronization events are supported. */
+	VkBool32 memoryBarriers;					/**< If true, full memory barriers within Metal render passes are supported. */
+	VkBool32 multisampleLayeredRendering;       /**< If true, layered rendering to multiple multi-sampled cube or texture array layers is supported. */
 } MVKPhysicalDeviceMetalFeatures;
 
 /**
@@ -564,6 +571,7 @@ typedef struct {
     MVKPerformanceTracker functionRetrieval;			/** Retrieve a MTLFunction from a MTLLibrary. */
     MVKPerformanceTracker functionSpecialization;		/** Specialize a retrieved MTLFunction. */
     MVKPerformanceTracker pipelineCompile;				/** Compile MTLFunctions into a pipeline. */
+	MVKPerformanceTracker glslToSPRIV;					/** Convert GLSL to SPIR-V code. */
 } MVKShaderCompilationPerformance;
 
 
@@ -787,6 +795,18 @@ VKAPI_ATTR void VKAPI_CALL vkGetVersionStringsMVK(
     char*                                       pVulkanVersionStringBuffer,
     uint32_t                                    vulkanVersionStringBufferLength);
 
+/**
+ * Sets the number of threads in a workgroup for a compute kernel.
+ *
+ * This needs to be called if you are creating compute shader modules from MSL
+ * source code or MSL compiled code. Workgroup size is determined automatically
+ * if you're using SPIR-V.
+ */
+VKAPI_ATTR void VKAPI_CALL vkSetWorkgroupSizeMVK(
+    VkShaderModule                              shaderModule,
+    uint32_t                                    x,
+    uint32_t                                    y,
+    uint32_t                                    z);
 
 #ifdef __OBJC__
 
