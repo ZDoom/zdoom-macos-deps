@@ -50,7 +50,7 @@ typedef unsigned long MTLLanguageVersion;
  */
 #define MVK_VERSION_MAJOR   1
 #define MVK_VERSION_MINOR   0
-#define MVK_VERSION_PATCH   37
+#define MVK_VERSION_PATCH   38
 
 #define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
 #define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
@@ -100,7 +100,7 @@ typedef unsigned long MTLLanguageVersion;
  *      0: No logging.
  *      1: Log errors only.
  *      2: Log errors and informational messages.
- *    If neither is set, errors and informational messages are logged.
+ *    If none of these is set, errors and informational messages are logged.
  *
  * 2. The MVK_CONFIG_TRACE_VULKAN_CALLS runtime environment variable or MoltenVK compile-time build
  *    setting causes MoltenVK to log the name of each Vulkan call made by the application. The logging
@@ -110,15 +110,21 @@ typedef unsigned long MTLLanguageVersion;
  *        2: Log the name of each Vulkan call when the call is entered and exited. This effectively
  *           brackets any other logging activity within the scope of the Vulkan call.
  *        3: Same as option 2, plus logs the time spent inside the Vulkan function.
+ *    If none of these is set, no Vulkan call logging will occur.
  *
  * 3. Setting the MVK_CONFIG_FORCE_LOW_POWER_GPU runtime environment variable or MoltenVK compile-time
  *    build setting to 1 will force MoltenVK to use a low-power GPU, if one is availble on the device.
+ *    By default, this setting is disabled, allowing both low-power and high-power GPU's to be used.
  *
  * 4. Setting the MVK_ALLOW_METAL_FENCES or MVK_ALLOW_METAL_EVENTS runtime environment variable
- *    or MoltenVK compile-time build setting to 1 will cause MoltenVK to use MTLFence or MTLEvent
- *    if they are available on the device, for VkSemaphore sychronization behaviour.
+ *    or MoltenVK compile-time build setting to 1 will cause MoltenVK to use MTLFence or MTLEvent,
+ *    respectively, if it is available on the device, for VkSemaphore synchronization behaviour.
  *    If both variables are set, MVK_ALLOW_METAL_FENCES takes priority over MVK_ALLOW_METAL_EVENTS.
- *    Both options are disabled by default.
+ *    If both are disabled, or if MTLFence or MTLEvent is not available on the device, MoltenVK
+ *    will use CPU synchronization to control VkSemaphore synchronization behaviour.
+ *    By default, MVK_ALLOW_METAL_FENCES is enabled and MVK_ALLOW_METAL_EVENTS is disabled,
+ *    meaning MoltenVK will use MTLFences, if they are available, to control VkSemaphore
+ *    synchronization behaviour, by default.
  *
  * 5. The MVK_CONFIG_AUTO_GPU_CAPTURE_SCOPE runtime environment variable or MoltenVK compile-time
  *    build setting controls whether Xcode should run an automatic GPU capture without the user
@@ -131,6 +137,13 @@ typedef unsigned long MTLLanguageVersion;
  *      0: No automatic GPU capture.
  *      1: Capture all GPU commands issued during the lifetime of the VkDevice.
  *    If none of these is set, no automatic GPU capture will occur.
+ *
+ * 6. The MVK_CONFIG_TEXTURE_1D_AS_2D runtime environment variable or MoltenVK compile-time build
+ *    setting controls whether MoltenVK should use a Metal 2D texture with a height of 1 for a
+ *    Vulkan 1D image, or use a native Metal 1D texture. Metal imposes significant restrictions
+ *    on native 1D textures, including not being renderable, clearable, or permitting mipmaps.
+ *    Using a Metal 2D texture allows Vulkan 1D textures to support this additional functionality.
+ *    This setting is enabled by default, and MoltenVK will use a Metal 2D texture for each Vulkan 1D image.
  */
 typedef struct {
 
@@ -548,6 +561,9 @@ typedef struct {
 	VkBool32 postDepthCoverage;					/**< If true, coverage masks in fragment shaders post-depth-test are supported. */
 	VkBool32 fences;							/**< If true, Metal synchronization fences (MTLFence) are supported. */
 	VkBool32 rasterOrderGroups;					/**< If true, Raster order groups in fragment shaders are supported. */
+	VkBool32 native3DCompressedTextures;		/**< If true, 3D compressed images are supported natively, without manual decompression. */
+	VkBool32 nativeTextureSwizzle;				/**< If true, component swizzle is supported natively, without manual swizzling in shaders. */
+	VkBool32 placementHeaps;					/**< If true, MTLHeap objects support placement of resources. */
 } MVKPhysicalDeviceMetalFeatures;
 
 /**
