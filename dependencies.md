@@ -27,6 +27,9 @@ Note: OPL implementations are not listed
 |Name|Links|Homebrew Formula|Pulled by|
 |---|---|---|---|
 |FluidSynth|[Homepage](http://www.fluidsynth.org/) / [Download](https://github.com/FluidSynth/fluidsynth/releases)|[fluid-synth.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/fluid-synth.rb)|*ZDoom|
+|gettext|[Homepage](https://www.gnu.org/software/gettext/)|[gettext.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gettext.rb)|GLib|
+|GLib|[Homepage](https://developer.gnome.org/glib/)|[glib.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/glib.rb)|FluidSynth|
+|libffi|[Homepage](https://sourceware.org/libffi/)|[libffi.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libffi.rb)|GLib|
 |libflac|[Homepage](https://xiph.org/flac/) / [Download](https://github.com/xiph/flac/releases)|[flac.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/flac.rb)|libsndfile|
 |libjpeg-turbo|[Homepage](https://libjpeg-turbo.org/)|[jpeg-turbo.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/jpeg-turbo.rb)|*ZDoom|
 |libogg|[Homepage](https://www.xiph.org/ogg/) / [Download](https://github.com/xiph/ogg/releases)|[libogg.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libogg.rb)|libsndfile|
@@ -35,3 +38,4 @@ Note: OPL implementations are not listed
 |MoltenVK|[Homepage](https://moltengl.com/moltenvk/) / [Download](https://github.com/KhronosGroup/MoltenVK/releases)|[molten-vk.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/molten-vk.rb)|*ZDoom|
 |mpg123|[Homepage](https://www.mpg123.de/)|[mpg123.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/mpg123.rb)|*ZDoom|
 |OpenAL Soft|[Homepage](https://openal-soft.org/) / [Download](https://github.com/kcat/openal-soft/releases)|[openal-soft.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/openal-soft.rb)|*ZDoom|
+|PCRE|[Homepage](https://www.pcre.org/)|[pcre.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/pcre.rb)|GLib|
