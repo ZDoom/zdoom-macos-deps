@@ -8,6 +8,7 @@
 |game-music-emu|[Homepage](https://bitbucket.org/mpyne/game-music-emu/)|[game-music-emu.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/game-music-emu.rb)|[game-music-emu](https://github.com/coelckers/gzdoom/tree/master/libraries/game-music-emu)|
 |gdtoa|[Homepage](http://www.netlib.org/fp/)||[gdtoa](https://github.com/coelckers/gzdoom/tree/master/libraries/gdtoa)|
 |glslang|[Homepage](https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/) / [Download](https://github.com/KhronosGroup/glslang/releases)|[glslang.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/glslang.rb)|[glslang](https://github.com/coelckers/gzdoom/tree/master/libraries/glslang)|
+|hqNx|||[hqnx](https://github.com/coelckers/gzdoom/tree/master/src/gamedata/textures/hires/hqnx) / [hqnx_asm](https://github.com/coelckers/gzdoom/tree/master/src/gamedata/textures/hires/hqnx_asm)|
 |libADLMIDI|[Homepage](https://github.com/Wohlstand/libADLMIDI)||[adlmidi](https://github.com/coelckers/gzdoom/tree/master/libraries/adlmidi)|
 |libjpeg|[Homepage](https://www.ijg.org/)|[jpeg.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/jpeg.rb)|[jpeg](https://github.com/coelckers/gzdoom/tree/master/libraries/jpeg)|
 |libOPNMIDI|[Homepage](https://github.com/Wohlstand/libOPNMIDI/)||[opnmidi](https://github.com/coelckers/gzdoom/tree/master/libraries/opnmidi)|
@@ -18,6 +19,7 @@
 |Vulkan-Headers|[Homepage](https://github.com/KhronosGroup/Vulkan-Headers)||[vulkan](https://github.com/coelckers/gzdoom/tree/master/src/rendering/vulkan/thirdparty/vulkan)|
 |VulkanMemoryAllocator|[Homepage](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator)||[vk_mem_alloc](https://github.com/coelckers/gzdoom/tree/master/src/rendering/vulkan/thirdparty/vk_mem_alloc)|
 |WildMIDI|[Homepage](https://www.mindwerks.net/projects/wildmidi) / [Download](https://github.com/Mindwerks/wildmidi/releases)||[wildmidi](https://github.com/coelckers/gzdoom/tree/master/libraries/wildmidi)|
+|xBRZ|[Homepage](https://sourceforge.net/projects/xbrz/)||[xbr](https://github.com/coelckers/gzdoom/tree/master/src/gamedata/textures/hires/xbr)|
 |zlib|[Homepage](https://zlib.net/)|[zlib.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/zlib.rb)|[zlib](https://github.com/coelckers/gzdoom/tree/master/libraries/zlib)|
 
 Note: OPL implementations are not listed
