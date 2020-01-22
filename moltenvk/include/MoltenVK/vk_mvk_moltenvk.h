@@ -1,7 +1,7 @@
 /*
  * vk_mvk_moltenvk.h
  *
- * Copyright (c) 2014-2019 The Brenwill Workshop Ltd. (http://www.brenwill.com)
+ * Copyright (c) 2015-2020 The Brenwill Workshop Ltd. (http://www.brenwill.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,12 +50,12 @@ typedef unsigned long MTLLanguageVersion;
  */
 #define MVK_VERSION_MAJOR   1
 #define MVK_VERSION_MINOR   0
-#define MVK_VERSION_PATCH   39
+#define MVK_VERSION_PATCH   40
 
 #define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
 #define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
 
-#define VK_MVK_MOLTENVK_SPEC_VERSION            23
+#define VK_MVK_MOLTENVK_SPEC_VERSION            24
 #define VK_MVK_MOLTENVK_EXTENSION_NAME          "VK_MVK_moltenvk"
 
 /**
@@ -144,6 +144,15 @@ typedef unsigned long MTLLanguageVersion;
  *    on native 1D textures, including not being renderable, clearable, or permitting mipmaps.
  *    Using a Metal 2D texture allows Vulkan 1D textures to support this additional functionality.
  *    This setting is enabled by default, and MoltenVK will use a Metal 2D texture for each Vulkan 1D image.
+ *
+ * 7. The MVK_CONFIG_PREALLOCATE_DESCRIPTORS runtime environment variable or MoltenVK compile-time
+ *    build setting controls whether MoltenVK should preallocate memory in each VkDescriptorPool
+ *    according to the values of the VkDescriptorPoolSize parameters. Doing so may improve
+ *    descriptor set allocation performance at a cost of preallocated application memory.
+ *    If this environment variable is disabled, the descriptors required for a descriptor set will
+ *    be dynamically allocated in application memory when the descriptor set itself is allocated.
+ *    This setting is disabled by default, and MoltenVK will dynamically allocate descriptors
+ *    when the containing descriptor set is allocated.
  */
 typedef struct {
 
@@ -564,6 +573,7 @@ typedef struct {
 	VkBool32 native3DCompressedTextures;		/**< If true, 3D compressed images are supported natively, without manual decompression. */
 	VkBool32 nativeTextureSwizzle;				/**< If true, component swizzle is supported natively, without manual swizzling in shaders. */
 	VkBool32 placementHeaps;					/**< If true, MTLHeap objects support placement of resources. */
+	VkDeviceSize pushConstantSizeAlignment;     /**< The alignment used internally when allocating memory for push constants. Must be PoT. */
 } MVKPhysicalDeviceMetalFeatures;
 
 /**
@@ -607,7 +617,6 @@ typedef struct {
 	MVKPerformanceTracker glslToSPRIV;					/** Convert GLSL to SPIR-V code. */
 } MVKShaderCompilationPerformance;
 
-
 /** MoltenVK performance of pipeline cache activities. */
 typedef struct {
 	MVKPerformanceTracker sizePipelineCache;			/** Calculate the size of cache data required to write MSL to pipeline cache data stream. */
@@ -619,6 +628,7 @@ typedef struct {
 typedef struct {
 	MVKPerformanceTracker mtlQueueAccess;               /** Create an MTLCommmandQueue or access an existing cached instance. */
 	MVKPerformanceTracker mtlCommandBufferCompletion;   /** Completion of a MTLCommandBuffer on the GPU, from commit to completion callback. */
+	MVKPerformanceTracker nextCAMetalDrawable;			/** Retrieve next CAMetalDrawable from CAMetalLayer during presentation. */
 } MVKQueuePerformance;
 
 /**
@@ -655,6 +665,7 @@ typedef void (VKAPI_PTR *PFN_vkGetVersionStringsMVK)(char* pMoltenVersionStringB
 typedef void (VKAPI_PTR *PFN_vkGetMTLDeviceMVK)(VkPhysicalDevice physicalDevice, id<MTLDevice>* pMTLDevice);
 typedef VkResult (VKAPI_PTR *PFN_vkSetMTLTextureMVK)(VkImage image, id<MTLTexture> mtlTexture);
 typedef void (VKAPI_PTR *PFN_vkGetMTLTextureMVK)(VkImage image, id<MTLTexture>* pMTLTexture);
+typedef void (VKAPI_PTR *PFN_vkGetMTLBufferMVK)(VkBuffer buffer, id<MTLBuffer>* pMTLBuffer);
 typedef VkResult (VKAPI_PTR *PFN_vkUseIOSurfaceMVK)(VkImage image, IOSurfaceRef ioSurface);
 typedef void (VKAPI_PTR *PFN_vkGetIOSurfaceMVK)(VkImage image, IOSurfaceRef* pIOSurface);
 #endif // __OBJC__
@@ -925,6 +936,19 @@ VKAPI_ATTR VkResult VKAPI_CALL vkSetMTLTextureMVK(
 VKAPI_ATTR void VKAPI_CALL vkGetMTLTextureMVK(
     VkImage                                     image,
     id<MTLTexture>*                             pMTLTexture);
+
+/**
+* Returns, in the pMTLBuffer pointer, the MTLBuffer currently underlaying the VkBuffer.
+*
+* This function is not supported by the Vulkan SDK Loader and Layers framework.
+* The VkBuffer object you provide here must have been retrieved directly from
+* MoltenVK, and not through the Vulkan SDK Loader and Layers framework. Opaque Vulkan
+* objects are often changed by layers, and passing them from one layer to another,
+* or from a layer directly to MoltenVK, will result in undefined behaviour.
+*/
+VKAPI_ATTR void VKAPI_CALL vkGetMTLBufferMVK(
+    VkBuffer                                    buffer,
+    id<MTLBuffer>*                              pMTLBuffer);
 
 /**
  * Indicates that a VkImage should use an IOSurface to underlay the Metal texture.
