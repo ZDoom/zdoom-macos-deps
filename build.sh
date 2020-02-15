@@ -36,9 +36,6 @@ cmake                                                 \
 	-DCMAKE_OSX_DEPLOYMENT_TARGET="10.9"              \
 	-DCMAKE_EXE_LINKER_FLAGS="${LINKER_FLAGS}"        \
 	-DDYN_OPENAL=NO                                   \
-	-DDYN_MPG123=NO                                   \
-	-DDYN_SNDFILE=NO                                  \
-	-DDYN_FLUIDSYNTH=NO                               \
 	-DFORCE_INTERNAL_ZLIB=YES                         \
 	-DFORCE_INTERNAL_BZIP2=YES                        \
 	-DPK3_QUIET_ZIPDIR=YES                            \
