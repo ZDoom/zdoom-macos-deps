@@ -1,0 +1,41 @@
+name: Continuous Integration
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: "macOS"
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "GZDoom"
+          }
+        - {
+            name: "Raze"
+          }
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Configure
+      run: |
+        echo "::set-env name=PROJECT_NAME_LOWER::$(echo ${{ matrix.config.name }} | tr '[:upper:]' '[:lower:]')"
+
+    - name: Build
+      run: |
+        ./build_${PROJECT_NAME_LOWER}
+
+    - name: Create Package
+      shell: bash
+      run: |
+        mkdir package
+        cp -r ${PROJECT_NAME_LOWER}/build/${PROJECT_NAME_LOWER}.app package
+
+    - name: Upload Package
+      uses: actions/upload-artifact@v1
+      with:
+        path: package
+        name: ${{ matrix.config.name }}
