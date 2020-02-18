@@ -46,7 +46,7 @@ cmake                                                 \
 	-DOPENAL_INCLUDE_DIR="${OPENAL_DIR}include"       \
 	-DOPENAL_LIBRARY="${OPENAL_DIR}lib/libopenal.a"   \
 	-DZMUSIC_INCLUDE_DIR="${ZMUSIC_DIR}include"       \
-	-DZMUSIC_LIBRARIES="${ZMUSIC_DIR}lib/libzmusic.a" \
+	-DZMUSIC_LIBRARIES="${ZMUSIC_DIR}lib/libzmusiclite.a" \
 	-DJPEG_INCLUDE_DIR="${JPEG_DIR}include"           \
 	-DJPEG_LIBRARY="${JPEG_DIR}lib/libjpeg.a"         \
 	-DVPX_INCLUDE_DIR=${VPX_DIR}include               \
