@@ -73,15 +73,17 @@ enum
 
 /**
  * Indicates the type of a sample used by the _fluid_sample_t::sampletype field.
+ * This enum corresponds to the \c SFSampleLink enum in the SoundFont spec.
+ * One \c flag may be bit-wise OR-ed with one \c value.
  */
 enum fluid_sample_type
 {
-    FLUID_SAMPLETYPE_MONO = 0x1, /**< Used for mono samples */
-    FLUID_SAMPLETYPE_RIGHT = 0x2, /**< Used for right samples of a stereo pair */
-    FLUID_SAMPLETYPE_LEFT = 0x4, /**< Used for left samples of a stereo pair */
-    FLUID_SAMPLETYPE_LINKED = 0x8, /**< Currently not used */
-    FLUID_SAMPLETYPE_OGG_VORBIS = 0x10, /**< Used for Ogg Vorbis compressed samples @since 1.1.7 */
-    FLUID_SAMPLETYPE_ROM = 0x8000 /**< Indicates ROM samples, causes sample to be ignored */
+    FLUID_SAMPLETYPE_MONO = 0x1, /**< Value used for mono samples */
+    FLUID_SAMPLETYPE_RIGHT = 0x2, /**< Value used for right samples of a stereo pair */
+    FLUID_SAMPLETYPE_LEFT = 0x4, /**< Value used for left samples of a stereo pair */
+    FLUID_SAMPLETYPE_LINKED = 0x8, /**< Value used for linked sample, which is currently not supported */
+    FLUID_SAMPLETYPE_OGG_VORBIS = 0x10, /**< Flag used for Ogg Vorbis compressed samples (non-standard compliant extension) as found in the program "sftools" developed by Werner Schweer from MuseScore @since 1.1.7 */
+    FLUID_SAMPLETYPE_ROM = 0x8000 /**< Flag that indicates ROM samples, causing the sample to be ignored */
 };
 
 
@@ -90,7 +92,7 @@ enum fluid_sample_type
  * could be another type of string identifier that the \a loader understands).
  * @param loader SoundFont loader
  * @param filename File name or other string identifier
- * @return The loaded instrument file (SoundFont) or NULL if an error occured.
+ * @return The loaded instrument file (SoundFont) or NULL if an error occurred.
  */
 typedef fluid_sfont_t *(*fluid_sfloader_load_t)(fluid_sfloader_t *loader, const char *filename);
 
@@ -134,7 +136,7 @@ typedef int (* fluid_sfloader_callback_read_t)(void *buf, int count, void *handl
 typedef int (* fluid_sfloader_callback_seek_t)(void *handle, long offset, int origin);
 
 /**
- * Closes the handle returned by #fluid_sfloader_callback_open_t and frees used ressources.
+ * Closes the handle returned by #fluid_sfloader_callback_open_t and frees used resources.
  *
  * @return returns #FLUID_OK on success, #FLUID_FAILED on error
  */

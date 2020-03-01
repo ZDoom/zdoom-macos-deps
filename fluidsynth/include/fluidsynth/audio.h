@@ -42,15 +42,20 @@ extern "C" {
 /**
  * Callback function type used with new_fluid_audio_driver2() to allow for
  * custom user audio processing before the audio is sent to the driver. This
- * function is responsible for rendering the audio to the buffers. For details
- * please refer to fluid_synth_process().
+ * function is responsible for rendering audio to the buffers.
+ * The buffers passed to this function are allocated and owned by the respective
+ * audio driver and are only valid during that specific call (do not cache them).
+ * For further details please refer to fluid_synth_process().
+ * @note Whereas fluid_synth_process() allows aliasing buffers, there is the guarentee that @p out
+ * and @p fx buffers provided by fluidsynth's audio drivers never alias. This prevents downstream
+ * applications from e.g. applying a custom effect accidentially to the same buffer multiple times.
  * @param data The user data parameter as passed to new_fluid_audio_driver2().
  * @param len Count of audio frames to synthesize.
  * @param nfx Count of arrays in \c fx.
  * @param fx Array of buffers to store effects audio to. Buffers may alias with buffers of \c out.
  * @param nout Count of arrays in \c out.
  * @param out Array of buffers to store (dry) audio to. Buffers may alias with buffers of \c fx.
- * @return Should return #FLUID_OK on success, #FLUID_FAILED if an error occured.
+ * @return Should return #FLUID_OK on success, #FLUID_FAILED if an error occurred.
  */
 typedef int (*fluid_audio_func_t)(void *data, int len,
                                   int nfx, float *fx[],

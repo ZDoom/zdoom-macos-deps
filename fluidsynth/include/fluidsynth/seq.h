@@ -41,7 +41,7 @@ typedef void (*fluid_event_callback_t)(unsigned int time, fluid_event_t *event,
                                        fluid_sequencer_t *seq, void *data);
 
 
-FLUIDSYNTH_API fluid_sequencer_t *new_fluid_sequencer(void);
+FLUID_DEPRECATED FLUIDSYNTH_API fluid_sequencer_t *new_fluid_sequencer(void);
 FLUIDSYNTH_API fluid_sequencer_t *new_fluid_sequencer2(int use_system_timer);
 FLUIDSYNTH_API void delete_fluid_sequencer(fluid_sequencer_t *seq);
 FLUIDSYNTH_API int fluid_sequencer_get_use_system_timer(fluid_sequencer_t *seq);
@@ -63,14 +63,6 @@ void fluid_sequencer_remove_events(fluid_sequencer_t *seq, fluid_seq_id_t source
 FLUIDSYNTH_API unsigned int fluid_sequencer_get_tick(fluid_sequencer_t *seq);
 FLUIDSYNTH_API void fluid_sequencer_set_time_scale(fluid_sequencer_t *seq, double scale);
 FLUIDSYNTH_API double fluid_sequencer_get_time_scale(fluid_sequencer_t *seq);
-
-// Compile in internal traceing functions
-#define FLUID_SEQ_WITH_TRACE 0
-
-#if FLUID_SEQ_WITH_TRACE
-FLUIDSYNTH_API char *fluid_seq_gettrace(fluid_sequencer_t *seq);
-FLUIDSYNTH_API void fluid_seq_cleartrace(fluid_sequencer_t *seq);
-#endif
 
 #ifdef __cplusplus
 }
