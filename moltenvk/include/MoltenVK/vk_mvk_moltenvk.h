@@ -50,7 +50,7 @@ typedef unsigned long MTLLanguageVersion;
  */
 #define MVK_VERSION_MAJOR   1
 #define MVK_VERSION_MINOR   0
-#define MVK_VERSION_PATCH   40
+#define MVK_VERSION_PATCH   41
 
 #define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
 #define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
@@ -103,8 +103,9 @@ typedef unsigned long MTLLanguageVersion;
  *    If none of these is set, errors and informational messages are logged.
  *
  * 2. The MVK_CONFIG_TRACE_VULKAN_CALLS runtime environment variable or MoltenVK compile-time build
- *    setting causes MoltenVK to log the name of each Vulkan call made by the application. The logging
- *    format options can be controlled by setting the value of MVK_CONFIG_TRACE_VULKAN_CALLS as follows:
+ *    setting causes MoltenVK to log the name of each Vulkan call made by the application, along with
+ *    the Mach thread ID, global system thread ID, and thread name. The logging format options can be
+ *    controlled by setting the value of MVK_CONFIG_TRACE_VULKAN_CALLS as follows:
  *        0: No Vulkan call logging.
  *        1: Log the name of each Vulkan call when the call is entered.
  *        2: Log the name of each Vulkan call when the call is entered and exited. This effectively
@@ -153,6 +154,27 @@ typedef unsigned long MTLLanguageVersion;
  *    be dynamically allocated in application memory when the descriptor set itself is allocated.
  *    This setting is disabled by default, and MoltenVK will dynamically allocate descriptors
  *    when the containing descriptor set is allocated.
+ *
+ * 8. The MVK_CONFIG_USE_COMMAND_POOLING runtime environment variable or MoltenVK compile-time
+ *    build setting controls whether MoltenVK should use pools to manage memory used when
+ *    adding commands to command buffers. If this environment variable is enabled, MoltenVK
+ *    will use a pool to hold command resources for reuse during command execution. If this
+ *    environment variable is disabled, command memory is allocated and destroyed each time
+ *    a command is executed. This is a classic time-space trade off. When command pooling is
+ *    active, the memory in the pool can be cleared via a call to the vkTrimCommandPoolKHR()
+ *    command. This setting is enabled by default, and MoltenVK will pool command memory.
+ *
+ * 9. The MVK_CONFIG_USE_MTLHEAP runtime environment variable or MoltenVK compile-time build
+ *    setting controls whether MoltenVK should use MTLHeaps for allocating textures and buffers
+ *    from device memory. If this environment variable is enabled, and placement MTLHeaps are
+ *    available on the platform, MoltenVK will allocate a placement MTLHeap for each VkDeviceMemory
+ *    instance, and allocate textures and buffers from that placement heap. If this environment
+ *    variable is disabled, MoltenVK will allocate textures and buffers from general device memory.
+ *    Apple recommends that MTLHeaps should only be used for specific requirements such as aliasing
+ *    or hazard tracking, and MoltenVK testing has shown that allocating multiple textures of
+ *    different types or usages from one MTLHeap can occassionally cause corruption issues under
+ *    certain circumstances. Because of this, this setting is disabled by default, and MoltenVK
+ *    will allocate texures and buffers from general device memory.
  */
 typedef struct {
 
