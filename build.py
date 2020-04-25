@@ -29,7 +29,6 @@ import argparse
 import os
 import shutil
 import subprocess
-import sys
 
 
 class Configuration(object):
@@ -77,7 +76,7 @@ def copy_moltenvk(config: Configuration):
         copy_func(src_path, dst_path)
 
 
-def create_configuration():
+def create_configuration(args: list):
     target_list = (
         Target('gzdoom', 'https://github.com/coelckers/gzdoom.git', copy_moltenvk),
         Target('raze', 'https://github.com/coelckers/Raze.git'),
@@ -94,7 +93,7 @@ def create_configuration():
     parser.add_argument('--source-path', help='path to target\'s source code')
     parser.add_argument('--build-path', help='target build path')
     parser.add_argument('--sdk-path', help='path to macOS SDK')
-    arguments = parser.parse_args()
+    arguments = parser.parse_args(args)
 
     config = Configuration()
     config.target = targets[arguments.target]
@@ -231,8 +230,8 @@ def build_target(config: Configuration):
         config.target.post_build(config)
 
 
-def main():
-    config = create_configuration()
+def build(args: list):
+    config = create_configuration(args)
     create_prefix_directory(config)
 
     prepare_source(config)
@@ -241,8 +240,4 @@ def main():
 
 
 if __name__ == '__main__':
-    if sys.hexversion < 0x3070000:
-        print('This script requires Python 3.7 or newer')
-        exit(1)
-
-    main()
+    build(sys.argv[1:])
