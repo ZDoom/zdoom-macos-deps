@@ -26,13 +26,13 @@ jobs:
 
     - name: Build
       run: |
-        ./build_${PROJECT_NAME_LOWER}
+        ./build.py ${PROJECT_NAME_LOWER}
 
     - name: Create Package
       shell: bash
       run: |
         mkdir package
-        cp -r ${PROJECT_NAME_LOWER}/build/${PROJECT_NAME_LOWER}.app package
+        cp -r build/${PROJECT_NAME_LOWER}/make/${PROJECT_NAME_LOWER}.app package
 
     - name: Upload Package
       uses: actions/upload-artifact@v1
