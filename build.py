@@ -44,7 +44,7 @@ class Configuration(object):
         self.commit = None
         self.generate = True
         self.checkout = True
-        self.update_prefix = True
+        self.rebuild_prefix = False
 
         self.source_path = None
         self.build_path = None
@@ -89,7 +89,7 @@ def create_configuration(args: list):
     parser.add_argument('--commit', help='target\'s source code commit or tag to checkout')
     parser.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
     parser.add_argument('--skip-checkout', action='store_true', help='do not touch target\'s source code')
-    parser.add_argument('--skip-prefix-update', action='store_true', help='do not touch prefix path')
+    parser.add_argument('--rebuild-prefix', action='store_true', help='rebuild prefix path')
     parser.add_argument('--source-path', help='path to target\'s source code')
     parser.add_argument('--build-path', help='target build path')
     parser.add_argument('--sdk-path', help='path to macOS SDK')
@@ -101,7 +101,7 @@ def create_configuration(args: list):
     config.commit = arguments.commit
     config.generate = not arguments.skip_generate
     config.checkout = not arguments.skip_checkout
-    config.update_prefix = not arguments.skip_prefix_update
+    config.rebuild_prefix = arguments.rebuild_prefix
 
     config.source_path = arguments.source_path
     config.build_path = arguments.build_path
@@ -121,11 +121,11 @@ def create_configuration(args: list):
 
 
 def create_prefix_directory(config: Configuration):
-    if not config.update_prefix:
-        return
-
     if os.path.exists(config.prefix_path):
-        shutil.rmtree(config.prefix_path)
+        if config.rebuild_prefix:
+            shutil.rmtree(config.prefix_path)
+        else:
+            return
 
     os.makedirs(config.include_path)
     os.makedirs(config.lib_path)
