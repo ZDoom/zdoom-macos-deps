@@ -2,9 +2,9 @@
 
 set -o errexit
 
-DEPS_DIR=$(cd "${0%/*}"; pwd)/
+cd "${0%/*}"
 
-cd "${DEPS_DIR}"
+DEPS_DIR=$(pwd)/deps/
 
 if [ ! -e raze ]; then
 	if [ ! -z "${GITHUB_ACTIONS}" ]; then
