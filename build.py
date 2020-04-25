@@ -18,20 +18,43 @@ class Configuration(object):
         self.target = None
         self.xcode = False
         self.commit = None
+        self.generate = True
+        self.checkout = True
+        self.update_prefix = True
 
         self.source_path = None
         self.build_path = None
+        self.sdk_path = None
 
 
 class Target(object):
-    def __init__(self, name: str, url: str):
+    def __init__(self, name: str, url: str, post_build=None):
         self.name = name
         self.url = url
+        self.post_build = post_build
+
+
+def copy_moltenvk(config: Configuration):
+    molten_lib = 'libMoltenVK.dylib'
+    src_path = config.lib_path + molten_lib
+    dst_path = config.build_path
+
+    if config.xcode:
+        dst_path += 'Debug' + os.sep
+
+    dst_path += config.target.name + '.app/Contents/MacOS' + os.sep
+    os.makedirs(dst_path, exist_ok=True)
+
+    dst_path += molten_lib
+
+    if not os.path.exists(dst_path):
+        copy_func = config.xcode and os.symlink or shutil.copy
+        copy_func(src_path, dst_path)
 
 
 def create_configuration():
     target_list = (
-        Target('gzdoom', 'https://github.com/coelckers/gzdoom.git'),
+        Target('gzdoom', 'https://github.com/coelckers/gzdoom.git', copy_moltenvk),
         Target('raze', 'https://github.com/coelckers/Raze.git'),
     )
     targets = {target.name: target for target in target_list}
@@ -39,21 +62,44 @@ def create_configuration():
     parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
     parser.add_argument('target', choices=targets.keys(), help='target to build')
     parser.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
-    parser.add_argument('--commit', help='target\'s commit or tag to checkout')
+    parser.add_argument('--commit', help='target\'s source code commit or tag to checkout')
+    parser.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
+    parser.add_argument('--skip-checkout', action='store_true', help='do not touch target\'s source code')
+    parser.add_argument('--skip-prefix-update', action='store_true', help='do not touch prefix path')
+    parser.add_argument('--source-path', help='path to target\'s source code')
+    parser.add_argument('--build-path', help='target build path')
+    parser.add_argument('--sdk-path', help='path to macOS SDK')
     arguments = parser.parse_args()
 
     config = Configuration()
     config.target = targets[arguments.target]
     config.xcode = arguments.xcode
     config.commit = arguments.commit
-    config.source_path = config.root_path + config.target.name
-    config.build_path = config.root_path + 'build' + os.sep + config.target.name + \
-        os.sep + (config.xcode and 'xcode' or 'make')
+    config.generate = not arguments.skip_generate
+    config.checkout = not arguments.skip_checkout
+    config.update_prefix = not arguments.skip_prefix_update
+
+    config.source_path = arguments.source_path
+    config.build_path = arguments.build_path
+    config.sdk_path = arguments.sdk_path
+
+    if not config.source_path:
+        config.source_path = config.root_path + config.target.name
+
+    if not config.build_path:
+        config.build_path = config.root_path + 'build' + os.sep + config.target.name + \
+            os.sep + (config.xcode and 'xcode' or 'make')
+
+    config.source_path += os.sep
+    config.build_path += os.sep
 
     return config
 
 
 def create_prefix_directory(config: Configuration):
+    if not config.update_prefix:
+        return
+
     if os.path.exists(config.prefix_path):
         shutil.rmtree(config.prefix_path)
 
@@ -82,16 +128,19 @@ def prepare_source(config: Configuration):
         args = ('git', 'clone', config.target.url, config.source_path)
         subprocess.check_call(args, cwd=config.root_path)
 
-    args = ['git', 'checkout', config.commit and config.commit or 'master']
-    subprocess.check_call(args, cwd=config.source_path)
+    if config.checkout:
+        args = ['git', 'checkout', config.commit and config.commit or 'master']
+        subprocess.check_call(args, cwd=config.source_path)
 
 
 def generate_cmake(config: Configuration):
+    if not config.generate:
+        return
+
     environ = os.environ
     environ['PATH'] = environ['PATH'] + os.pathsep + '/Applications/CMake.app/Contents/bin'
 
-    if not os.path.exists(config.build_path):
-        os.makedirs(config.build_path)
+    os.makedirs(config.build_path, exist_ok=True)
 
     extra_libs = (
         'mpg123',
@@ -120,7 +169,7 @@ def generate_cmake(config: Configuration):
     for lib in extra_libs:
         linker_args += f' {config.lib_path}lib{lib}.a'
 
-    args = (
+    args = [
         'cmake',
         config.xcode and '-GXcode' or '-GUnix Makefiles',
         '-DCMAKE_BUILD_TYPE=Release',
@@ -133,8 +182,13 @@ def generate_cmake(config: Configuration):
         # Explicit OpenAL configuration to avoid selection of Apple's framework
         '-DOPENAL_INCLUDE_DIR=' + config.include_path,
         '-DOPENAL_LIBRARY=' + config.lib_path + 'libopenal.a',
-        config.source_path
-    )
+    ]
+
+    if config.sdk_path:
+        args.append('-DCMAKE_OSX_SYSROOT=' + config.sdk_path)
+
+    args.append(config.source_path)
+
     subprocess.check_call(args, cwd=config.build_path, env=environ)
 
 
@@ -147,6 +201,9 @@ def build_target(config: Configuration):
         args = ('make', '-j', jobs)
 
     subprocess.check_call(args, cwd=config.build_path)
+
+    if config.target.post_build:
+        config.target.post_build(config)
 
 
 def main():
