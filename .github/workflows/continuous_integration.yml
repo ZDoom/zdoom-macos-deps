@@ -26,7 +26,7 @@ jobs:
 
     - name: Build
       run: |
-        ./build.py ${PROJECT_NAME_LOWER}
+        ./build.py --target ${PROJECT_NAME_LOWER}
 
     - name: Create Package
       shell: bash

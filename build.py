@@ -26,6 +26,7 @@ if sys.hexversion < 0x3070000:
 
 
 import argparse
+import re
 import os
 import shutil
 import subprocess
@@ -75,6 +76,20 @@ def copy_moltenvk(config: Configuration):
         copy_func(src_path, dst_path)
 
 
+def detect_target(config: Configuration, targets: dict):
+    cmakelists_path = config.source_path + os.sep + 'CMakeLists.txt'
+    project_name = None
+
+    for line in open(cmakelists_path).readlines():
+        match = re.search(r'project\s*\(\s*(\w+)\s*\)', line, re.IGNORECASE)
+        if match:
+            project_name = match.group(1).lower()
+            break
+
+    assert project_name
+    config.target = targets[project_name]
+
+
 def create_configuration(args: list):
     target_list = (
         Target('gzdoom', 'https://github.com/coelckers/gzdoom.git', copy_moltenvk),
@@ -83,29 +98,36 @@ def create_configuration(args: list):
     targets = {target.name: target for target in target_list}
 
     parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
-    parser.add_argument('target', choices=targets.keys(), help='target to build')
-    parser.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
-    parser.add_argument('--checkout-commit', help='target\'s source code commit or tag to checkout')
-    parser.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
-    parser.add_argument('--rebuild-prefix', action='store_true', help='rebuild prefix path')
-    parser.add_argument('--source-path', help='path to target\'s source code')
-    parser.add_argument('--build-path', help='target build path')
-    parser.add_argument('--sdk-path', help='path to macOS SDK')
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--target', choices=targets.keys(), help='target to build')
+    group.add_argument('--source-path', metavar='path', help='path to target\'s source code')
+
+    group = parser.add_argument_group()
+    group.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
+    group.add_argument('--checkout-commit', metavar='commit', help='target\'s source code commit or tag to checkout')
+    group.add_argument('--build-path', metavar='path', help='target build path')
+    group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
+    group.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
+    group.add_argument('--rebuild-prefix', action='store_true', help='rebuild prefix path')
+
     arguments = parser.parse_args(args)
 
     config = Configuration()
-    config.target = targets[arguments.target]
     config.xcode = arguments.xcode
     config.checkout_commit = arguments.checkout_commit
     config.generate = not arguments.skip_generate
     config.rebuild_prefix = arguments.rebuild_prefix
-
-    config.source_path = arguments.source_path
     config.build_path = arguments.build_path
     config.sdk_path = arguments.sdk_path
 
-    if not config.source_path:
+    if arguments.target:
+        config.target = targets[arguments.target]
         config.source_path = config.root_path + config.target.name
+    else:
+        assert arguments.source_path
+        config.source_path = arguments.source_path
+        detect_target(config, targets)
 
     if not config.build_path:
         config.build_path = config.root_path + 'build' + os.sep + config.target.name + \
