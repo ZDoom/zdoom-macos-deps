@@ -30,6 +30,7 @@ import re
 import os
 import shutil
 import subprocess
+import tarfile
 
 
 class Configuration(object):
@@ -45,6 +46,7 @@ class Configuration(object):
         self.checkout_commit = None
         self.generate = True
         self.rebuild_prefix = False
+        self.create_package = False
 
         self.source_path = None
         self.build_path = None
@@ -111,6 +113,7 @@ def create_configuration(args: list):
     group.add_argument('--build-path', metavar='path', help='target build path')
     group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
     group.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
+    group.add_argument('--create-package', action='store_true', help='create deployment package')
     group.add_argument('--rebuild-prefix', action='store_true', help='rebuild prefix path')
 
     arguments = parser.parse_args(args)
@@ -122,6 +125,7 @@ def create_configuration(args: list):
     config.rebuild_prefix = arguments.rebuild_prefix
     config.build_path = arguments.build_path
     config.sdk_path = arguments.sdk_path
+    config.create_package = arguments.create_package
 
     if arguments.target:
         config.target = targets[arguments.target]
@@ -251,6 +255,29 @@ def build_target(config: Configuration):
         config.target.post_build(config)
 
 
+def create_package(config: Configuration):
+    if not config.create_package or config.xcode:
+        return
+
+    args = ['git', 'describe', '--tags']
+    version = subprocess.check_output(args, cwd=config.source_path).decode('ascii').strip()
+    package_path = f'{config.build_path}{config.target.name}-{version}.tar.bz2'
+    name_pos = len(config.build_path) - 1
+
+    if os.path.exists(package_path):
+        os.remove(package_path)
+
+    def tar_filter(tarinfo):
+        tarinfo.name = tarinfo.name[name_pos:]
+        tarinfo.uname = tarinfo.gname = "root"
+        tarinfo.uid = tarinfo.gid = 0
+        return tarinfo
+
+    with tarfile.open(package_path, 'w:bz2') as package:
+        bundle_path = config.build_path + config.target.name + '.app'
+        package.add(bundle_path, filter=tar_filter)
+
+
 def build(args: list):
     config = create_configuration(args)
     create_prefix_directory(config)
@@ -258,6 +285,7 @@ def build(args: list):
     prepare_source(config)
     generate_cmake(config)
     build_target(config)
+    create_package(config)
 
 
 if __name__ == '__main__':
