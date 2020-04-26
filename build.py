@@ -93,6 +93,8 @@ def detect_target(config: Configuration, targets: dict):
 def create_configuration(args: list):
     target_list = (
         Target('gzdoom', 'https://github.com/coelckers/gzdoom.git', copy_moltenvk),
+        Target('qzdoom', 'https://github.com/madame-rachelle/qzdoom.git', copy_moltenvk),
+        Target('lzdoom', 'https://github.com/drfrag666/gzdoom.git'),
         Target('raze', 'https://github.com/coelckers/Raze.git'),
     )
     targets = {target.name: target for target in target_list}
