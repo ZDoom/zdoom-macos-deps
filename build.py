@@ -41,9 +41,8 @@ class Configuration(object):
 
         self.target = None
         self.xcode = False
-        self.commit = None
+        self.checkout_commit = None
         self.generate = True
-        self.checkout = True
         self.rebuild_prefix = False
 
         self.source_path = None
@@ -86,9 +85,8 @@ def create_configuration(args: list):
     parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
     parser.add_argument('target', choices=targets.keys(), help='target to build')
     parser.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
-    parser.add_argument('--commit', help='target\'s source code commit or tag to checkout')
+    parser.add_argument('--checkout-commit', help='target\'s source code commit or tag to checkout')
     parser.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
-    parser.add_argument('--skip-checkout', action='store_true', help='do not touch target\'s source code')
     parser.add_argument('--rebuild-prefix', action='store_true', help='rebuild prefix path')
     parser.add_argument('--source-path', help='path to target\'s source code')
     parser.add_argument('--build-path', help='target build path')
@@ -98,9 +96,8 @@ def create_configuration(args: list):
     config = Configuration()
     config.target = targets[arguments.target]
     config.xcode = arguments.xcode
-    config.commit = arguments.commit
+    config.checkout_commit = arguments.checkout_commit
     config.generate = not arguments.skip_generate
-    config.checkout = not arguments.skip_checkout
     config.rebuild_prefix = arguments.rebuild_prefix
 
     config.source_path = arguments.source_path
@@ -152,8 +149,8 @@ def prepare_source(config: Configuration):
         args = ('git', 'clone', config.target.url, config.source_path)
         subprocess.check_call(args, cwd=config.root_path)
 
-    if config.checkout:
-        args = ['git', 'checkout', config.commit and config.commit or 'master']
+    if config.checkout_commit:
+        args = ['git', 'checkout', config.checkout_commit]
         subprocess.check_call(args, cwd=config.source_path)
 
 
