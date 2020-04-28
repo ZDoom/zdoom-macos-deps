@@ -25,8 +25,9 @@
 |gettext|[Homepage](https://www.gnu.org/software/gettext/)|[gettext.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gettext.rb)|GLib|`libintl` only|
 |GLib|[Homepage](https://developer.gnome.org/glib/)|[glib.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/glib.rb)|FluidSynth||
 |libADLMIDI|[Homepage](https://github.com/Wohlstand/libADLMIDI)||ZMusic||
-|libffi|[Homepage](https://sourceware.org/libffi/)|[libffi.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libffi.rb)|GLib|to build only|
+|libffi|[Homepage](https://sourceware.org/libffi/)|[libffi.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libffi.rb)|GLib|For libinstpatch|
 |libflac|[Homepage](https://xiph.org/flac/) / [Download](https://github.com/xiph/flac/releases)|[flac.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/flac.rb)|libsndfile||
+|libinstpatch|[Homepage](https://github.com/swami/libinstpatch/)||FluidSynth||
 |libjpeg-turbo|[Homepage](https://libjpeg-turbo.org/)|[jpeg-turbo.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/jpeg-turbo.rb)|*ZDoom||
 |libogg|[Homepage](https://www.xiph.org/ogg/) / [Download](https://github.com/xiph/ogg/releases)|[libogg.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libogg.rb)|libsndfile||
 |libOPNMIDI|[Homepage](https://github.com/Wohlstand/libOPNMIDI/)||ZMusic||
@@ -35,7 +36,8 @@
 |MoltenVK|[Homepage](https://moltengl.com/moltenvk/) / [Download](https://github.com/KhronosGroup/MoltenVK/releases)|[molten-vk.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/molten-vk.rb)|*ZDoom||
 |mpg123|[Homepage](https://www.mpg123.de/)|[mpg123.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/mpg123.rb)|*ZDoom||
 |OpenAL Soft|[Homepage](https://openal-soft.org/) / [Download](https://github.com/kcat/openal-soft/releases)|[openal-soft.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/openal-soft.rb)|*ZDoom||
-|PCRE|[Homepage](https://www.pcre.org/)|[pcre.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/pcre.rb)|GLib|to build only|
+|opus|[Homepage](https://www.opus-codec.org/)|[opus.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/opus.rb)|libsndfile||
+|PCRE|[Homepage](https://www.pcre.org/)|[pcre.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/pcre.rb)|GLib|For libinstpatch|
 |TiMidity|||ZMusic||
 |TiMidity++|[Homepage](http://timidity.sourceforge.net/)|[timidity.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/timidity.rb)|ZMusic||
 |WildMIDI|[Homepage](https://www.mindwerks.net/projects/wildmidi) / [Download](https://github.com/Mindwerks/wildmidi/releases)||ZMusic||
