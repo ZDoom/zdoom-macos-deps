@@ -1,12 +1,3 @@
-# Generated directories
+/.idea/
 /build/
 /prefix/
-
-# Targets
-/gzdoom/
-/lzdoom/
-/qzdoom/
-/raze/
-
-# IDE
-/.idea/

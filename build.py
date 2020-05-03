@@ -129,7 +129,7 @@ def create_configuration(args: list):
 
     if arguments.target:
         config.target = targets[arguments.target]
-        config.source_path = config.root_path + config.target.name
+        config.source_path = config.root_path + 'source' + os.sep + config.target.name
     else:
         assert arguments.source_path
         config.source_path = arguments.source_path
