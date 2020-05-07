@@ -34,20 +34,87 @@ import tarfile
 
 
 class Target(object):
-    def __init__(self, name: str, url: str, post_build=None):
+    _SETUP_PREFIX = '_setup_'
+
+    def __init__(self, name: str):
         self.name = name
-        self.url = url
-        self.post_build = post_build
+        self.url = None
+        self.cmake_options = {}
+        self.post_build = None
+
+    def setup(self, builder: 'Builder'):
+        setup_func = getattr(Target, Target._SETUP_PREFIX + self.name)
+        setup_func(self, builder)
+
+    @staticmethod
+    def get_target_names() -> list:
+        targets = []
+
+        for member in dir(Target):
+            if member.startswith(Target._SETUP_PREFIX):
+                targets.append(member[len(Target._SETUP_PREFIX):])
+
+        return targets
 
     @staticmethod
     def create_targets() -> dict:
-        target_list = (
-            Target('gzdoom', 'https://github.com/coelckers/gzdoom.git', Target._copy_moltenvk),
-            Target('qzdoom', 'https://github.com/madame-rachelle/qzdoom.git', Target._copy_moltenvk),
-            Target('lzdoom', 'https://github.com/drfrag666/gzdoom.git'),
-            Target('raze', 'https://github.com/coelckers/Raze.git'),
+        return {name: Target(name) for name in Target.get_target_names()}
+
+    def _setup_gzdoom(self, builder: 'Builder'):
+        self.url = 'https://github.com/coelckers/gzdoom.git'
+        self.post_build = Target._copy_moltenvk
+        self._assign_zdoom_raze_cmake_options(builder)
+
+    def _setup_qzdoom(self, builder: 'Builder'):
+        self.url = 'https://github.com/madame-rachelle/qzdoom.git'
+        self.post_build = Target._copy_moltenvk
+        self._assign_zdoom_raze_cmake_options(builder)
+
+    def _setup_lzdoom(self, builder: 'Builder'):
+        self.url = 'https://github.com/drfrag666/gzdoom.git'
+        self._assign_zdoom_raze_cmake_options(builder)
+
+    def _setup_raze(self, builder: 'Builder'):
+        self.url = 'https://github.com/coelckers/Raze.git'
+        self._assign_zdoom_raze_cmake_options(builder)
+
+    def _assign_zdoom_raze_cmake_options(self, builder: 'Builder'):
+        extra_libs = (
+            'mpg123',
+
+            # FluidSynth with dependencies
+            'fluidsynth',
+            'instpatch-1.0',
+            'glib-2.0',
+            'gobject-2.0',
+            'intl',
+            'ffi',
+            'pcre',
+
+            # Sndfile with dependencies
+            'sndfile',
+            'ogg',
+            'vorbis',
+            'vorbisenc',
+            'FLAC',
+            'opus',
         )
-        return {target.name: target for target in target_list}
+
+        linker_args = '-framework AudioUnit -framework AudioToolbox -framework Carbon ' \
+                      '-framework CoreAudio -framework CoreMIDI -framework CoreVideo -liconv'
+
+        for lib in extra_libs:
+            linker_args += f' {builder.lib_path}lib{lib}.a'
+
+        opts = self.cmake_options
+        opts['CMAKE_EXE_LINKER_FLAGS'] = linker_args
+        opts['FORCE_INTERNAL_ZLIB'] = 'YES'
+        opts['FORCE_INTERNAL_BZIP2'] = 'YES'
+        opts['PK3_QUIET_ZIPDIR'] = 'YES'
+        opts['DYN_OPENAL'] = 'NO'
+        # Explicit OpenAL configuration to avoid selection of Apple's framework
+        opts['OPENAL_INCLUDE_DIR'] = builder.include_path
+        opts['OPENAL_LIBRARY'] = builder.lib_path + 'libopenal.a'
 
     @staticmethod
     def _copy_moltenvk(builder: 'Builder'):
@@ -77,8 +144,7 @@ class Builder(object):
         self.include_path = self.prefix_path + 'include' + os.sep
         self.lib_path = self.prefix_path + 'lib' + os.sep
 
-        targets = Target.create_targets()
-        arguments = Builder._parse_arguments(args, targets)
+        arguments = Builder._parse_arguments(args)
 
         self.xcode = arguments.xcode
         self.checkout_commit = arguments.checkout_commit
@@ -87,6 +153,8 @@ class Builder(object):
         self.build_path = arguments.build_path
         self.sdk_path = arguments.sdk_path
         self.create_package = arguments.create_package
+
+        targets = Target.create_targets()
 
         if arguments.target:
             self.target = targets[arguments.target]
@@ -102,6 +170,8 @@ class Builder(object):
 
         self.source_path += os.sep
         self.build_path += os.sep
+
+        self.target.setup(self)
 
     def run(self):
         self._create_prefix_directory()
@@ -154,50 +224,18 @@ class Builder(object):
 
         os.makedirs(self.build_path, exist_ok=True)
 
-        extra_libs = (
-            'mpg123',
-
-            # FluidSynth with dependencies
-            'fluidsynth',
-            'instpatch-1.0',
-            'glib-2.0',
-            'gobject-2.0',
-            'intl',
-            'ffi',
-            'pcre',
-
-            # Sndfile with dependencies
-            'sndfile',
-            'ogg',
-            'vorbis',
-            'vorbisenc',
-            'FLAC',
-            'opus',
-        )
-
-        linker_args = '-framework AudioUnit -framework AudioToolbox -framework Carbon -framework CoreAudio ' \
-                      '-framework CoreMIDI -framework CoreVideo -framework ForceFeedback -liconv'
-
-        for lib in extra_libs:
-            linker_args += f' {self.lib_path}lib{lib}.a'
-
         args = [
             'cmake',
             self.xcode and '-GXcode' or '-GUnix Makefiles',
             '-DCMAKE_BUILD_TYPE=Release',
             '-DCMAKE_PREFIX_PATH=' + self.prefix_path,
-            '-DCMAKE_EXE_LINKER_FLAGS=' + linker_args,
-            '-DFORCE_INTERNAL_ZLIB=YES',
-            '-DFORCE_INTERNAL_BZIP2=YES',
-            '-DPK3_QUIET_ZIPDIR=YES',
-            '-DDYN_OPENAL=NO',
-            # Explicit OpenAL configuration to avoid selection of Apple's framework
-            '-DOPENAL_INCLUDE_DIR=' + self.include_path,
-            '-DOPENAL_LIBRARY=' + self.lib_path + 'libopenal.a',
         ]
 
         if self.sdk_path:
             args.append('-DCMAKE_OSX_SYSROOT=' + self.sdk_path)
+
+        for cmake_arg_name, cmake_arg_value in self.target.cmake_options.items():
+            args.append(f'-D{cmake_arg_name}={cmake_arg_value}')
 
         args.append(self.source_path)
 
@@ -252,11 +290,11 @@ class Builder(object):
         self.target = targets[project_name]
 
     @staticmethod
-    def _parse_arguments(args: list, targets: dict):
+    def _parse_arguments(args: list):
         parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
 
         group = parser.add_mutually_exclusive_group(required=True)
-        group.add_argument('--target', choices=targets.keys(), help='target to build')
+        group.add_argument('--target', choices=Target.get_target_names(), help='target to build')
         group.add_argument('--source-path', metavar='path', help='path to target\'s source code')
 
         group = parser.add_argument_group()
