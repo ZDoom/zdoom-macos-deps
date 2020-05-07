@@ -39,6 +39,35 @@ class Target(object):
         self.url = url
         self.post_build = post_build
 
+    @staticmethod
+    def create_targets() -> dict:
+        target_list = (
+            Target('gzdoom', 'https://github.com/coelckers/gzdoom.git', Target._copy_moltenvk),
+            Target('qzdoom', 'https://github.com/madame-rachelle/qzdoom.git', Target._copy_moltenvk),
+            Target('lzdoom', 'https://github.com/drfrag666/gzdoom.git'),
+            Target('raze', 'https://github.com/coelckers/Raze.git'),
+        )
+        return {target.name: target for target in target_list}
+
+    @staticmethod
+    def _copy_moltenvk(builder: 'Builder'):
+        molten_lib = 'libMoltenVK.dylib'
+        src_path = builder.lib_path + molten_lib
+        dst_path = builder.build_path
+
+        if builder.xcode:
+            # TODO: Support other configurations
+            dst_path += 'Debug' + os.sep
+
+        dst_path += builder.target.name + '.app/Contents/MacOS' + os.sep
+        os.makedirs(dst_path, exist_ok=True)
+
+        dst_path += molten_lib
+
+        if not os.path.exists(dst_path):
+            copy_func = builder.xcode and os.symlink or shutil.copy
+            copy_func(src_path, dst_path)
+
 
 class Builder(object):
     def __init__(self, args: list):
@@ -48,7 +77,7 @@ class Builder(object):
         self.include_path = self.prefix_path + 'include' + os.sep
         self.lib_path = self.prefix_path + 'lib' + os.sep
 
-        targets = Builder._create_targets()
+        targets = Target.create_targets()
         arguments = Builder._parse_arguments(args, targets)
 
         self.xcode = arguments.xcode
@@ -74,7 +103,14 @@ class Builder(object):
         self.source_path += os.sep
         self.build_path += os.sep
 
-    def create_prefix_directory(self):
+    def run(self):
+        self._create_prefix_directory()
+        self._prepare_source()
+        self._generate_cmake()
+        self._build_target()
+        self._make_package()
+
+    def _create_prefix_directory(self):
         if os.path.exists(self.prefix_path):
             if self.rebuild_prefix:
                 shutil.rmtree(self.prefix_path)
@@ -100,7 +136,7 @@ class Builder(object):
             for dep_lib in os.scandir(dep_lib_path):
                 os.symlink(dep_lib.path, self.lib_path + dep_lib.name)
 
-    def prepare_source(self):
+    def _prepare_source(self):
         if not os.path.exists(self.source_path):
             args = ('git', 'clone', self.target.url, self.source_path)
             subprocess.check_call(args, cwd=self.root_path)
@@ -109,7 +145,7 @@ class Builder(object):
             args = ['git', 'checkout', self.checkout_commit]
             subprocess.check_call(args, cwd=self.source_path)
 
-    def generate_cmake(self):
+    def _generate_cmake(self):
         if not self.generate:
             return
 
@@ -167,7 +203,7 @@ class Builder(object):
 
         subprocess.check_call(args, cwd=self.build_path, env=environ)
 
-    def build_target(self):
+    def _build_target(self):
         if self.xcode:
             # TODO: support case-sensitive file system
             args = ('open', self.target.name + '.xcodeproj')
@@ -180,7 +216,7 @@ class Builder(object):
         if self.target.post_build:
             self.target.post_build(self)
 
-    def create_package(self):
+    def _make_package(self):
         if not self.create_package or self.xcode:
             return
 
@@ -216,16 +252,6 @@ class Builder(object):
         self.target = targets[project_name]
 
     @staticmethod
-    def _create_targets() -> dict:
-        target_list = (
-            Target('gzdoom', 'https://github.com/coelckers/gzdoom.git', Builder._copy_moltenvk),
-            Target('qzdoom', 'https://github.com/madame-rachelle/qzdoom.git', Builder._copy_moltenvk),
-            Target('lzdoom', 'https://github.com/drfrag666/gzdoom.git'),
-            Target('raze', 'https://github.com/coelckers/Raze.git'),
-        )
-        return {target.name: target for target in target_list}
-
-    @staticmethod
     def _parse_arguments(args: list, targets: dict):
         parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
 
@@ -245,33 +271,6 @@ class Builder(object):
 
         return parser.parse_args(args)
 
-    def _copy_moltenvk(self):
-        molten_lib = 'libMoltenVK.dylib'
-        src_path = self.lib_path + molten_lib
-        dst_path = self.build_path
-
-        if self.xcode:
-            # TODO: Support other targets
-            dst_path += 'Debug' + os.sep
-
-        dst_path += self.target.name + '.app/Contents/MacOS' + os.sep
-        os.makedirs(dst_path, exist_ok=True)
-
-        dst_path += molten_lib
-
-        if not os.path.exists(dst_path):
-            copy_func = self.xcode and os.symlink or shutil.copy
-            copy_func(src_path, dst_path)
-
-
-def build(args: list):
-    builder = Builder(args)
-    builder.create_prefix_directory()
-    builder.prepare_source()
-    builder.generate_cmake()
-    builder.build_target()
-    builder.create_package()
-
 
 if __name__ == '__main__':
-    build(sys.argv[1:])
+    Builder(sys.argv[1:]).run()
