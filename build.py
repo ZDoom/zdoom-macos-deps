@@ -33,26 +33,6 @@ import subprocess
 import tarfile
 
 
-class Configuration(object):
-    def __init__(self):
-        self.root_path = os.path.dirname(os.path.abspath(__file__)) + os.sep
-        self.deps_path = self.root_path + 'deps' + os.sep
-        self.prefix_path = self.root_path + 'prefix' + os.sep
-        self.include_path = self.prefix_path + 'include' + os.sep
-        self.lib_path = self.prefix_path + 'lib' + os.sep
-
-        self.target = None
-        self.xcode = False
-        self.checkout_commit = None
-        self.generate = True
-        self.rebuild_prefix = False
-        self.create_package = False
-
-        self.source_path = None
-        self.build_path = None
-        self.sdk_path = None
-
-
 class Target(object):
     def __init__(self, name: str, url: str, post_build=None):
         self.name = name
@@ -60,232 +40,237 @@ class Target(object):
         self.post_build = post_build
 
 
-def copy_moltenvk(config: Configuration):
-    molten_lib = 'libMoltenVK.dylib'
-    src_path = config.lib_path + molten_lib
-    dst_path = config.build_path
+class Builder(object):
+    def __init__(self, args: list):
+        self.root_path = os.path.dirname(os.path.abspath(__file__)) + os.sep
+        self.deps_path = self.root_path + 'deps' + os.sep
+        self.prefix_path = self.root_path + 'prefix' + os.sep
+        self.include_path = self.prefix_path + 'include' + os.sep
+        self.lib_path = self.prefix_path + 'lib' + os.sep
 
-    if config.xcode:
-        dst_path += 'Debug' + os.sep
+        targets = Builder._create_targets()
+        arguments = Builder._parse_arguments(args, targets)
 
-    dst_path += config.target.name + '.app/Contents/MacOS' + os.sep
-    os.makedirs(dst_path, exist_ok=True)
+        self.xcode = arguments.xcode
+        self.checkout_commit = arguments.checkout_commit
+        self.generate = not arguments.skip_generate
+        self.rebuild_prefix = arguments.rebuild_prefix
+        self.build_path = arguments.build_path
+        self.sdk_path = arguments.sdk_path
+        self.create_package = arguments.create_package
 
-    dst_path += molten_lib
-
-    if not os.path.exists(dst_path):
-        copy_func = config.xcode and os.symlink or shutil.copy
-        copy_func(src_path, dst_path)
-
-
-def detect_target(config: Configuration, targets: dict):
-    cmakelists_path = config.source_path + os.sep + 'CMakeLists.txt'
-    project_name = None
-
-    for line in open(cmakelists_path).readlines():
-        match = re.search(r'project\s*\(\s*(\w+)\s*\)', line, re.IGNORECASE)
-        if match:
-            project_name = match.group(1).lower()
-            break
-
-    assert project_name
-    config.target = targets[project_name]
-
-
-def create_configuration(args: list):
-    target_list = (
-        Target('gzdoom', 'https://github.com/coelckers/gzdoom.git', copy_moltenvk),
-        Target('qzdoom', 'https://github.com/madame-rachelle/qzdoom.git', copy_moltenvk),
-        Target('lzdoom', 'https://github.com/drfrag666/gzdoom.git'),
-        Target('raze', 'https://github.com/coelckers/Raze.git'),
-    )
-    targets = {target.name: target for target in target_list}
-
-    parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
-
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--target', choices=targets.keys(), help='target to build')
-    group.add_argument('--source-path', metavar='path', help='path to target\'s source code')
-
-    group = parser.add_argument_group()
-    group.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
-    group.add_argument('--checkout-commit', metavar='commit', help='target\'s source code commit or tag to checkout')
-    group.add_argument('--build-path', metavar='path', help='target build path')
-    group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
-    group.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
-    group.add_argument('--create-package', action='store_true', help='create deployment package')
-    group.add_argument('--rebuild-prefix', action='store_true', help='rebuild prefix path')
-
-    arguments = parser.parse_args(args)
-
-    config = Configuration()
-    config.xcode = arguments.xcode
-    config.checkout_commit = arguments.checkout_commit
-    config.generate = not arguments.skip_generate
-    config.rebuild_prefix = arguments.rebuild_prefix
-    config.build_path = arguments.build_path
-    config.sdk_path = arguments.sdk_path
-    config.create_package = arguments.create_package
-
-    if arguments.target:
-        config.target = targets[arguments.target]
-        config.source_path = config.root_path + 'source' + os.sep + config.target.name
-    else:
-        assert arguments.source_path
-        config.source_path = arguments.source_path
-        detect_target(config, targets)
-
-    if not config.build_path:
-        config.build_path = config.root_path + 'build' + os.sep + config.target.name + \
-            os.sep + (config.xcode and 'xcode' or 'make')
-
-    config.source_path += os.sep
-    config.build_path += os.sep
-
-    return config
-
-
-def create_prefix_directory(config: Configuration):
-    if os.path.exists(config.prefix_path):
-        if config.rebuild_prefix:
-            shutil.rmtree(config.prefix_path)
+        if arguments.target:
+            self.target = targets[arguments.target]
+            self.source_path = self.root_path + 'source' + os.sep + self.target.name
         else:
+            assert arguments.source_path
+            self.source_path = arguments.source_path
+            self._detect_target(targets)
+
+        if not self.build_path:
+            self.build_path = self.root_path + 'build' + os.sep + self.target.name + \
+                os.sep + (self.xcode and 'xcode' or 'make')
+
+        self.source_path += os.sep
+        self.build_path += os.sep
+
+    def create_prefix_directory(self):
+        if os.path.exists(self.prefix_path):
+            if self.rebuild_prefix:
+                shutil.rmtree(self.prefix_path)
+            else:
+                return
+
+        os.makedirs(self.include_path)
+        os.makedirs(self.lib_path)
+
+        for dep in os.scandir(self.deps_path):
+            if not dep.is_dir():
+                continue
+
+            dep_include_path = dep.path + os.sep + 'include' + os.sep
+            dep_lib_path = dep.path + os.sep + 'lib' + os.sep
+
+            if not os.path.exists(dep_include_path) or not os.path.exists(dep_lib_path):
+                continue
+
+            for dep_include in os.scandir(dep_include_path):
+                os.symlink(dep_include.path, self.include_path + dep_include.name)
+
+            for dep_lib in os.scandir(dep_lib_path):
+                os.symlink(dep_lib.path, self.lib_path + dep_lib.name)
+
+    def prepare_source(self):
+        if not os.path.exists(self.source_path):
+            args = ('git', 'clone', self.target.url, self.source_path)
+            subprocess.check_call(args, cwd=self.root_path)
+
+        if self.checkout_commit:
+            args = ['git', 'checkout', self.checkout_commit]
+            subprocess.check_call(args, cwd=self.source_path)
+
+    def generate_cmake(self):
+        if not self.generate:
             return
 
-    os.makedirs(config.include_path)
-    os.makedirs(config.lib_path)
+        environ = os.environ
+        environ['PATH'] = environ['PATH'] + os.pathsep + '/Applications/CMake.app/Contents/bin'
 
-    for dep in os.scandir(config.deps_path):
-        if not dep.is_dir():
-            continue
+        os.makedirs(self.build_path, exist_ok=True)
 
-        dep_include_path = dep.path + os.sep + 'include' + os.sep
-        dep_lib_path = dep.path + os.sep + 'lib' + os.sep
+        extra_libs = (
+            'mpg123',
 
-        if not os.path.exists(dep_include_path) or not os.path.exists(dep_lib_path):
-            continue
+            # FluidSynth with dependencies
+            'fluidsynth',
+            'instpatch-1.0',
+            'glib-2.0',
+            'gobject-2.0',
+            'intl',
+            'ffi',
+            'pcre',
 
-        for dep_include in os.scandir(dep_include_path):
-            os.symlink(dep_include.path, config.include_path + dep_include.name)
+            # Sndfile with dependencies
+            'sndfile',
+            'ogg',
+            'vorbis',
+            'vorbisenc',
+            'FLAC',
+            'opus',
+        )
 
-        for dep_lib in os.scandir(dep_lib_path):
-            os.symlink(dep_lib.path, config.lib_path + dep_lib.name)
+        linker_args = '-framework AudioUnit -framework AudioToolbox -framework Carbon -framework CoreAudio ' \
+                      '-framework CoreMIDI -framework CoreVideo -framework ForceFeedback -liconv'
 
+        for lib in extra_libs:
+            linker_args += f' {self.lib_path}lib{lib}.a'
 
-def prepare_source(config: Configuration):
-    if not os.path.exists(config.source_path):
-        args = ('git', 'clone', config.target.url, config.source_path)
-        subprocess.check_call(args, cwd=config.root_path)
+        args = [
+            'cmake',
+            self.xcode and '-GXcode' or '-GUnix Makefiles',
+            '-DCMAKE_BUILD_TYPE=Release',
+            '-DCMAKE_PREFIX_PATH=' + self.prefix_path,
+            '-DCMAKE_EXE_LINKER_FLAGS=' + linker_args,
+            '-DFORCE_INTERNAL_ZLIB=YES',
+            '-DFORCE_INTERNAL_BZIP2=YES',
+            '-DPK3_QUIET_ZIPDIR=YES',
+            '-DDYN_OPENAL=NO',
+            # Explicit OpenAL configuration to avoid selection of Apple's framework
+            '-DOPENAL_INCLUDE_DIR=' + self.include_path,
+            '-DOPENAL_LIBRARY=' + self.lib_path + 'libopenal.a',
+        ]
 
-    if config.checkout_commit:
-        args = ['git', 'checkout', config.checkout_commit]
-        subprocess.check_call(args, cwd=config.source_path)
+        if self.sdk_path:
+            args.append('-DCMAKE_OSX_SYSROOT=' + self.sdk_path)
 
+        args.append(self.source_path)
 
-def generate_cmake(config: Configuration):
-    if not config.generate:
-        return
+        subprocess.check_call(args, cwd=self.build_path, env=environ)
 
-    environ = os.environ
-    environ['PATH'] = environ['PATH'] + os.pathsep + '/Applications/CMake.app/Contents/bin'
+    def build_target(self):
+        if self.xcode:
+            # TODO: support case-sensitive file system
+            args = ('open', self.target.name + '.xcodeproj')
+        else:
+            jobs = subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
+            args = ('make', '-j', jobs)
 
-    os.makedirs(config.build_path, exist_ok=True)
+        subprocess.check_call(args, cwd=self.build_path)
 
-    extra_libs = (
-        'mpg123',
+        if self.target.post_build:
+            self.target.post_build(self)
 
-        # FluidSynth with dependencies
-        'fluidsynth',
-        'instpatch-1.0',
-        'glib-2.0',
-        'gobject-2.0',
-        'intl',
-        'ffi',
-        'pcre',
-        
-        # Sndfile with dependencies
-        'sndfile',
-        'ogg',
-        'vorbis',
-        'vorbisenc',
-        'FLAC',
-        'opus',
-    )
+    def create_package(self):
+        if not self.create_package or self.xcode:
+            return
 
-    linker_args = '-framework AudioUnit -framework AudioToolbox -framework Carbon -framework CoreAudio ' \
-                  '-framework CoreMIDI -framework CoreVideo -framework ForceFeedback -liconv'
+        args = ['git', 'describe', '--tags']
+        version = subprocess.check_output(args, cwd=self.source_path).decode('ascii').strip()
+        package_path = f'{self.build_path}{self.target.name}-{version}.tar.bz2'
+        name_pos = len(self.build_path) - 1
 
-    for lib in extra_libs:
-        linker_args += f' {config.lib_path}lib{lib}.a'
+        if os.path.exists(package_path):
+            os.remove(package_path)
 
-    args = [
-        'cmake',
-        config.xcode and '-GXcode' or '-GUnix Makefiles',
-        '-DCMAKE_BUILD_TYPE=Release',
-        '-DCMAKE_PREFIX_PATH=' + config.prefix_path,
-        '-DCMAKE_EXE_LINKER_FLAGS=' + linker_args,
-        '-DFORCE_INTERNAL_ZLIB=YES',
-        '-DFORCE_INTERNAL_BZIP2=YES',
-        '-DPK3_QUIET_ZIPDIR=YES',
-        '-DDYN_OPENAL=NO',
-        # Explicit OpenAL configuration to avoid selection of Apple's framework
-        '-DOPENAL_INCLUDE_DIR=' + config.include_path,
-        '-DOPENAL_LIBRARY=' + config.lib_path + 'libopenal.a',
-    ]
+        def tar_filter(tarinfo):
+            tarinfo.name = tarinfo.name[name_pos:]
+            tarinfo.uname = tarinfo.gname = "root"
+            tarinfo.uid = tarinfo.gid = 0
+            return tarinfo
 
-    if config.sdk_path:
-        args.append('-DCMAKE_OSX_SYSROOT=' + config.sdk_path)
+        with tarfile.open(package_path, 'w:bz2') as package:
+            bundle_path = self.build_path + self.target.name + '.app'
+            package.add(bundle_path, filter=tar_filter)
 
-    args.append(config.source_path)
+    def _detect_target(self, targets: dict):
+        cmakelists_path = self.source_path + os.sep + 'CMakeLists.txt'
+        project_name = None
 
-    subprocess.check_call(args, cwd=config.build_path, env=environ)
+        for line in open(cmakelists_path).readlines():
+            match = re.search(r'project\s*\(\s*(\w+)\s*\)', line, re.IGNORECASE)
+            if match:
+                project_name = match.group(1).lower()
+                break
 
+        assert project_name
+        self.target = targets[project_name]
 
-def build_target(config: Configuration):
-    if config.xcode:
-        # TODO: support case-sensitive file system
-        args = ('open', config.target.name + '.xcodeproj')
-    else:
-        jobs = subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
-        args = ('make', '-j', jobs)
+    @staticmethod
+    def _create_targets() -> dict:
+        target_list = (
+            Target('gzdoom', 'https://github.com/coelckers/gzdoom.git', Builder._copy_moltenvk),
+            Target('qzdoom', 'https://github.com/madame-rachelle/qzdoom.git', Builder._copy_moltenvk),
+            Target('lzdoom', 'https://github.com/drfrag666/gzdoom.git'),
+            Target('raze', 'https://github.com/coelckers/Raze.git'),
+        )
+        return {target.name: target for target in target_list}
 
-    subprocess.check_call(args, cwd=config.build_path)
+    @staticmethod
+    def _parse_arguments(args: list, targets: dict):
+        parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
 
-    if config.target.post_build:
-        config.target.post_build(config)
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument('--target', choices=targets.keys(), help='target to build')
+        group.add_argument('--source-path', metavar='path', help='path to target\'s source code')
 
+        group = parser.add_argument_group()
+        group.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
+        group.add_argument('--checkout-commit', metavar='commit',
+                           help='target\'s source code commit or tag to checkout')
+        group.add_argument('--build-path', metavar='path', help='target build path')
+        group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
+        group.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
+        group.add_argument('--create-package', action='store_true', help='create deployment package')
+        group.add_argument('--rebuild-prefix', action='store_true', help='rebuild prefix path')
 
-def create_package(config: Configuration):
-    if not config.create_package or config.xcode:
-        return
+        return parser.parse_args(args)
 
-    args = ['git', 'describe', '--tags']
-    version = subprocess.check_output(args, cwd=config.source_path).decode('ascii').strip()
-    package_path = f'{config.build_path}{config.target.name}-{version}.tar.bz2'
-    name_pos = len(config.build_path) - 1
+    def _copy_moltenvk(self):
+        molten_lib = 'libMoltenVK.dylib'
+        src_path = self.lib_path + molten_lib
+        dst_path = self.build_path
 
-    if os.path.exists(package_path):
-        os.remove(package_path)
+        if self.xcode:
+            # TODO: Support other targets
+            dst_path += 'Debug' + os.sep
 
-    def tar_filter(tarinfo):
-        tarinfo.name = tarinfo.name[name_pos:]
-        tarinfo.uname = tarinfo.gname = "root"
-        tarinfo.uid = tarinfo.gid = 0
-        return tarinfo
+        dst_path += self.target.name + '.app/Contents/MacOS' + os.sep
+        os.makedirs(dst_path, exist_ok=True)
 
-    with tarfile.open(package_path, 'w:bz2') as package:
-        bundle_path = config.build_path + config.target.name + '.app'
-        package.add(bundle_path, filter=tar_filter)
+        dst_path += molten_lib
+
+        if not os.path.exists(dst_path):
+            copy_func = self.xcode and os.symlink or shutil.copy
+            copy_func(src_path, dst_path)
 
 
 def build(args: list):
-    config = create_configuration(args)
-    create_prefix_directory(config)
-
-    prepare_source(config)
-    generate_cmake(config)
-    build_target(config)
-    create_package(config)
+    builder = Builder(args)
+    builder.create_prefix_directory()
+    builder.prepare_source()
+    builder.generate_cmake()
+    builder.build_target()
+    builder.create_package()
 
 
 if __name__ == '__main__':
