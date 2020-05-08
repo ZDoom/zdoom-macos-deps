@@ -78,6 +78,16 @@ class Target(object):
         self.url = 'https://github.com/coelckers/Raze.git'
         self._assign_zdoom_raze_cmake_options(builder)
 
+    def _setup_zandronum(self, builder: 'Builder'):
+        self.url = 'https://github.com/TorrSamaho/zandronum.git'
+        opts = self.cmake_options
+        opts['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit -framework Carbon -framework IOKit'
+        # Linking to FluidSynth is disabled because Zandronum doesn't support FluidSynth 2.x
+        # opts['DYN_FLUIDSYNTH'] = 'NO'
+        opts['FMOD_INCLUDE_DIR'] = builder.include_path
+        opts['FMOD_LIBRARY'] = builder.lib_path + 'libfmodex.dylib'
+        # TODO: create app bundle in post build
+
     def _assign_zdoom_raze_cmake_options(self, builder: 'Builder'):
         extra_libs = (
             'mpg123',
