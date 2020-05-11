@@ -69,6 +69,7 @@ class Target:
     def __init__(self, name: str):
         self.name = name
         self.url = None
+        self.src_root = ''
         self.cmake_options = {}
         self.post_build = None
 
@@ -109,7 +110,41 @@ class Target:
         opts['FMOD_LIBRARY'] = builder.lib_path + 'libfmodex.dylib'
         # TODO: create app bundle in post build
 
-    def _assign_zdoom_raze_cmake_options(self, builder: 'Builder'):
+    @target_setup('prboom-plus')
+    def _setup_prboomplus(self, builder: 'Builder'):
+        self.url = 'https://github.com/coelckers/prboom-plus.git'
+        self.src_root = 'prboom2'
+        self._assign_common_linker_flags(builder)
+
+        extra_linker_args = ' -framework ForceFeedback -framework IOKit'
+
+        extra_libs = (
+            'mikmod',
+            'modplug',
+            'opusfile',
+            'webp',
+        )
+
+        for lib in extra_libs:
+            extra_linker_args += f' {builder.lib_path}lib{lib}.a'
+
+        opts = self.cmake_options
+        opts['CMAKE_C_FLAGS'] = '-D_FILE_OFFSET_BITS=64'
+        opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
+        opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
+
+        def copy_bundle(builder: 'Builder'):
+            src_path = builder.build_path + 'Launcher.app'
+            dst_path = builder.build_path + self.name + '.app'
+
+            if os.path.exists(dst_path):
+                shutil.rmtree(dst_path)
+
+            shutil.copytree(src_path, dst_path)
+
+        self.post_build = copy_bundle
+
+    def _assign_common_linker_flags(self, builder: 'Builder'):
         extra_libs = (
             'mpg123',
 
@@ -137,8 +172,12 @@ class Target:
         for lib in extra_libs:
             linker_args += f' {builder.lib_path}lib{lib}.a'
 
+        self.cmake_options['CMAKE_EXE_LINKER_FLAGS'] = linker_args
+
+    def _assign_zdoom_raze_cmake_options(self, builder: 'Builder'):
+        self._assign_common_linker_flags(builder)
+
         opts = self.cmake_options
-        opts['CMAKE_EXE_LINKER_FLAGS'] = linker_args
         opts['FORCE_INTERNAL_ZLIB'] = 'YES'
         opts['FORCE_INTERNAL_BZIP2'] = 'YES'
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
@@ -268,7 +307,7 @@ class Builder(object):
         for cmake_arg_name, cmake_arg_value in self.target.cmake_options.items():
             args.append(f'-D{cmake_arg_name}={cmake_arg_value}')
 
-        args.append(self.source_path)
+        args.append(self.source_path + self.target.src_root)
 
         subprocess.check_call(args, cwd=self.build_path, env=environ)
 
