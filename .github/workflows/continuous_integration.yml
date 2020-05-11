@@ -16,6 +16,9 @@ jobs:
         - {
             name: "Raze"
           }
+        - {
+            name: "PrBoom-Plus"
+          }
 
     steps:
     - uses: actions/checkout@v1
