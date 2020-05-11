@@ -24,18 +24,48 @@ if sys.hexversion < 0x3070000:
     print('Build module requires Python 3.7 or newer')
     exit(1)
 
-
 import argparse
 import re
 import os
 import shutil
 import subprocess
 import tarfile
+from typing import KeysView
 
 
-class Target(object):
-    _SETUP_PREFIX = '_setup_'
+class TargetRegistry:
+    _SETUPS = {}
+    _TARGETS = {}
 
+    @staticmethod
+    def get_names() -> KeysView:
+        return TargetRegistry._SETUPS.keys()
+
+    @staticmethod
+    def get_targets() -> dict:
+        if len(TargetRegistry._TARGETS) == 0:
+            TargetRegistry._TARGETS = {name: Target(name) for name in TargetRegistry.get_names()}
+
+        return TargetRegistry._TARGETS
+
+    @staticmethod
+    def get_setup(name: str):
+        return TargetRegistry._SETUPS[name]
+
+    @staticmethod
+    def setup(name):
+        def register(func):
+            assert name not in TargetRegistry._SETUPS
+            TargetRegistry._SETUPS[name] = func
+            return func
+
+        return register
+
+
+target_setup = TargetRegistry.setup
+
+
+class Target:
     def __init__(self, name: str):
         self.name = name
         self.url = None
@@ -43,41 +73,32 @@ class Target(object):
         self.post_build = None
 
     def setup(self, builder: 'Builder'):
-        setup_func = getattr(Target, Target._SETUP_PREFIX + self.name)
+        setup_func = TargetRegistry.get_setup(self.name)
         setup_func(self, builder)
 
-    @staticmethod
-    def get_target_names() -> list:
-        targets = []
-
-        for member in dir(Target):
-            if member.startswith(Target._SETUP_PREFIX):
-                targets.append(member[len(Target._SETUP_PREFIX):])
-
-        return targets
-
-    @staticmethod
-    def create_targets() -> dict:
-        return {name: Target(name) for name in Target.get_target_names()}
-
+    @target_setup('gzdoom')
     def _setup_gzdoom(self, builder: 'Builder'):
         self.url = 'https://github.com/coelckers/gzdoom.git'
         self.post_build = Target._copy_moltenvk
         self._assign_zdoom_raze_cmake_options(builder)
 
+    @target_setup('qzdoom')
     def _setup_qzdoom(self, builder: 'Builder'):
         self.url = 'https://github.com/madame-rachelle/qzdoom.git'
         self.post_build = Target._copy_moltenvk
         self._assign_zdoom_raze_cmake_options(builder)
 
+    @target_setup('lzdoom')
     def _setup_lzdoom(self, builder: 'Builder'):
         self.url = 'https://github.com/drfrag666/gzdoom.git'
         self._assign_zdoom_raze_cmake_options(builder)
 
+    @target_setup('raze')
     def _setup_raze(self, builder: 'Builder'):
         self.url = 'https://github.com/coelckers/Raze.git'
         self._assign_zdoom_raze_cmake_options(builder)
 
+    @target_setup('zandronum')
     def _setup_zandronum(self, builder: 'Builder'):
         self.url = 'https://github.com/TorrSamaho/zandronum.git'
         opts = self.cmake_options
@@ -164,7 +185,7 @@ class Builder(object):
         self.sdk_path = arguments.sdk_path
         self.create_package = arguments.create_package
 
-        targets = Target.create_targets()
+        targets = TargetRegistry.get_targets()
 
         if arguments.target:
             self.target = targets[arguments.target]
@@ -304,7 +325,7 @@ class Builder(object):
         parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
 
         group = parser.add_mutually_exclusive_group(required=True)
-        group.add_argument('--target', choices=Target.get_target_names(), help='target to build')
+        group.add_argument('--target', choices=TargetRegistry.get_names(), help='target to build')
         group.add_argument('--source-path', metavar='path', help='path to target\'s source code')
 
         group = parser.add_argument_group()
