@@ -190,6 +190,9 @@ class PrBoomPlusTarget(Target):
 
     @staticmethod
     def _copy_bundle(builder: 'Builder'):
+        if builder.xcode:
+            return
+
         src_path = builder.build_path + 'Launcher.app'
         dst_path = builder.build_path + builder.target.name + '.app'
 
