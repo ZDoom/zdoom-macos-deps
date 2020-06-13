@@ -30,119 +30,15 @@ import os
 import shutil
 import subprocess
 import tarfile
-from typing import KeysView
-
-
-class TargetRegistry:
-    _SETUPS = {}
-    _TARGETS = {}
-
-    @staticmethod
-    def get_names() -> KeysView:
-        return TargetRegistry._SETUPS.keys()
-
-    @staticmethod
-    def get_targets() -> dict:
-        if len(TargetRegistry._TARGETS) == 0:
-            TargetRegistry._TARGETS = {name: Target(name) for name in TargetRegistry.get_names()}
-
-        return TargetRegistry._TARGETS
-
-    @staticmethod
-    def get_setup(name: str):
-        return TargetRegistry._SETUPS[name]
-
-    @staticmethod
-    def setup(name):
-        def register(func):
-            assert name not in TargetRegistry._SETUPS
-            TargetRegistry._SETUPS[name] = func
-            return func
-
-        return register
-
-
-target_setup = TargetRegistry.setup
 
 
 class Target:
-    def __init__(self, name: str):
-        self.name = name
+    def __init__(self: str):
+        self.name = None
         self.url = None
         self.src_root = ''
         self.cmake_options = {}
         self.post_build = None
-
-    def setup(self, builder: 'Builder'):
-        setup_func = TargetRegistry.get_setup(self.name)
-        setup_func(self, builder)
-
-    @target_setup('gzdoom')
-    def _setup_gzdoom(self, builder: 'Builder'):
-        self.url = 'https://github.com/coelckers/gzdoom.git'
-        self.post_build = Target._copy_moltenvk
-        self._assign_zdoom_raze_cmake_options(builder)
-
-    @target_setup('qzdoom')
-    def _setup_qzdoom(self, builder: 'Builder'):
-        self.url = 'https://github.com/madame-rachelle/qzdoom.git'
-        self.post_build = Target._copy_moltenvk
-        self._assign_zdoom_raze_cmake_options(builder)
-
-    @target_setup('lzdoom')
-    def _setup_lzdoom(self, builder: 'Builder'):
-        self.url = 'https://github.com/drfrag666/gzdoom.git'
-        self._assign_zdoom_raze_cmake_options(builder)
-
-    @target_setup('raze')
-    def _setup_raze(self, builder: 'Builder'):
-        self.url = 'https://github.com/coelckers/Raze.git'
-        self._assign_zdoom_raze_cmake_options(builder)
-
-    @target_setup('zandronum')
-    def _setup_zandronum(self, builder: 'Builder'):
-        self.url = 'https://github.com/TorrSamaho/zandronum.git'
-        opts = self.cmake_options
-        opts['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit -framework Carbon -framework IOKit'
-        # Linking to FluidSynth is disabled because Zandronum doesn't support FluidSynth 2.x
-        # opts['DYN_FLUIDSYNTH'] = 'NO'
-        opts['FMOD_INCLUDE_DIR'] = builder.include_path
-        opts['FMOD_LIBRARY'] = builder.lib_path + 'libfmodex.dylib'
-        # TODO: create app bundle in post build
-
-    @target_setup('prboom-plus')
-    def _setup_prboomplus(self, builder: 'Builder'):
-        self.url = 'https://github.com/coelckers/prboom-plus.git'
-        self.src_root = 'prboom2'
-        self._assign_common_linker_flags(builder)
-
-        extra_linker_args = ' -framework ForceFeedback -framework IOKit'
-
-        extra_libs = (
-            'mikmod',
-            'modplug',
-            'opusfile',
-            'webp',
-        )
-
-        for lib in extra_libs:
-            extra_linker_args += f' {builder.lib_path}lib{lib}.a'
-
-        opts = self.cmake_options
-        opts['CMAKE_C_FLAGS'] = '-D_FILE_OFFSET_BITS=64'
-        opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
-        opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
-
-        def copy_bundle(builder: 'Builder'):
-            src_path = builder.build_path + 'Launcher.app'
-            dst_path = builder.build_path + self.name + '.app'
-
-            if os.path.exists(dst_path):
-                shutil.rmtree(dst_path)
-
-            shutil.copytree(src_path, dst_path)
-
-        self.post_build = copy_bundle
 
     def _assign_common_linker_flags(self, builder: 'Builder'):
         extra_libs = (
@@ -206,15 +102,114 @@ class Target:
             copy_func(src_path, dst_path)
 
 
+class GZDoomTarget(Target):
+    def __init__(self):
+        super().__init__()
+        self.name = 'gzdoom'
+        self.url = 'https://github.com/coelckers/gzdoom.git'
+        self.post_build = Target._copy_moltenvk
+
+    def configure(self, builder: 'Builder'):
+        self._assign_zdoom_raze_cmake_options(builder)
+
+
+class QZDoomTarget(Target):
+    def __init__(self):
+        super().__init__()
+        self.name = 'qzdoom'
+        self.url = 'https://github.com/madame-rachelle/qzdoom.git'
+        self.post_build = Target._copy_moltenvk
+
+    def configure(self, builder: 'Builder'):
+        self._assign_zdoom_raze_cmake_options(builder)
+
+
+class LZDoomTarget(Target):
+    def __init__(self):
+        super().__init__()
+        self.name = 'lzdoom'
+        self.url = 'https://github.com/drfrag666/gzdoom.git'
+
+    def configure(self, builder: 'Builder'):
+        self._assign_zdoom_raze_cmake_options(builder)
+
+
+class RazeTarget(Target):
+    def __init__(self):
+        super().__init__()
+        self.name = 'raze'
+        self.url = 'https://github.com/coelckers/Raze.git'
+
+    def configure(self, builder: 'Builder'):
+        self._assign_zdoom_raze_cmake_options(builder)
+
+
+class ZandronumTarget(Target):
+    def __init__(self):
+        super().__init__()
+        self.name = 'zandronum'
+        self.url = 'https://github.com/TorrSamaho/zandronum.git'
+
+    def configure(self, builder: 'Builder'):
+        opts = self.cmake_options
+        opts['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit -framework Carbon -framework IOKit'
+        # TODO: Linking to FluidSynth is disabled because Zandronum doesn't support FluidSynth 2.x
+        # opts['DYN_FLUIDSYNTH'] = 'NO'
+        opts['FMOD_INCLUDE_DIR'] = builder.include_path
+        opts['FMOD_LIBRARY'] = builder.lib_path + 'libfmodex.dylib'
+        # TODO: create app bundle in post build
+
+
+class PrBoomPlusTarget(Target):
+    def __init__(self):
+        super().__init__()
+        self.name = 'prboom-plus'
+        self.url = 'https://github.com/coelckers/prboom-plus.git'
+        self.src_root = 'prboom2'
+        self.post_build = self._copy_bundle
+
+    def configure(self, builder: 'Builder'):
+        self._assign_common_linker_flags(builder)
+
+        extra_linker_args = ' -framework ForceFeedback -framework IOKit'
+
+        extra_libs = (
+            'mikmod',
+            'modplug',
+            'opusfile',
+            'webp',
+        )
+
+        for lib in extra_libs:
+            extra_linker_args += f' {builder.lib_path}lib{lib}.a'
+
+        opts = self.cmake_options
+        opts['CMAKE_C_FLAGS'] = '-D_FILE_OFFSET_BITS=64'
+        opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
+        opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
+
+    @staticmethod
+    def _copy_bundle(builder: 'Builder'):
+        src_path = builder.build_path + 'Launcher.app'
+        dst_path = builder.build_path + builder.target.name + '.app'
+
+        if os.path.exists(dst_path):
+            shutil.rmtree(dst_path)
+
+        shutil.copytree(src_path, dst_path)
+
+
 class Builder(object):
     def __init__(self, args: list):
+        self._create_targets()
+
         self.root_path = os.path.dirname(os.path.abspath(__file__)) + os.sep
         self.deps_path = self.root_path + 'deps' + os.sep
         self.prefix_path = self.root_path + 'prefix' + os.sep
         self.include_path = self.prefix_path + 'include' + os.sep
         self.lib_path = self.prefix_path + 'lib' + os.sep
 
-        arguments = Builder._parse_arguments(args)
+        arguments = self._parse_arguments(args)
 
         self.xcode = arguments.xcode
         self.checkout_commit = arguments.checkout_commit
@@ -224,15 +219,13 @@ class Builder(object):
         self.sdk_path = arguments.sdk_path
         self.create_package = arguments.create_package
 
-        targets = TargetRegistry.get_targets()
-
         if arguments.target:
-            self.target = targets[arguments.target]
+            self.target = self.targets[arguments.target]
             self.source_path = self.root_path + 'source' + os.sep + self.target.name
         else:
             assert arguments.source_path
             self.source_path = arguments.source_path
-            self._detect_target(targets)
+            self._detect_target()
 
         if not self.build_path:
             self.build_path = self.root_path + 'build' + os.sep + self.target.name + \
@@ -241,7 +234,7 @@ class Builder(object):
         self.source_path += os.sep
         self.build_path += os.sep
 
-        self.target.setup(self)
+        self.target.configure(self)
 
     def run(self):
         self._create_prefix_directory()
@@ -346,25 +339,48 @@ class Builder(object):
             bundle_path = self.build_path + self.target.name + '.app'
             package.add(bundle_path, filter=tar_filter)
 
-    def _detect_target(self, targets: dict):
-        cmakelists_path = self.source_path + os.sep + 'CMakeLists.txt'
+    def _detect_target(self):
+        cmakelists_path = None
+
+        for target in self.targets.values():
+            src_root = target.src_root and os.sep + target.src_root or ''
+            probe_path = self.source_path + src_root + os.sep + 'CMakeLists.txt'
+
+            if os.path.exists(probe_path):
+                cmakelists_path = probe_path
+                break
+
+        assert cmakelists_path
         project_name = None
 
         for line in open(cmakelists_path).readlines():
-            match = re.search(r'project\s*\(\s*(\w+)\s*\)', line, re.IGNORECASE)
+            match = re.search(r'project\s*\(\s*"?(\w[\s\w-]+)"?', line, re.IGNORECASE)
             if match:
                 project_name = match.group(1).lower()
                 break
 
         assert project_name
-        self.target = targets[project_name]
+        self.target = self.targets[project_name]
 
-    @staticmethod
-    def _parse_arguments(args: list):
+    def _create_targets(self):
+        targets = (
+            GZDoomTarget(),
+            QZDoomTarget(),
+            LZDoomTarget(),
+            RazeTarget(),
+            ZandronumTarget(),
+            PrBoomPlusTarget(),
+        )
+
+        self.targets = {target.name: target for target in targets}
+
+    def _parse_arguments(self, args: list):
+        assert self.targets
+
         parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
 
         group = parser.add_mutually_exclusive_group(required=True)
-        group.add_argument('--target', choices=TargetRegistry.get_names(), help='target to build')
+        group.add_argument('--target', choices=self.targets.keys(), help='target to build')
         group.add_argument('--source-path', metavar='path', help='path to target\'s source code')
 
         group = parser.add_argument_group()
