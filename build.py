@@ -202,6 +202,39 @@ class PrBoomPlusTarget(Target):
         shutil.copytree(src_path, dst_path)
 
 
+class ChocolateDoomTarget(Target):
+    def __init__(self):
+        super().__init__()
+        self.name = 'chocolate-doom'
+        self.url = 'https://github.com/chocolate-doom/chocolate-doom.git'
+
+    def configure(self, builder: 'Builder'):
+        self._assign_common_linker_flags(builder)
+
+        extra_linker_args = ' -lc++ -framework Cocoa -framework ForceFeedback -framework IOKit'
+
+        extra_libs = (
+            'mikmod',
+            'modplug',
+            'opusfile',
+            'vorbisfile',
+        )
+
+        for lib in extra_libs:
+            extra_linker_args += f' {builder.lib_path}lib{lib}.a'
+
+        sdl2_include_dir = builder.include_path + 'SDL2'
+
+        opts = self.cmake_options
+        opts['SDL2_INCLUDE_DIR'] = sdl2_include_dir
+        opts['SDL2_LIBRARY'] = builder.lib_path + 'libSDL2.a'
+        opts['SDL2_MIXER_INCLUDE_DIR'] = sdl2_include_dir
+        opts['SDL2_MIXER_LIBRARY'] = builder.lib_path + 'libSDL2_mixer.a'
+        opts['SDL2_NET_INCLUDE_DIR'] = sdl2_include_dir
+        opts['SDL2_NET_LIBRARY'] = builder.lib_path + 'libSDL2_net.a'
+        opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
+
+
 class Builder(object):
     def __init__(self, args: list):
         self._create_targets()
@@ -374,6 +407,7 @@ class Builder(object):
             RazeTarget(),
             ZandronumTarget(),
             PrBoomPlusTarget(),
+            ChocolateDoomTarget(),
         )
 
         self.targets = {target.name: target for target in targets}
