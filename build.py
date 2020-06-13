@@ -363,6 +363,7 @@ class Builder(object):
                 break
 
         assert project_name
+        project_name = project_name.replace(' ', '-')
         self.target = self.targets[project_name]
 
     def _create_targets(self):
