@@ -274,7 +274,7 @@ class Builder(object):
 
     def _prepare_source(self):
         if not os.path.exists(self.source_path):
-            args = ('git', 'clone', self.target.url, self.source_path)
+            args = ('git', 'clone', '--recurse-submodules', self.target.url, self.source_path)
             subprocess.check_call(args, cwd=self.root_path)
 
         if self.checkout_commit:
