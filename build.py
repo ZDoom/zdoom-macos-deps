@@ -149,6 +149,7 @@ class ZandronumTarget(Target):
         super().__init__()
         self.name = 'zandronum'
         self.url = 'https://github.com/TorrSamaho/zandronum.git'
+        # TODO: create app bundle in post build
 
     def configure(self, builder: 'Builder'):
         opts = self.cmake_options
@@ -157,7 +158,6 @@ class ZandronumTarget(Target):
         # opts['DYN_FLUIDSYNTH'] = 'NO'
         opts['FMOD_INCLUDE_DIR'] = builder.include_path
         opts['FMOD_LIBRARY'] = builder.lib_path + 'libfmodex.dylib'
-        # TODO: create app bundle in post build
 
 
 class PrBoomPlusTarget(Target):
@@ -166,7 +166,7 @@ class PrBoomPlusTarget(Target):
         self.name = 'prboom-plus'
         self.url = 'https://github.com/coelckers/prboom-plus.git'
         self.src_root = 'prboom2'
-        self.post_build = self._copy_bundle
+        self.post_build = PrBoomPlusTarget._copy_bundle
 
     def configure(self, builder: 'Builder'):
         self._assign_common_linker_flags(builder)
