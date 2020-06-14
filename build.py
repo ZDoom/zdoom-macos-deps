@@ -211,6 +211,13 @@ class ChocolateDoomTarget(Target):
         opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
 
 
+class CrispyDoomTarget(ChocolateDoomTarget):
+    def __init__(self):
+        super().__init__()
+        self.name = 'crispy-doom'
+        self.url = 'https://github.com/fabiangreffrath/crispy-doom.git'
+
+
 class Builder(object):
     def __init__(self, args: list):
         self._create_targets()
@@ -360,6 +367,7 @@ class Builder(object):
             ZandronumTarget(),
             PrBoomPlusTarget(),
             ChocolateDoomTarget(),
+            CrispyDoomTarget(),
         )
 
         self.targets = {target.name: target for target in targets}
