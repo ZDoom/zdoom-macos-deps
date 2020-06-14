@@ -17,7 +17,8 @@ jobs:
             name: "Raze"
           }
         - {
-            name: "PrBoom-Plus"
+            name: "PrBoom-Plus",
+            bundle: "Launcher"
           }
 
     steps:
@@ -34,8 +35,13 @@ jobs:
     - name: Create Package
       shell: bash
       run: |
+        if [ -z ${{ matrix.config.bundle }} ]; then
+          BUNDLE_FILENAME=${PROJECT_NAME_LOWER}
+        else
+          BUNDLE_FILENAME=${{ matrix.config.bundle }}
+        fi
         mkdir package
-        cp -r build/${PROJECT_NAME_LOWER}/make/${PROJECT_NAME_LOWER}.app package
+        cp -r "build/${PROJECT_NAME_LOWER}/make/${BUNDLE_FILENAME}.app" package
 
     - name: Upload Package
       uses: actions/upload-artifact@v1
