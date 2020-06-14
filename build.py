@@ -69,7 +69,12 @@ class Target:
 
         self.cmake_options['CMAKE_EXE_LINKER_FLAGS'] = linker_args
 
-    def _assign_zdoom_raze_cmake_options(self, builder: 'Builder'):
+
+class ZDoomBaseTarget(Target):
+    def __init__(self):
+        super().__init__()
+
+    def configure(self, builder: 'Builder'):
         self._assign_common_linker_flags(builder)
 
         opts = self.cmake_options
@@ -80,6 +85,14 @@ class Target:
         # Explicit OpenAL configuration to avoid selection of Apple's framework
         opts['OPENAL_INCLUDE_DIR'] = builder.include_path
         opts['OPENAL_LIBRARY'] = builder.lib_path + 'libopenal.a'
+
+
+class GZDoomTarget(ZDoomBaseTarget):
+    def __init__(self):
+        super().__init__()
+        self.name = 'gzdoom'
+        self.url = 'https://github.com/coelckers/gzdoom.git'
+        self.post_build = GZDoomTarget._copy_moltenvk
 
     @staticmethod
     def _copy_moltenvk(builder: 'Builder'):
@@ -101,46 +114,25 @@ class Target:
             copy_func(src_path, dst_path)
 
 
-class GZDoomTarget(Target):
-    def __init__(self):
-        super().__init__()
-        self.name = 'gzdoom'
-        self.url = 'https://github.com/coelckers/gzdoom.git'
-        self.post_build = Target._copy_moltenvk
-
-    def configure(self, builder: 'Builder'):
-        self._assign_zdoom_raze_cmake_options(builder)
-
-
-class QZDoomTarget(Target):
+class QZDoomTarget(GZDoomTarget):
     def __init__(self):
         super().__init__()
         self.name = 'qzdoom'
         self.url = 'https://github.com/madame-rachelle/qzdoom.git'
-        self.post_build = Target._copy_moltenvk
-
-    def configure(self, builder: 'Builder'):
-        self._assign_zdoom_raze_cmake_options(builder)
 
 
-class LZDoomTarget(Target):
+class LZDoomTarget(ZDoomBaseTarget):
     def __init__(self):
         super().__init__()
         self.name = 'lzdoom'
         self.url = 'https://github.com/drfrag666/gzdoom.git'
 
-    def configure(self, builder: 'Builder'):
-        self._assign_zdoom_raze_cmake_options(builder)
 
-
-class RazeTarget(Target):
+class RazeTarget(ZDoomBaseTarget):
     def __init__(self):
         super().__init__()
         self.name = 'raze'
         self.url = 'https://github.com/coelckers/Raze.git'
-
-    def configure(self, builder: 'Builder'):
-        self._assign_zdoom_raze_cmake_options(builder)
 
 
 class ZandronumTarget(Target):
