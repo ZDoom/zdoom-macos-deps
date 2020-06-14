@@ -29,7 +29,6 @@ import re
 import os
 import shutil
 import subprocess
-import tarfile
 
 
 class Target:
@@ -149,7 +148,6 @@ class ZandronumTarget(Target):
         super().__init__()
         self.name = 'zandronum'
         self.url = 'https://github.com/TorrSamaho/zandronum.git'
-        # TODO: create app bundle in post build
 
     def configure(self, builder: 'Builder'):
         opts = self.cmake_options
@@ -166,7 +164,6 @@ class PrBoomPlusTarget(Target):
         self.name = 'prboom-plus'
         self.url = 'https://github.com/coelckers/prboom-plus.git'
         self.src_root = 'prboom2'
-        self.post_build = PrBoomPlusTarget._copy_bundle
 
     def configure(self, builder: 'Builder'):
         self._assign_common_linker_flags(builder)
@@ -187,19 +184,6 @@ class PrBoomPlusTarget(Target):
         opts['CMAKE_C_FLAGS'] = '-D_FILE_OFFSET_BITS=64'
         opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
         opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
-
-    @staticmethod
-    def _copy_bundle(builder: 'Builder'):
-        if builder.xcode:
-            return
-
-        src_path = builder.build_path + 'Launcher.app'
-        dst_path = builder.build_path + builder.target.name + '.app'
-
-        if os.path.exists(dst_path):
-            shutil.rmtree(dst_path)
-
-        shutil.copytree(src_path, dst_path)
 
 
 class ChocolateDoomTarget(Target):
@@ -253,7 +237,6 @@ class Builder(object):
         self.rebuild_prefix = arguments.rebuild_prefix
         self.build_path = arguments.build_path
         self.sdk_path = arguments.sdk_path
-        self.create_package = arguments.create_package
 
         if arguments.target:
             self.target = self.targets[arguments.target]
@@ -277,7 +260,6 @@ class Builder(object):
         self._prepare_source()
         self._generate_cmake()
         self._build_target()
-        self._make_package()
 
     def _create_prefix_directory(self):
         if os.path.exists(self.prefix_path):
@@ -353,28 +335,6 @@ class Builder(object):
         if self.target.post_build:
             self.target.post_build(self)
 
-    def _make_package(self):
-        if not self.create_package or self.xcode:
-            return
-
-        args = ['git', 'describe', '--tags']
-        version = subprocess.check_output(args, cwd=self.source_path).decode('ascii').strip()
-        package_path = f'{self.build_path}{self.target.name}-{version}.tar.bz2'
-        name_pos = len(self.build_path) - 1
-
-        if os.path.exists(package_path):
-            os.remove(package_path)
-
-        def tar_filter(tarinfo):
-            tarinfo.name = tarinfo.name[name_pos:]
-            tarinfo.uname = tarinfo.gname = "root"
-            tarinfo.uid = tarinfo.gid = 0
-            return tarinfo
-
-        with tarfile.open(package_path, 'w:bz2') as package:
-            bundle_path = self.build_path + self.target.name + '.app'
-            package.add(bundle_path, filter=tar_filter)
-
     def _detect_target(self):
         cmakelists_path = None
 
@@ -428,7 +388,6 @@ class Builder(object):
         group.add_argument('--build-path', metavar='path', help='target build path')
         group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
         group.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
-        group.add_argument('--create-package', action='store_true', help='create deployment package')
         group.add_argument('--rebuild-prefix', action='store_true', help='rebuild prefix path')
 
         return parser.parse_args(args)
