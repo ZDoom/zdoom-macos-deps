@@ -127,6 +127,14 @@ class LZDoomTarget(ZDoomBaseTarget):
         self.name = 'lzdoom'
         self.url = 'https://github.com/drfrag666/gzdoom.git'
 
+    def configure(self, builder: 'Builder'):
+        super().configure(builder)
+
+        opts = self.cmake_options
+        opts['DYN_FLUIDSYNTH'] = 'NO'
+        opts['DYN_MPG123'] = 'NO'
+        opts['DYN_SNDFILE'] = 'NO'
+
 
 class RazeTarget(ZDoomBaseTarget):
     def __init__(self):
