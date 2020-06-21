@@ -1,3 +1,5 @@
+# *ZDoom binary dependencies for macOS
+
 **Dependencies stored in GZDoom repository**
 
 |Name|Links|Homebrew Formula|Repository Path|

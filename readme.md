@@ -1,4 +1,4 @@
-## *ZDoom binary dependencies for macOS
+# *ZDoom binary dependencies for macOS
 
 This repository contains all binary dependencies required to build macOS application bundles of [ZDoom-derived](https://zdoom.org) source ports.
 
