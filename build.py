@@ -36,7 +36,7 @@ class Target:
         self.name = None
         self.url = None
         self.src_root = ''
-        self.cmake_options = {}
+        self.cmake_options = {'CMAKE_OSX_DEPLOYMENT_TARGET': '10.9'}
         self.post_build = None
 
     def _assign_common_linker_flags(self, builder: 'Builder'):
