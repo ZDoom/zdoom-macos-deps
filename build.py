@@ -260,6 +260,7 @@ class Builder(object):
         self.root_path = os.path.dirname(os.path.abspath(__file__)) + os.sep
         self.deps_path = self.root_path + 'deps' + os.sep
         self.prefix_path = self.root_path + 'prefix' + os.sep
+        self.bin_path = self.prefix_path + 'bin' + os.sep
         self.include_path = self.prefix_path + 'include' + os.sep
         self.lib_path = self.prefix_path + 'lib' + os.sep
 
@@ -295,6 +296,7 @@ class Builder(object):
         self._build_target()
 
     def _create_prefix_directory(self):
+        os.makedirs(self.bin_path, exist_ok=True)
         os.makedirs(self.include_path, exist_ok=True)
         os.makedirs(self.lib_path, exist_ok=True)
 
@@ -327,6 +329,7 @@ class Builder(object):
                     elif not os.path.exists(dst_subpath):
                         os.symlink(src.path, dst_subpath)
 
+            symlink_deps('bin')
             symlink_deps('include')
             symlink_deps('lib')
 
@@ -344,7 +347,9 @@ class Builder(object):
             return
 
         environ = os.environ
-        environ['PATH'] = environ['PATH'] + os.pathsep + '/Applications/CMake.app/Contents/bin'
+        environ['PATH'] = environ['PATH'] \
+            + os.pathsep + '/Applications/CMake.app/Contents/bin' \
+            + os.pathsep + self.bin_path
 
         os.makedirs(self.build_path, exist_ok=True)
 
