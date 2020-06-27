@@ -1,0 +1,2 @@
+#!/bin/sh
+"`dirname \"$0\"`/pkg-config.exe" --define-prefix $*

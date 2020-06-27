@@ -350,6 +350,7 @@ class Builder(object):
         environ['PATH'] = environ['PATH'] \
             + os.pathsep + '/Applications/CMake.app/Contents/bin' \
             + os.pathsep + self.bin_path
+        environ['PKG_CONFIG_PATH'] = self.lib_path + 'pkgconfig'
 
         os.makedirs(self.build_path, exist_ok=True)
 
