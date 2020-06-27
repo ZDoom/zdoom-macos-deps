@@ -268,7 +268,6 @@ class Builder(object):
         self.xcode = arguments.xcode
         self.checkout_commit = arguments.checkout_commit
         self.generate = not arguments.skip_generate
-        self.rebuild_prefix = arguments.rebuild_prefix
         self.build_path = arguments.build_path
         self.sdk_path = arguments.sdk_path
 
@@ -296,30 +295,40 @@ class Builder(object):
         self._build_target()
 
     def _create_prefix_directory(self):
-        if os.path.exists(self.prefix_path):
-            if self.rebuild_prefix:
-                shutil.rmtree(self.prefix_path)
-            else:
-                return
+        os.makedirs(self.include_path, exist_ok=True)
+        os.makedirs(self.lib_path, exist_ok=True)
 
-        os.makedirs(self.include_path)
-        os.makedirs(self.lib_path)
+        # Delete obsolete symbolic links
+        for root, _, files in os.walk(self.prefix_path, followlinks=True):
+            for filename in files:
+                file_path = root + os.sep + filename
 
+                if os.path.islink(file_path) and not os.path.exists(file_path):
+                    os.remove(file_path)
+
+        # Create symbolic links if needed
         for dep in os.scandir(self.deps_path):
             if not dep.is_dir():
                 continue
 
-            dep_include_path = dep.path + os.sep + 'include' + os.sep
-            dep_lib_path = dep.path + os.sep + 'lib' + os.sep
+            def symlink_deps(src_dir):
+                src_path = dep.path + os.sep + src_dir + os.sep
+                if not os.path.exists(src_path):
+                    return
 
-            if not os.path.exists(dep_include_path) or not os.path.exists(dep_lib_path):
-                continue
+                dst_path = self.prefix_path + src_dir + os.sep
 
-            for dep_include in os.scandir(dep_include_path):
-                os.symlink(dep_include.path, self.include_path + dep_include.name)
+                for src in os.scandir(src_path):
+                    dst_subpath = dst_path + src.name
 
-            for dep_lib in os.scandir(dep_lib_path):
-                os.symlink(dep_lib.path, self.lib_path + dep_lib.name)
+                    if src.is_dir():
+                        os.makedirs(dst_subpath, exist_ok=True)
+                        symlink_deps(src_dir + os.sep + src.name)
+                    elif not os.path.exists(dst_subpath):
+                        os.symlink(src.path, dst_subpath)
+
+            symlink_deps('include')
+            symlink_deps('lib')
 
     def _prepare_source(self):
         if not os.path.exists(self.source_path):
@@ -424,7 +433,6 @@ class Builder(object):
         group.add_argument('--build-path', metavar='path', help='target build path')
         group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
         group.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
-        group.add_argument('--rebuild-prefix', action='store_true', help='rebuild prefix path')
 
         return parser.parse_args(args)
 
