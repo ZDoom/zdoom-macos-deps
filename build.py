@@ -36,7 +36,7 @@ class Target:
         self.name = None
         self.url = None
         self.src_root = ''
-        self.cmake_options = {'CMAKE_OSX_DEPLOYMENT_TARGET': '10.9'}
+        self.cmake_options = {}
         self.post_build = None
 
     def _assign_common_linker_flags(self, builder: 'Builder'):
@@ -271,6 +271,7 @@ class Builder(object):
         self.generate = not arguments.skip_generate
         self.build_path = arguments.build_path
         self.sdk_path = arguments.sdk_path
+        self.os_version = arguments.os_version
 
         if arguments.target:
             self.target = self.targets[arguments.target]
@@ -359,6 +360,7 @@ class Builder(object):
             self.xcode and '-GXcode' or '-GUnix Makefiles',
             '-DCMAKE_BUILD_TYPE=Release',
             '-DCMAKE_PREFIX_PATH=' + self.prefix_path,
+            '-DCMAKE_OSX_DEPLOYMENT_TARGET=' + self.os_version,
         ]
 
         if self.sdk_path:
@@ -438,6 +440,7 @@ class Builder(object):
                            help='target\'s source code commit or tag to checkout')
         group.add_argument('--build-path', metavar='path', help='target build path')
         group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
+        group.add_argument('--os-version', metavar='version', default='10.9', help='macOS deployment version')
         group.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
 
         return parser.parse_args(args)
