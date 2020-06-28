@@ -268,7 +268,6 @@ class Builder(object):
 
         self.xcode = arguments.xcode
         self.checkout_commit = arguments.checkout_commit
-        self.generate = not arguments.skip_generate
         self.build_path = arguments.build_path
         self.sdk_path = arguments.sdk_path
         self.os_version = arguments.os_version
@@ -344,9 +343,6 @@ class Builder(object):
             subprocess.check_call(args, cwd=self.source_path)
 
     def _generate_cmake(self):
-        if not self.generate:
-            return
-
         environ = os.environ
         environ['PATH'] = environ['PATH'] \
             + os.pathsep + '/Applications/CMake.app/Contents/bin' \
@@ -441,7 +437,6 @@ class Builder(object):
         group.add_argument('--build-path', metavar='path', help='target build path')
         group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
         group.add_argument('--os-version', metavar='version', default='10.9', help='macOS deployment version')
-        group.add_argument('--skip-generate', action='store_true', help='do not generate build environment')
 
         return parser.parse_args(args)
 
