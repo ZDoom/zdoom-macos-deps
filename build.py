@@ -78,8 +78,6 @@ class ZDoomBaseTarget(Target):
         self._assign_common_linker_flags(builder)
 
         opts = self.cmake_options
-        opts['FORCE_INTERNAL_ZLIB'] = 'YES'
-        opts['FORCE_INTERNAL_BZIP2'] = 'YES'
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
         # Explicit OpenAL configuration to avoid selection of Apple's framework
