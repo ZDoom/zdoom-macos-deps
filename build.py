@@ -233,15 +233,17 @@ class DevilutionXTarget(Target):
     def configure(self, builder: 'Builder'):
         self._assign_common_linker_flags(builder)
 
-        extra_linker_args = ' -lbz2 -lz -framework Cocoa -framework ForceFeedback -framework IOKit'
+        extra_linker_args = ' -framework Cocoa -framework ForceFeedback -framework IOKit'
 
         extra_libs = (
+            'bz2',
             'freetype',
             'mikmod',
             'modplug',
             'opusfile',
             'png',
             'vorbisfile',
+            'z',
         )
 
         for lib in extra_libs:
