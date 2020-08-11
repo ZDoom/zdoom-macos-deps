@@ -308,6 +308,7 @@ class Builder(object):
         self.build_path = arguments.build_path
         self.sdk_path = arguments.sdk_path
         self.os_version = arguments.os_version
+        self.verbose = arguments.verbose
 
         if arguments.target:
             self.target = self.targets[arguments.target]
@@ -412,7 +413,10 @@ class Builder(object):
             args = ('open', self.target.name + '.xcodeproj')
         else:
             jobs = subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
-            args = ('make', '-j', jobs)
+            args = ['make', '-j', jobs]
+
+            if self.verbose:
+                args.append('VERBOSE=1')
 
         subprocess.check_call(args, cwd=self.build_path)
 
@@ -475,6 +479,7 @@ class Builder(object):
         group.add_argument('--build-path', metavar='path', help='target build path')
         group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
         group.add_argument('--os-version', metavar='version', default='10.9', help='macOS deployment version')
+        group.add_argument('--verbose', action='store_true', help='enable verbose build output')
 
         return parser.parse_args(args)
 
