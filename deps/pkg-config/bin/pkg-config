@@ -1,2 +1,3 @@
 #!/bin/sh
-"`dirname \"$0\"`/pkg-config.exe" --define-prefix $*
+echo "% pkg-config $*" >> pkg-config.log
+"`dirname \"$0\"`/pkg-config.exe" --define-prefix $* | tee -a pkg-config.log
