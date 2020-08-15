@@ -24,7 +24,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '..')
 sys.dont_write_bytecode = True
 
-from build import Builder
+from build import Builder  # pylint: disable=import-error
 
 test_lines = (
     'project(GZDoom)',
