@@ -423,6 +423,22 @@ class Builder(object):
         if self.target.post_build:
             self.target.post_build(self)
 
+    @staticmethod
+    def extract_project_name(line: str):
+        project_name = None
+
+        # Try to get project name without whitespaces in it
+        match = re.search(r'project\s*\(\s*(\w[\w-]+)', line, re.IGNORECASE)
+
+        if not match:
+            # Try to get project name that contains whitespaces
+            match = re.search(r'project\s*\(\s*"?(\w[\s\w-]+)"?', line, re.IGNORECASE)
+
+        if match:
+            project_name = match.group(1)
+
+        return project_name
+
     def _detect_target(self):
         cmakelists_path = None
 
@@ -438,9 +454,9 @@ class Builder(object):
         project_name = None
 
         for line in open(cmakelists_path).readlines():
-            match = re.search(r'project\s*\(\s*"?(\w[\s\w-]+)"?', line, re.IGNORECASE)
-            if match:
-                project_name = match.group(1).lower()
+            project_name = Builder.extract_project_name(line)
+            if project_name:
+                project_name = project_name.lower()
                 break
 
         assert project_name
