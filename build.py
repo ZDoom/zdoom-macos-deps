@@ -49,6 +49,7 @@ class Target:
             'glib-2.0',
             'gobject-2.0',
             'intl',
+            'iconv',
             'ffi',
             'pcre',
 
@@ -62,7 +63,7 @@ class Target:
         )
 
         linker_args = '-framework AudioUnit -framework AudioToolbox -framework Carbon ' \
-                      '-framework CoreAudio -framework CoreMIDI -framework CoreVideo -liconv'
+                      '-framework CoreAudio -framework CoreMIDI -framework CoreVideo'
 
         for lib in extra_libs:
             linker_args += f' {builder.lib_path}lib{lib}.a'
