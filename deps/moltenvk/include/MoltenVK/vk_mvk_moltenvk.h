@@ -49,13 +49,13 @@ typedef unsigned long MTLLanguageVersion;
  *   - 401215    (version 4.12.15)
  */
 #define MVK_VERSION_MAJOR   1
-#define MVK_VERSION_MINOR   0
-#define MVK_VERSION_PATCH   44
+#define MVK_VERSION_MINOR   1
+#define MVK_VERSION_PATCH   0
 
 #define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
 #define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
 
-#define VK_MVK_MOLTENVK_SPEC_VERSION            27
+#define VK_MVK_MOLTENVK_SPEC_VERSION            28
 #define VK_MVK_MOLTENVK_EXTENSION_NAME          "VK_MVK_moltenvk"
 
 /**
@@ -614,6 +614,13 @@ typedef struct {
     uint32_t subgroupSize;			            /**< The number of threads in a SIMD-group. */
 	VkDeviceSize vertexStrideAlignment;         /**< The alignment used for the stride of vertex attribute bindings. */
 	VkBool32 indirectTessellationDrawing;		/**< If true, tessellation draw calls support parameters held in a GPU buffer. */
+	VkBool32 nonUniformThreadgroups;			/**< If true, the device supports arbitrary-sized grids in compute workloads. */
+	VkBool32 renderWithoutAttachments;          /**< If true, we don't have to create a dummy attachment for a render pass if there isn't one. */
+	VkBool32 deferredStoreActions;				/**< If true, render pass store actions can be specified after the render encoder is created. */
+	VkBool32 sharedLinearTextures;				/**< If true, linear textures and texture buffers can be created from buffers in Shared storage. */
+	VkBool32 depthResolve;						/**< If true, resolving depth textures with filters other than Sample0 is supported. */
+	VkBool32 stencilResolve;					/**< If true, resolving stencil textures with filters other than Sample0 is supported. */
+	uint32_t maxPerStageDynamicMTLBufferCount;	/**< The maximum number of inline buffers that can be set on a command buffer. */
 } MVKPhysicalDeviceMetalFeatures;
 
 /** MoltenVK performance of a particular type of activity. */
