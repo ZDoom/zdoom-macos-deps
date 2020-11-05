@@ -39,6 +39,9 @@ class Target:
         self.cmake_options = {}
         self.post_build = None
 
+    def configure(self, builder: 'Builder'):
+        pass
+
     def _assign_common_linker_flags(self, builder: 'Builder'):
         extra_libs = (
             'mpg123',
@@ -155,6 +158,13 @@ class ZandronumTarget(Target):
         # opts['DYN_FLUIDSYNTH'] = 'NO'
         opts['FMOD_INCLUDE_DIR'] = builder.include_path
         opts['FMOD_LIBRARY'] = builder.lib_path + 'libfmodex.dylib'
+
+
+class AccTarget(Target):
+    def __init__(self):
+        super().__init__()
+        self.name = 'acc'
+        self.url = 'https://github.com/rheit/acc.git'
 
 
 class PrBoomPlusTarget(Target):
@@ -471,6 +481,7 @@ class Builder(object):
             LZDoomTarget(),
             RazeTarget(),
             ZandronumTarget(),
+            AccTarget(),
             PrBoomPlusTarget(),
             ChocolateDoomTarget(),
             CrispyDoomTarget(),
