@@ -272,6 +272,20 @@ class DoomRetroTarget(Target):
         opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
 
 
+class Doom64EXTarget(Target):
+    def __init__(self):
+        super().__init__()
+        self.name = 'doom64ex'
+        self.url = 'https://github.com/svkaiser/Doom64EX.git'
+
+    def configure(self, builder: 'Builder'):
+        self._assign_common_linker_flags(builder)
+
+        opts = self.cmake_options
+        opts['ENABLE_SYSTEM_FLUIDSYNTH'] = 'YES'
+        opts['CMAKE_EXE_LINKER_FLAGS'] += ' -framework Cocoa -framework ForceFeedback -framework IOKit'
+
+
 class DevilutionXTarget(Target):
     def __init__(self):
         super().__init__()
@@ -486,6 +500,7 @@ class Builder(object):
             ChocolateDoomTarget(),
             CrispyDoomTarget(),
             DoomRetroTarget(),
+            Doom64EXTarget(),
             DevilutionXTarget(),
         )
 
