@@ -32,17 +32,96 @@ import subprocess
 
 
 class Target:
-    def __init__(self: str):
-        self.name = None
-        self.url = None
+    def __init__(self, name=None):
+        self.name = name
         self.src_root = ''
         self.cmake_options = {}
-        self.post_build = None
+
+    def prepare_source(self, builder: 'Builder'):
+        pass
+
+    def initialize(self, builder: 'Builder'):
+        pass
+
+    def detect(self, builder: 'Builder') -> bool:
+        return False
 
     def configure(self, builder: 'Builder'):
         pass
 
-    def _assign_common_linker_flags(self, builder: 'Builder'):
+    def build(self, builder: 'Builder'):
+        pass
+
+    def post_build(self, builder: 'Builder'):
+        pass
+
+
+class CMakeTarget(Target):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+    def detect(self, builder: 'Builder') -> bool:
+        src_root = self.src_root and os.sep + self.src_root or ''
+        cmakelists_path = builder.source_path + src_root + os.sep + 'CMakeLists.txt'
+
+        if not os.path.exists(cmakelists_path):
+            return False
+
+        for line in open(cmakelists_path).readlines():
+            project_name = CMakeTarget._extract_project_name(line)
+            if project_name:
+                project_name = project_name.lower()
+                project_name = project_name.replace(' ', '-')
+                break
+        else:
+            return False
+
+        return project_name == self.name
+
+    @staticmethod
+    def _extract_project_name(line: str):
+        project_name = None
+
+        # Try to get project name without whitespaces in it
+        match = re.search(r'project\s*\(\s*(\w[\w-]+)', line, re.IGNORECASE)
+
+        if not match:
+            # Try to get project name that contains whitespaces
+            match = re.search(r'project\s*\(\s*"?(\w[\s\w-]+)"?', line, re.IGNORECASE)
+
+        if match:
+            project_name = match.group(1)
+
+        return project_name
+
+    def configure(self, builder: 'Builder'):
+        environ = os.environ
+        environ['PATH'] = environ['PATH'] \
+            + os.pathsep + '/Applications/CMake.app/Contents/bin' \
+            + os.pathsep + builder.bin_path
+        environ['PKG_CONFIG_PATH'] = builder.lib_path + 'pkgconfig'
+
+        os.makedirs(builder.build_path, exist_ok=True)
+
+        args = [
+            'cmake',
+            builder.xcode and '-GXcode' or '-GUnix Makefiles',
+            '-DCMAKE_BUILD_TYPE=Release',
+            '-DCMAKE_PREFIX_PATH=' + builder.prefix_path,
+            '-DCMAKE_OSX_DEPLOYMENT_TARGET=' + builder.os_version,
+        ]
+
+        if builder.sdk_path:
+            args.append('-DCMAKE_OSX_SYSROOT=' + builder.sdk_path)
+
+        for cmake_arg_name, cmake_arg_value in self.cmake_options.items():
+            args.append(f'-D{cmake_arg_name}={cmake_arg_value}')
+
+        args.append(builder.source_path + self.src_root)
+
+        subprocess.check_call(args, cwd=builder.build_path, env=environ)
+
+    def _link_with_sound_libraries(self, builder: 'Builder'):
         extra_libs = (
             'mpg123',
 
@@ -73,13 +152,26 @@ class Target:
 
         self.cmake_options['CMAKE_EXE_LINKER_FLAGS'] = linker_args
 
+    def build(self, builder: 'Builder'):
+        if builder.xcode:
+            # TODO: support case-sensitive file system
+            args = ('open', self.name + '.xcodeproj')
+        else:
+            jobs = subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
+            args = ['make', '-j', jobs]
 
-class ZDoomBaseTarget(Target):
-    def __init__(self):
-        super().__init__()
+            if builder.verbose:
+                args.append('VERBOSE=1')
 
-    def configure(self, builder: 'Builder'):
-        self._assign_common_linker_flags(builder)
+        subprocess.check_call(args, cwd=builder.build_path)
+
+
+class ZDoomBaseTarget(CMakeTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+    def initialize(self, builder: 'Builder'):
+        self._link_with_sound_libraries(builder)
 
         opts = self.cmake_options
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
@@ -90,14 +182,14 @@ class ZDoomBaseTarget(Target):
 
 
 class GZDoomTarget(ZDoomBaseTarget):
-    def __init__(self):
-        super().__init__()
-        self.name = 'gzdoom'
-        self.url = 'https://github.com/coelckers/gzdoom.git'
-        self.post_build = GZDoomTarget._copy_moltenvk
+    def __init__(self, name='gzdoom'):
+        super().__init__(name)
 
-    @staticmethod
-    def _copy_moltenvk(builder: 'Builder'):
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/coelckers/gzdoom.git')
+
+    def post_build(self, builder: 'Builder'):
+        # Put MoltenVK library into application bundle
         molten_lib = 'libMoltenVK.dylib'
         src_path = builder.lib_path + molten_lib
         dst_path = builder.build_path
@@ -106,7 +198,7 @@ class GZDoomTarget(ZDoomBaseTarget):
             # TODO: Support other configurations
             dst_path += 'Debug' + os.sep
 
-        dst_path += builder.target.name + '.app/Contents/MacOS' + os.sep
+        dst_path += self.name + '.app/Contents/MacOS' + os.sep
         os.makedirs(dst_path, exist_ok=True)
 
         dst_path += molten_lib
@@ -117,20 +209,22 @@ class GZDoomTarget(ZDoomBaseTarget):
 
 
 class QZDoomTarget(GZDoomTarget):
-    def __init__(self):
-        super().__init__()
-        self.name = 'qzdoom'
-        self.url = 'https://github.com/madame-rachelle/qzdoom.git'
+    def __init__(self, name='qzdoom'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/madame-rachelle/qzdoom.git')
 
 
 class LZDoomTarget(ZDoomBaseTarget):
-    def __init__(self):
-        super().__init__()
-        self.name = 'lzdoom'
-        self.url = 'https://github.com/drfrag666/gzdoom.git'
+    def __init__(self, name='lzdoom'):
+        super().__init__(name)
 
-    def configure(self, builder: 'Builder'):
-        super().configure(builder)
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/drfrag666/gzdoom.git')
+
+    def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
 
         opts = self.cmake_options
         opts['DYN_FLUIDSYNTH'] = 'NO'
@@ -139,19 +233,22 @@ class LZDoomTarget(ZDoomBaseTarget):
 
 
 class RazeTarget(ZDoomBaseTarget):
-    def __init__(self):
-        super().__init__()
-        self.name = 'raze'
-        self.url = 'https://github.com/coelckers/Raze.git'
+    def __init__(self, name='raze'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/coelckers/Raze.git')
 
 
-class ZandronumTarget(Target):
-    def __init__(self):
-        super().__init__()
-        self.name = 'zandronum'
-        self.url = 'https://github.com/TorrSamaho/zandronum.git'
+class ZandronumTarget(CMakeTarget):
+    def __init__(self, name='zandronum'):
+        super().__init__(name)
 
-    def configure(self, builder: 'Builder'):
+    def prepare_source(self, builder: 'Builder'):
+        # TODO: use official Mercurial repository
+        builder.checkout_git('https://github.com/TorrSamaho/zandronum.git')
+
+    def initialize(self, builder: 'Builder'):
         opts = self.cmake_options
         opts['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit -framework Carbon -framework IOKit'
         # TODO: Linking to FluidSynth is disabled because Zandronum doesn't support FluidSynth 2.x
@@ -160,22 +257,24 @@ class ZandronumTarget(Target):
         opts['FMOD_LIBRARY'] = builder.lib_path + 'libfmodex.dylib'
 
 
-class AccTarget(Target):
-    def __init__(self):
-        super().__init__()
-        self.name = 'acc'
-        self.url = 'https://github.com/rheit/acc.git'
+class AccTarget(CMakeTarget):
+    def __init__(self, name='acc'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/rheit/acc.git')
 
 
-class PrBoomPlusTarget(Target):
-    def __init__(self):
-        super().__init__()
-        self.name = 'prboom-plus'
-        self.url = 'https://github.com/coelckers/prboom-plus.git'
+class PrBoomPlusTarget(CMakeTarget):
+    def __init__(self, name='prboom-plus'):
+        super().__init__(name)
         self.src_root = 'prboom2'
 
-    def configure(self, builder: 'Builder'):
-        self._assign_common_linker_flags(builder)
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/coelckers/prboom-plus.git')
+
+    def initialize(self, builder: 'Builder'):
+        self._link_with_sound_libraries(builder)
 
         extra_linker_args = ' -framework ForceFeedback -framework IOKit'
 
@@ -195,14 +294,15 @@ class PrBoomPlusTarget(Target):
         opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
 
 
-class ChocolateDoomTarget(Target):
-    def __init__(self):
-        super().__init__()
-        self.name = 'chocolate-doom'
-        self.url = 'https://github.com/chocolate-doom/chocolate-doom.git'
+class ChocolateDoomTarget(CMakeTarget):
+    def __init__(self, name='chocolate-doom'):
+        super().__init__(name)
 
-    def configure(self, builder: 'Builder'):
-        self._assign_common_linker_flags(builder)
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/chocolate-doom/chocolate-doom.git')
+
+    def initialize(self, builder: 'Builder'):
+        self._link_with_sound_libraries(builder)
 
         extra_linker_args = ' -lc++ -framework Cocoa -framework ForceFeedback -framework IOKit'
 
@@ -229,20 +329,22 @@ class ChocolateDoomTarget(Target):
 
 
 class CrispyDoomTarget(ChocolateDoomTarget):
-    def __init__(self):
-        super().__init__()
-        self.name = 'crispy-doom'
-        self.url = 'https://github.com/fabiangreffrath/crispy-doom.git'
+    def __init__(self, name='crispy-doom'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/fabiangreffrath/crispy-doom.git')
 
 
-class DoomRetroTarget(Target):
-    def __init__(self):
-        super().__init__()
-        self.name = 'doomretro'
-        self.url = 'https://github.com/bradharding/doomretro.git'
+class DoomRetroTarget(CMakeTarget):
+    def __init__(self, name='doomretro'):
+        super().__init__(name)
 
-    def configure(self, builder: 'Builder'):
-        self._assign_common_linker_flags(builder)
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/bradharding/doomretro.git')
+
+    def initialize(self, builder: 'Builder'):
+        self._link_with_sound_libraries(builder)
 
         extra_linker_args = ' -lc++ -framework Cocoa -framework ForceFeedback -framework IOKit'
 
@@ -272,28 +374,30 @@ class DoomRetroTarget(Target):
         opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
 
 
-class Doom64EXTarget(Target):
-    def __init__(self):
-        super().__init__()
-        self.name = 'doom64ex'
-        self.url = 'https://github.com/svkaiser/Doom64EX.git'
+class Doom64EXTarget(CMakeTarget):
+    def __init__(self, name='doom64ex'):
+        super().__init__(name)
 
-    def configure(self, builder: 'Builder'):
-        self._assign_common_linker_flags(builder)
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/svkaiser/Doom64EX.git')
+
+    def initialize(self, builder: 'Builder'):
+        self._link_with_sound_libraries(builder)
 
         opts = self.cmake_options
         opts['ENABLE_SYSTEM_FLUIDSYNTH'] = 'YES'
         opts['CMAKE_EXE_LINKER_FLAGS'] += ' -framework Cocoa -framework ForceFeedback -framework IOKit'
 
 
-class DevilutionXTarget(Target):
-    def __init__(self):
-        super().__init__()
-        self.name = 'devilutionx'
-        self.url = 'https://github.com/diasurgical/devilutionX.git'
+class DevilutionXTarget(CMakeTarget):
+    def __init__(self, name='devilutionx'):
+        super().__init__(name)
 
-    def configure(self, builder: 'Builder'):
-        self._assign_common_linker_flags(builder)
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/diasurgical/devilutionX.git')
+
+    def initialize(self, builder: 'Builder'):
+        self._link_with_sound_libraries(builder)
 
         extra_linker_args = ' -framework Cocoa -framework ForceFeedback -framework IOKit'
 
@@ -350,13 +454,16 @@ class Builder(object):
         self.source_path += os.sep
         self.build_path += os.sep
 
-        self.target.configure(self)
+        self.target.initialize(self)
 
     def run(self):
         self._create_prefix_directory()
-        self._prepare_source()
-        self._generate_cmake()
-        self._build_target()
+
+        target = self.target
+        target.prepare_source(self)
+        target.configure(self)
+        target.build(self)
+        target.post_build(self)
 
     def _create_prefix_directory(self):
         os.makedirs(self.bin_path, exist_ok=True)
@@ -396,97 +503,13 @@ class Builder(object):
             symlink_deps('include')
             symlink_deps('lib')
 
-    def _prepare_source(self):
-        if not os.path.exists(self.source_path):
-            args = ('git', 'clone', '--recurse-submodules', self.target.url, self.source_path)
-            subprocess.check_call(args, cwd=self.root_path)
-
-        if self.checkout_commit:
-            args = ['git', 'checkout', self.checkout_commit]
-            subprocess.check_call(args, cwd=self.source_path)
-
-    def _generate_cmake(self):
-        environ = os.environ
-        environ['PATH'] = environ['PATH'] \
-            + os.pathsep + '/Applications/CMake.app/Contents/bin' \
-            + os.pathsep + self.bin_path
-        environ['PKG_CONFIG_PATH'] = self.lib_path + 'pkgconfig'
-
-        os.makedirs(self.build_path, exist_ok=True)
-
-        args = [
-            'cmake',
-            self.xcode and '-GXcode' or '-GUnix Makefiles',
-            '-DCMAKE_BUILD_TYPE=Release',
-            '-DCMAKE_PREFIX_PATH=' + self.prefix_path,
-            '-DCMAKE_OSX_DEPLOYMENT_TARGET=' + self.os_version,
-        ]
-
-        if self.sdk_path:
-            args.append('-DCMAKE_OSX_SYSROOT=' + self.sdk_path)
-
-        for cmake_arg_name, cmake_arg_value in self.target.cmake_options.items():
-            args.append(f'-D{cmake_arg_name}={cmake_arg_value}')
-
-        args.append(self.source_path + self.target.src_root)
-
-        subprocess.check_call(args, cwd=self.build_path, env=environ)
-
-    def _build_target(self):
-        if self.xcode:
-            # TODO: support case-sensitive file system
-            args = ('open', self.target.name + '.xcodeproj')
-        else:
-            jobs = subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
-            args = ['make', '-j', jobs]
-
-            if self.verbose:
-                args.append('VERBOSE=1')
-
-        subprocess.check_call(args, cwd=self.build_path)
-
-        if self.target.post_build:
-            self.target.post_build(self)
-
-    @staticmethod
-    def extract_project_name(line: str):
-        project_name = None
-
-        # Try to get project name without whitespaces in it
-        match = re.search(r'project\s*\(\s*(\w[\w-]+)', line, re.IGNORECASE)
-
-        if not match:
-            # Try to get project name that contains whitespaces
-            match = re.search(r'project\s*\(\s*"?(\w[\s\w-]+)"?', line, re.IGNORECASE)
-
-        if match:
-            project_name = match.group(1)
-
-        return project_name
-
     def _detect_target(self):
-        cmakelists_path = None
-
-        for target in self.targets.values():
-            src_root = target.src_root and os.sep + target.src_root or ''
-            probe_path = self.source_path + src_root + os.sep + 'CMakeLists.txt'
-
-            if os.path.exists(probe_path):
-                cmakelists_path = probe_path
+        for name, target in self.targets.items():
+            if target.detect(self):
+                self.target = self.targets[name]
                 break
 
-        assert cmakelists_path
-        project_name = None
-
-        for line in open(cmakelists_path).readlines():
-            project_name = Builder.extract_project_name(line)
-            if project_name:
-                project_name = project_name.lower()
-                break
-
-        assert project_name
-        project_name = project_name.replace(' ', '-')
-        self.target = self.targets[project_name]
+        assert self.target
 
     def _create_targets(self):
         targets = (
@@ -525,6 +548,15 @@ class Builder(object):
         group.add_argument('--verbose', action='store_true', help='enable verbose build output')
 
         return parser.parse_args(args)
+
+    def checkout_git(self, url: str):
+        if not os.path.exists(self.source_path):
+            args = ('git', 'clone', '--recurse-submodules', url, self.source_path)
+            subprocess.check_call(args, cwd=self.root_path)
+
+        if self.checkout_commit:
+            args = ['git', 'checkout', self.checkout_commit]
+            subprocess.check_call(args, cwd=self.source_path)
 
 
 if __name__ == '__main__':
