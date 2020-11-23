@@ -25,17 +25,15 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Configure
-      run: |
-        echo "::set-env name=PROJECT_NAME_LOWER::$(echo ${{ matrix.config.name }} | tr '[:upper:]' '[:lower:]')"
-
     - name: Build
       run: |
+        PROJECT_NAME_LOWER=$(echo ${{ matrix.config.name }} | tr '[:upper:]' '[:lower:]')
         ./build.py --target ${PROJECT_NAME_LOWER}
 
     - name: Create Package
       shell: bash
       run: |
+        PROJECT_NAME_LOWER=$(echo ${{ matrix.config.name }} | tr '[:upper:]' '[:lower:]')
         if [ -z ${{ matrix.config.bundle }} ]; then
           BUNDLE_FILENAME=${PROJECT_NAME_LOWER}
         else
