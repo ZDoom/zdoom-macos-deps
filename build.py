@@ -421,7 +421,7 @@ class DevilutionXTarget(CMakeTarget):
 
 
 # Case insensitive dictionary class from
-# from https://github.com/psf/requests/blob/v2.25.0/requests/structures.py
+# https://github.com/psf/requests/blob/v2.25.0/requests/structures.py
 
 class CaseInsensitiveDict(collections.abc.MutableMapping):
     """A case-insensitive ``dict``-like object.
