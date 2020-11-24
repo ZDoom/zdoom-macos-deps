@@ -158,8 +158,7 @@ class CMakeTarget(Target):
             # TODO: support case-sensitive file system
             args = ('open', self.name + '.xcodeproj')
         else:
-            jobs = subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
-            args = ['make', '-j', jobs]
+            args = ['make', '-j', builder.jobs]
 
             if builder.verbose:
                 args.append('VERBOSE=1')
@@ -527,6 +526,9 @@ class Builder(object):
         self.source_path += os.sep
         self.build_path += os.sep
 
+        self.jobs = arguments.jobs and arguments.jobs or \
+            subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
+
         self.target.initialize(self)
 
     def run(self):
@@ -619,6 +621,7 @@ class Builder(object):
         group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
         group.add_argument('--os-version', metavar='version', default='10.9', help='macOS deployment version')
         group.add_argument('--verbose', action='store_true', help='enable verbose build output')
+        group.add_argument('--jobs', help='number of parallel compilation jobs')
 
         return parser.parse_args(args)
 
