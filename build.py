@@ -419,6 +419,44 @@ class DevilutionXTarget(CMakeTarget):
         opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
 
 
+class QuakespasmTarget(Target):
+    def __init__(self, name='quakespasm'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://git.code.sf.net/p/quakespasm/quakespasm')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + os.sep + 'Quakespasm.txt')
+
+    def configure(self, builder: 'Builder'):
+        os.makedirs(builder.build_path, exist_ok=True)
+        Builder.symlink_directory(builder.source_path, builder.build_path)
+
+    def build(self, builder: 'Builder'):
+        assert not builder.xcode
+
+        # TODO: Use macOS specific Makefile which requires manual application bundle creation
+        args = (
+            'make', '-j', builder.jobs,
+            'USE_SDL2=1', 'USE_CODEC_FLAC=1', 'USE_CODEC_OPUS=1', 'USE_CODEC_MIKMOD=1', 'USE_CODEC_UMX=1',
+            # Use CPUFLAGS instead of CFLAGS to avoid discarding of the latter if we specify them at command line
+            f'CPUFLAGS=-I{builder.include_path} -I{builder.include_path}opus',
+            # Use main() alias to workaround executable linking without macOS launcher
+            # TODO: Specify full paths for all libraries
+            f'LDFLAGS=-L{builder.lib_path} -lopus -lopusfile -Wl,-alias -Wl,_SDL_main -Wl,_main',
+            # TODO: Setup sdl2-config
+            f'SDL_CFLAGS=-I{builder.include_path}SDL2',
+            f'SDL_LIBS={builder.lib_path}libSDL2.a',
+            'COMMON_LIBS=-framework AudioToolbox -framework Carbon -framework Cocoa -framework CoreAudio' 
+            ' -framework CoreVideo -framework ForceFeedback -framework IOKit -framework OpenGL',
+            # TODO: Enable use of custom macOS SDK and deployment target
+        )
+        work_path = builder.build_path + 'Quake'
+
+        subprocess.check_call(args, cwd=work_path)
+
+
 # Case insensitive dictionary class from
 # https://github.com/psf/requests/blob/v2.25.0/requests/structures.py
 
@@ -596,6 +634,7 @@ class Builder(object):
             DoomRetroTarget(),
             Doom64EXTarget(),
             DevilutionXTarget(),
+            QuakespasmTarget(),
         )
 
         self.targets = CaseInsensitiveDict({target.name: target for target in targets})
