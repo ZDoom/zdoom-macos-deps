@@ -541,42 +541,38 @@ class Builder(object):
         target.post_build(self)
 
     def _create_prefix_directory(self):
-        os.makedirs(self.bin_path, exist_ok=True)
-        os.makedirs(self.include_path, exist_ok=True)
-        os.makedirs(self.lib_path, exist_ok=True)
+        os.makedirs(self.prefix_path, exist_ok=True)
 
-        # Delete obsolete symbolic links
-        for root, _, files in os.walk(self.prefix_path, followlinks=True):
-            for filename in files:
-                file_path = root + os.sep + filename
+        cleanup = True
 
-                if os.path.islink(file_path) and not os.path.exists(file_path):
-                    os.remove(file_path)
+        for dep in os.scandir(self.deps_path):
+            Builder.symlink_directory(dep.path, self.prefix_path, cleanup)
+
+            # Do symlink cleanup only once
+            cleanup = False
+
+    @staticmethod
+    def symlink_directory(src_path: str, dst_path: str, cleanup=True):
+        src_abspath = os.path.abspath(src_path)
+        dst_abspath = os.path.abspath(dst_path)
+
+        if cleanup:
+            # Delete obsolete symbolic links
+            for root, _, files in os.walk(dst_abspath, followlinks=True):
+                for filename in files:
+                    file_path = root + os.sep + filename
+
+                    if os.path.islink(file_path) and not os.path.exists(file_path):
+                        os.remove(file_path)
 
         # Create symbolic links if needed
-        for dep in os.scandir(self.deps_path):
-            if not dep.is_dir():
-                continue
-
-            def symlink_deps(src_dir):
-                src_path = dep.path + os.sep + src_dir + os.sep
-                if not os.path.exists(src_path):
-                    return
-
-                dst_path = self.prefix_path + src_dir + os.sep
-
-                for src in os.scandir(src_path):
-                    dst_subpath = dst_path + src.name
-
-                    if src.is_dir():
-                        os.makedirs(dst_subpath, exist_ok=True)
-                        symlink_deps(src_dir + os.sep + src.name)
-                    elif not os.path.exists(dst_subpath):
-                        os.symlink(src.path, dst_subpath)
-
-            symlink_deps('bin')
-            symlink_deps('include')
-            symlink_deps('lib')
+        for entry in os.scandir(src_abspath):
+            dst_subpath = entry.path.replace(src_abspath, dst_abspath)
+            if entry.is_dir():
+                os.makedirs(dst_subpath, exist_ok=True)
+                Builder.symlink_directory(entry.path, dst_subpath, cleanup=False)
+            elif not os.path.exists(dst_subpath):
+                os.symlink(entry.path, dst_subpath)
 
     def _detect_target(self):
         for name, target in self.targets.items():
