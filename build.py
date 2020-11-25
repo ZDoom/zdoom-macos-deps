@@ -36,7 +36,6 @@ class Target:
     def __init__(self, name=None):
         self.name = name
         self.src_root = ''
-        self.cmake_options = {}
 
     def prepare_source(self, builder: 'Builder'):
         pass
@@ -60,6 +59,7 @@ class Target:
 class CMakeTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
+        self.options = {}
 
     def detect(self, builder: 'Builder') -> bool:
         src_root = self.src_root and os.sep + self.src_root or ''
@@ -115,8 +115,8 @@ class CMakeTarget(Target):
         if builder.sdk_path:
             args.append('-DCMAKE_OSX_SYSROOT=' + builder.sdk_path)
 
-        for cmake_arg_name, cmake_arg_value in self.cmake_options.items():
-            args.append(f'-D{cmake_arg_name}={cmake_arg_value}')
+        for arg_name, arg_value in self.options.items():
+            args.append(f'-D{arg_name}={arg_value}')
 
         args.append(builder.source_path + self.src_root)
 
@@ -151,7 +151,7 @@ class CMakeTarget(Target):
         for lib in extra_libs:
             linker_args += f' {builder.lib_path}lib{lib}.a'
 
-        self.cmake_options['CMAKE_EXE_LINKER_FLAGS'] = linker_args
+        self.options['CMAKE_EXE_LINKER_FLAGS'] = linker_args
 
     def build(self, builder: 'Builder'):
         if builder.xcode:
@@ -173,7 +173,7 @@ class ZDoomBaseTarget(CMakeTarget):
     def initialize(self, builder: 'Builder'):
         self._link_with_sound_libraries(builder)
 
-        opts = self.cmake_options
+        opts = self.options
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
         # Explicit OpenAL configuration to avoid selection of Apple's framework
@@ -226,7 +226,7 @@ class LZDoomTarget(ZDoomBaseTarget):
     def initialize(self, builder: 'Builder'):
         super().initialize(builder)
 
-        opts = self.cmake_options
+        opts = self.options
         opts['DYN_FLUIDSYNTH'] = 'NO'
         opts['DYN_MPG123'] = 'NO'
         opts['DYN_SNDFILE'] = 'NO'
@@ -249,7 +249,7 @@ class ZandronumTarget(CMakeTarget):
         builder.checkout_git('https://github.com/TorrSamaho/zandronum.git')
 
     def initialize(self, builder: 'Builder'):
-        opts = self.cmake_options
+        opts = self.options
         opts['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit -framework Carbon -framework IOKit'
         # TODO: Linking to FluidSynth is disabled because Zandronum doesn't support FluidSynth 2.x
         # opts['DYN_FLUIDSYNTH'] = 'NO'
@@ -288,7 +288,7 @@ class PrBoomPlusTarget(CMakeTarget):
         for lib in extra_libs:
             extra_linker_args += f' {builder.lib_path}lib{lib}.a'
 
-        opts = self.cmake_options
+        opts = self.options
         opts['CMAKE_C_FLAGS'] = '-D_FILE_OFFSET_BITS=64'
         opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
         opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
@@ -318,7 +318,7 @@ class ChocolateDoomTarget(CMakeTarget):
 
         sdl2_include_dir = builder.include_path + 'SDL2'
 
-        opts = self.cmake_options
+        opts = self.options
         opts['SDL2_INCLUDE_DIR'] = sdl2_include_dir
         opts['SDL2_LIBRARY'] = builder.lib_path + 'libSDL2.a'
         opts['SDL2_MIXER_INCLUDE_DIR'] = sdl2_include_dir
@@ -361,7 +361,7 @@ class DoomRetroTarget(CMakeTarget):
 
         sdl2_include_dir = builder.include_path + 'SDL2'
 
-        opts = self.cmake_options
+        opts = self.options
         opts['SDL2_INCLUDE_DIRS'] = sdl2_include_dir
         opts['SDL2_LIBRARIES'] = builder.lib_path + 'libSDL2.a'
         opts['SDL2_FOUND'] = 'YES'
@@ -384,7 +384,7 @@ class Doom64EXTarget(CMakeTarget):
     def initialize(self, builder: 'Builder'):
         self._link_with_sound_libraries(builder)
 
-        opts = self.cmake_options
+        opts = self.options
         opts['ENABLE_SYSTEM_FLUIDSYNTH'] = 'YES'
         opts['CMAKE_EXE_LINKER_FLAGS'] += ' -framework Cocoa -framework ForceFeedback -framework IOKit'
 
@@ -415,7 +415,7 @@ class DevilutionXTarget(CMakeTarget):
         for lib in extra_libs:
             extra_linker_args += f' {builder.lib_path}lib{lib}.a'
 
-        opts = self.cmake_options
+        opts = self.options
         opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
 
 
