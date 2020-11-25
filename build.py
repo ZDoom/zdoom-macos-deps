@@ -56,6 +56,57 @@ class Target:
         pass
 
 
+class MakeTarget(Target):
+    def __init__(self, name=None):
+        super().__init__(name)
+        self.makefile = 'Makefile'
+        self.environment = os.environ
+        self.options = {}
+
+    def configure(self, builder: 'Builder'):
+        os.makedirs(builder.build_path, exist_ok=True)
+        Builder.symlink_directory(builder.source_path, builder.build_path)
+
+        for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
+            varname = f'{prefix}FLAGS'
+
+            self._update_env(varname, f'-I{builder.include_path}')
+            self._set_sdk(builder, varname)
+            self._set_os_version(builder, varname)
+
+        ldflags = 'LDFLAGS'
+        self._update_env(ldflags, f'-L{builder.lib_path}')
+        self._set_sdk(builder, ldflags)
+        self._set_os_version(builder, ldflags)
+
+    def build(self, builder: 'Builder'):
+        assert not builder.xcode
+
+        args = [
+            'make',
+            '-f', self.makefile,
+            '-j', builder.jobs,
+        ]
+
+        for arg_name, arg_value in self.options.items():
+            args.append(f'{arg_name}={arg_value}')
+
+        work_path = builder.build_path + self.src_root
+        subprocess.check_call(args, cwd=work_path, env=self.environment)
+
+    def _update_env(self, name: str, value: str):
+        env = self.environment
+        env[name] = env[name] + ' ' + value if name in env else value
+
+    def _set_sdk(self, builder: 'Builder', varname: str):
+        if builder.sdk_path:
+            self._update_env(varname, f'-isysroot={builder.sdk_path}')
+
+    def _set_os_version(self, builder: 'Builder', varname: str):
+        if builder.os_version:
+            self._update_env(varname, f'-mmacosx-version-min={builder.os_version}')
+
+
 class CMakeTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
