@@ -36,6 +36,8 @@ class Target:
     def __init__(self, name=None):
         self.name = name
         self.src_root = ''
+        self.environment = os.environ
+        self.options = {}
 
     def prepare_source(self, builder: 'Builder'):
         pass
@@ -47,7 +49,12 @@ class Target:
         return False
 
     def configure(self, builder: 'Builder'):
-        pass
+        os.makedirs(builder.build_path, exist_ok=True)
+
+        self.environment['PATH'] = self.environment['PATH'] \
+            + os.pathsep + '/Applications/CMake.app/Contents/bin' \
+            + os.pathsep + builder.bin_path
+        self.environment['PKG_CONFIG_PATH'] = builder.lib_path + 'pkgconfig'
 
     def build(self, builder: 'Builder'):
         pass
@@ -60,11 +67,10 @@ class MakeTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
         self.makefile = 'Makefile'
-        self.environment = os.environ
-        self.options = {}
 
     def configure(self, builder: 'Builder'):
-        os.makedirs(builder.build_path, exist_ok=True)
+        super().configure(builder)
+
         Builder.symlink_directory(builder.source_path, builder.build_path)
 
         for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
@@ -110,7 +116,6 @@ class MakeTarget(Target):
 class CMakeTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
-        self.options = {}
 
     def detect(self, builder: 'Builder') -> bool:
         src_root = self.src_root and os.sep + self.src_root or ''
@@ -147,13 +152,7 @@ class CMakeTarget(Target):
         return project_name
 
     def configure(self, builder: 'Builder'):
-        environ = os.environ
-        environ['PATH'] = environ['PATH'] \
-            + os.pathsep + '/Applications/CMake.app/Contents/bin' \
-            + os.pathsep + builder.bin_path
-        environ['PKG_CONFIG_PATH'] = builder.lib_path + 'pkgconfig'
-
-        os.makedirs(builder.build_path, exist_ok=True)
+        super().configure(builder)
 
         args = [
             'cmake',
@@ -171,7 +170,7 @@ class CMakeTarget(Target):
 
         args.append(builder.source_path + self.src_root)
 
-        subprocess.check_call(args, cwd=builder.build_path, env=environ)
+        subprocess.check_call(args, cwd=builder.build_path, env=self.environment)
 
     def _link_with_sound_libraries(self, builder: 'Builder'):
         extra_libs = (
