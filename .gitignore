@@ -5,3 +5,5 @@
 deps/*/share
 *.la
 *.pc
+
+deps/nasm/bin/ndisasm

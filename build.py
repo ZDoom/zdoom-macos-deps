@@ -551,6 +551,22 @@ class QuakespasmTarget(MakeTarget):
         self.options[ldflags] = self.environment[ldflags]
 
 
+class NasmTarget(ConfigureMakeTarget):
+    def __init__(self, name='nasm'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05.tar.xz',
+            '3caf6729c1073bf96629b57cee31eeb54f4f8129b01902c73428836550b30a3f')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'nasm.txt')
+
+    def post_build(self, builder: 'Builder'):
+        self.install(builder)
+
+
 class OggTarget(ConfigureMakeTarget):
     def __init__(self, name='ogg'):
         super().__init__(name)
@@ -761,6 +777,7 @@ class Builder(object):
             QuakespasmTarget(),
 
             # Dependencies
+            NasmTarget(),
             OggTarget(),
         )
 
