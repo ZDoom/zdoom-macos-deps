@@ -155,6 +155,20 @@ class ConfigureMakeTarget(Target):
         self.make.build(builder)
 
 
+class ConfigureMakeDependencyTarget(ConfigureMakeTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+    def post_build(self, builder: 'Builder'):
+        self.install(builder)
+
+
+class ConfigureMakeStaticDependencyTarget(ConfigureMakeDependencyTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+        self.options['--enable-shared'] = 'no'
+
+
 class CMakeTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
@@ -257,6 +271,20 @@ class CMakeTarget(Target):
                 args.append('VERBOSE=1')
 
         subprocess.check_call(args, cwd=builder.build_path)
+
+
+class CMakeStaticDependencyTarget(Target):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+        # Set commonly used variables for static libraries
+        opts = self.options
+        opts['BUILD_SHARED_LIBS'] = 'NO'
+        opts['ENABLE_SHARED'] = 'NO'
+        opts['LIBTYPE'] = 'STATIC'
+
+    def post_build(self, builder: 'Builder'):
+        self.install(builder)
 
 
 class ZDoomBaseTarget(CMakeTarget):
@@ -564,7 +592,7 @@ class QuakespasmTarget(MakeTarget):
         self.options[ldflags] = self.environment[ldflags]
 
 
-class JpegTurboTarget(CMakeTarget):
+class JpegTurboTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='jpeg-turbo'):
         super().__init__(name)
 
@@ -573,18 +601,11 @@ class JpegTurboTarget(CMakeTarget):
             'https://downloads.sourceforge.net/project/libjpeg-turbo/2.0.6/libjpeg-turbo-2.0.6.tar.gz',
             'd74b92ac33b0e3657123ddcf6728788c90dc84dcb6a52013d758af3c4af481bb')
 
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-        self.options['ENABLE_SHARED'] = 'NO'
-
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'turbojpeg.h')
 
-    def post_build(self, builder: 'Builder'):
-        self.install(builder)
 
-
-class NasmTarget(ConfigureMakeTarget):
+class NasmTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='nasm'):
         super().__init__(name)
 
@@ -596,11 +617,8 @@ class NasmTarget(ConfigureMakeTarget):
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'nasm.txt')
 
-    def post_build(self, builder: 'Builder'):
-        self.install(builder)
 
-
-class OggTarget(ConfigureMakeTarget):
+class OggTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='ogg'):
         super().__init__(name)
 
@@ -618,15 +636,8 @@ class OggTarget(ConfigureMakeTarget):
             args.remove(test_arg)
             subprocess.check_call(args)
 
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-        self.options['--enable-shared'] = 'no'
-
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'ogg.pc.in')
-
-    def post_build(self, builder: 'Builder'):
-        self.install(builder)
 
 
 # Case insensitive dictionary class from
