@@ -38,6 +38,7 @@ class Target:
     def __init__(self, name=None):
         self.name = name
         self.src_root = ''
+        self.prefix = None
         self.environment = os.environ
         self.options = {}
 
@@ -45,7 +46,7 @@ class Target:
         pass
 
     def initialize(self, builder: 'Builder'):
-        pass
+        self.prefix = builder.deps_path + self.name
 
     def detect(self, builder: 'Builder') -> bool:
         return False
@@ -63,6 +64,16 @@ class Target:
 
     def post_build(self, builder: 'Builder'):
         pass
+
+    def install(self, builder: 'Builder'):
+        if builder.xcode:
+            return
+
+        if os.path.exists(self.prefix):
+            shutil.rmtree(self.prefix)
+
+        work_path = builder.build_path + self.src_root
+        subprocess.check_call(['make', 'install'], cwd=work_path)
 
 
 class MakeTarget(Target):
@@ -119,12 +130,9 @@ class ConfigureMakeTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
         self.make = MakeTarget(name)
-        self.prefix = None
 
     def initialize(self, builder: 'Builder'):
         super().initialize(builder)
-
-        self.prefix = builder.deps_path + self.name
         self.options['--prefix'] = self.prefix
 
         self.make.initialize(builder)
@@ -145,12 +153,6 @@ class ConfigureMakeTarget(Target):
         subprocess.check_call(args, cwd=work_path, env=self.environment)
 
         self.make.build(builder)
-
-    def install(self, builder: 'Builder'):
-        shutil.rmtree(self.prefix)
-
-        work_path = builder.build_path + self.src_root
-        subprocess.check_call(['make', 'install'], cwd=work_path)
 
 
 class CMakeTarget(Target):
@@ -198,6 +200,7 @@ class CMakeTarget(Target):
             'cmake',
             builder.xcode and '-GXcode' or '-GUnix Makefiles',
             '-DCMAKE_BUILD_TYPE=Release',
+            '-DCMAKE_INSTALL_PREFIX=' + self.prefix,
             '-DCMAKE_PREFIX_PATH=' + builder.prefix_path,
             '-DCMAKE_OSX_DEPLOYMENT_TARGET=' + builder.os_version,
         ]
