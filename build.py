@@ -261,6 +261,7 @@ class ZDoomBaseTarget(CMakeTarget):
         super().__init__(name)
 
     def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
         self._link_with_sound_libraries(builder)
 
         opts = self.options
@@ -339,6 +340,8 @@ class ZandronumTarget(CMakeTarget):
         builder.checkout_git('https://github.com/TorrSamaho/zandronum.git')
 
     def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
+
         opts = self.options
         opts['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit -framework Carbon -framework IOKit'
         # TODO: Linking to FluidSynth is disabled because Zandronum doesn't support FluidSynth 2.x
@@ -364,6 +367,7 @@ class PrBoomPlusTarget(CMakeTarget):
         builder.checkout_git('https://github.com/coelckers/prboom-plus.git')
 
     def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
         self._link_with_sound_libraries(builder)
 
         extra_linker_args = ' -framework ForceFeedback -framework IOKit'
@@ -392,6 +396,7 @@ class ChocolateDoomTarget(CMakeTarget):
         builder.checkout_git('https://github.com/chocolate-doom/chocolate-doom.git')
 
     def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
         self._link_with_sound_libraries(builder)
 
         extra_linker_args = ' -lc++ -framework Cocoa -framework ForceFeedback -framework IOKit'
@@ -434,6 +439,7 @@ class DoomRetroTarget(CMakeTarget):
         builder.checkout_git('https://github.com/bradharding/doomretro.git')
 
     def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
         self._link_with_sound_libraries(builder)
 
         extra_linker_args = ' -lc++ -framework Cocoa -framework ForceFeedback -framework IOKit'
@@ -472,6 +478,7 @@ class Doom64EXTarget(CMakeTarget):
         builder.checkout_git('https://github.com/svkaiser/Doom64EX.git')
 
     def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
         self._link_with_sound_libraries(builder)
 
         opts = self.options
@@ -487,6 +494,7 @@ class DevilutionXTarget(CMakeTarget):
         builder.checkout_git('https://github.com/diasurgical/devilutionX.git')
 
     def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
         self._link_with_sound_libraries(builder)
 
         extra_linker_args = ' -framework Cocoa -framework ForceFeedback -framework IOKit'
@@ -521,6 +529,8 @@ class QuakespasmTarget(MakeTarget):
         return os.path.exists(builder.source_path + os.sep + 'Quakespasm.txt')
 
     def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
+
         # TODO: Use macOS specific Makefile which requires manual application bundle creation
         opts = self.options
         opts['USE_SDL2'] = '1'
