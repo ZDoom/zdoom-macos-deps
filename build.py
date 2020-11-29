@@ -551,6 +551,35 @@ class QuakespasmTarget(MakeTarget):
         self.options[ldflags] = self.environment[ldflags]
 
 
+class OggTarget(ConfigureMakeTarget):
+    def __init__(self, name='ogg'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz',
+            'fe5670640bd49e828d64d2879c31cb4dde9758681bb664f9bdbf159a01b0c76e')
+
+        test_arg = '--dry-run'
+        os_types_path = builder.source_path + 'include/ogg/os_types.h'
+        patch_path = builder.root_source_path + 'ogg.patch'
+        args = ['patch', test_arg, os_types_path, patch_path]
+
+        if subprocess.call(args) == 0:
+            args.remove(test_arg)
+            subprocess.check_call(args)
+
+    def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
+        self.options['--enable-shared'] = 'no'
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'ogg.pc.in')
+
+    def post_build(self, builder: 'Builder'):
+        self.install(builder)
+
+
 # Case insensitive dictionary class from
 # https://github.com/psf/requests/blob/v2.25.0/requests/structures.py
 
@@ -633,6 +662,7 @@ class Builder(object):
         self.bin_path = self.prefix_path + 'bin' + os.sep
         self.include_path = self.prefix_path + 'include' + os.sep
         self.lib_path = self.prefix_path + 'lib' + os.sep
+        self.root_source_path = self.root_path + 'source' + os.sep
 
         arguments = self._parse_arguments(args)
 
@@ -645,7 +675,7 @@ class Builder(object):
 
         if arguments.target:
             self.target = self.targets[arguments.target]
-            self.source_path = self.root_path + 'source' + os.sep + self.target.name
+            self.source_path = self.root_source_path + self.target.name
         else:
             assert arguments.source_path
             self.source_path = arguments.source_path
@@ -729,6 +759,9 @@ class Builder(object):
             Doom64EXTarget(),
             DevilutionXTarget(),
             QuakespasmTarget(),
+
+            # Dependencies
+            OggTarget(),
         )
 
         self.targets = CaseInsensitiveDict({target.name: target for target in targets})
