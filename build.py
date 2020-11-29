@@ -640,6 +640,19 @@ class OggTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'ogg.pc.in')
 
 
+class VorbisTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='vorbis'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.xz',
+            'b33cc4934322bcbf6efcbacf49e3ca01aadbea4114ec9589d1b1e9d20f72954b')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'vorbis.pc.in')
+
+
 # Case insensitive dictionary class from
 # https://github.com/psf/requests/blob/v2.25.0/requests/structures.py
 
@@ -824,6 +837,7 @@ class Builder(object):
             JpegTurboTarget(),
             NasmTarget(),
             OggTarget(),
+            VorbisTarget(),
         )
 
         self.targets = CaseInsensitiveDict({target.name: target for target in targets})
