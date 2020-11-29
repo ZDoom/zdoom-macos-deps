@@ -564,6 +564,26 @@ class QuakespasmTarget(MakeTarget):
         self.options[ldflags] = self.environment[ldflags]
 
 
+class JpegTurboTarget(CMakeTarget):
+    def __init__(self, name='jpeg-turbo'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.sourceforge.net/project/libjpeg-turbo/2.0.6/libjpeg-turbo-2.0.6.tar.gz',
+            'd74b92ac33b0e3657123ddcf6728788c90dc84dcb6a52013d758af3c4af481bb')
+
+    def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
+        self.options['ENABLE_SHARED'] = 'NO'
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'turbojpeg.h')
+
+    def post_build(self, builder: 'Builder'):
+        self.install(builder)
+
+
 class NasmTarget(ConfigureMakeTarget):
     def __init__(self, name='nasm'):
         super().__init__(name)
@@ -790,6 +810,7 @@ class Builder(object):
             QuakespasmTarget(),
 
             # Dependencies
+            JpegTurboTarget(),
             NasmTarget(),
             OggTarget(),
         )
