@@ -115,6 +115,44 @@ class MakeTarget(Target):
             self._update_env(varname, f'-mmacosx-version-min={builder.os_version}')
 
 
+class ConfigureMakeTarget(Target):
+    def __init__(self, name=None):
+        super().__init__(name)
+        self.make = MakeTarget(name)
+        self.prefix = None
+
+    def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
+
+        self.prefix = builder.deps_path + self.name
+        self.options['--prefix'] = self.prefix
+
+        self.make.initialize(builder)
+
+    def configure(self, builder: 'Builder'):
+        super().configure(builder)
+        self.make.configure(builder)
+
+    def build(self, builder: 'Builder'):
+        assert not builder.xcode
+
+        work_path = builder.build_path + self.src_root
+        args = [work_path + os.sep + 'configure']
+
+        for arg_name, arg_value in self.options.items():
+            args.append(f'{arg_name}={arg_value}')
+
+        subprocess.check_call(args, cwd=work_path, env=self.environment)
+
+        self.make.build(builder)
+
+    def install(self, builder: 'Builder'):
+        shutil.rmtree(self.prefix)
+
+        work_path = builder.build_path + self.src_root
+        subprocess.check_call(['make', 'install'], cwd=work_path)
+
+
 class CMakeTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
