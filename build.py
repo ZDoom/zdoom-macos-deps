@@ -640,6 +640,19 @@ class OggTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'ogg.pc.in')
 
 
+class OpusTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='opus'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz',
+            '65b58e1e25b2a114157014736a3d9dfeaad8d41be1c8179866f144a2fb44ff9d')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'opus.pc.in')
+
+
 class VorbisTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
@@ -837,6 +850,7 @@ class Builder(object):
             JpegTurboTarget(),
             NasmTarget(),
             OggTarget(),
+            OpusTarget(),
             VorbisTarget(),
         )
 
