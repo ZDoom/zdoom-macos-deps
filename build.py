@@ -653,6 +653,20 @@ class OpusTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'opus.pc.in')
 
 
+class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='opusfile'):
+        super().__init__(name)
+        self.options['--enable-http'] = 'no'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.xiph.org/releases/opus/opusfile-0.12.tar.gz',
+            '118d8601c12dd6a44f52423e68ca9083cc9f2bfe72da7a8c1acb22a80ae3550b')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'opusfile.pc.in')
+
+
 class VorbisTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
@@ -851,6 +865,7 @@ class Builder(object):
             NasmTarget(),
             OggTarget(),
             OpusTarget(),
+            OpusFileTarget(),
             VorbisTarget(),
         )
 
