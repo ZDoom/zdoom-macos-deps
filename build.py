@@ -24,12 +24,14 @@ if sys.hexversion < 0x3070000:
     print('Build module requires Python 3.7 or newer')
     exit(1)
 
-import collections
 import argparse
-import re
+import collections
+import hashlib
 import os
+import re
 import shutil
 import subprocess
+import urllib.request
 
 
 class Target:
@@ -722,6 +724,65 @@ class Builder(object):
         if self.checkout_commit:
             args = ['git', 'checkout', self.checkout_commit]
             subprocess.check_call(args, cwd=self.source_path)
+
+    def download_source(self, url: str, checksum: str):
+        source_path = self.source_path
+        os.makedirs(source_path, exist_ok=True)
+
+        filename = source_path + url.rsplit(os.sep, 1)[1]
+
+        if os.path.exists(filename):
+            # Read existing source package
+            with open(filename, 'rb') as f:
+                data = f.read()
+        else:
+            # Download package with source code
+            response = urllib.request.urlopen(url)
+
+            try:
+                with open(filename, 'wb') as f:
+                    data = response.read()
+                    f.write(data)
+
+            except IOError:
+                os.unlink(filename)
+                raise
+
+        # Verify package checksum
+        file_hasher = hashlib.sha256()
+        file_hasher.update(data)
+        file_checksum = file_hasher.hexdigest()
+
+        if file_checksum != checksum:
+            os.unlink(filename)
+            raise Exception(f'Checksum of {filename} does not match, expected: {checksum}, actual: {file_checksum}')
+
+        # Figure out path to extracted source code
+        filepaths = subprocess.check_output(['tar', '-tf', filename]).decode("utf-8")
+        filepaths = filepaths.split('\n')
+        first_path_component = None
+
+        for filepath in filepaths:
+            if os.sep in filepath:
+                first_path_component = filepath[:filepath.find(os.sep)]
+                break
+
+        if not first_path_component:
+            raise Exception("Failed to figure out source code path for " + filename)
+
+        extract_path = source_path + first_path_component
+
+        if not os.path.exists(extract_path):
+            # Extract source code package
+            try:
+                subprocess.check_call(['tar', '-xf', filename], cwd=source_path)
+            except (IOError, subprocess.CalledProcessError):
+                shutil.rmtree(extract_path, ignore_errors=True)
+                raise
+
+        # Adjust source and build paths according to extracted source code
+        self.source_path = extract_path + os.sep
+        self.build_path = self.build_path + first_path_component + os.sep
 
 
 if __name__ == '__main__':
