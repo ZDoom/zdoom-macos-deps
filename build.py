@@ -108,7 +108,7 @@ class MakeTarget(Target):
 
     def _set_sdk(self, builder: 'Builder', varname: str):
         if builder.sdk_path:
-            self._update_env(varname, f'-isysroot={builder.sdk_path}')
+            self._update_env(varname, f'-isysroot {builder.sdk_path}')
 
     def _set_os_version(self, builder: 'Builder', varname: str):
         if builder.os_version:
