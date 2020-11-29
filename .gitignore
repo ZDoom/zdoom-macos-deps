@@ -2,12 +2,12 @@
 /build/
 /prefix/
 
-deps/*/share
-*.la
-*.pc
+/deps/*/share
+/deps/**/*.la
+/deps/**/*.pc
 
-deps/jpeg-turbo/bin/
-deps/jpeg-turbo/include/turbojpeg.h
-deps/jpeg-turbo/lib/libturbojpeg.a
-deps/nasm/bin/ndisasm
-deps/opusfile/lib/libopusurl.a
+/deps/jpeg-turbo/bin/
+/deps/jpeg-turbo/include/turbojpeg.h
+/deps/jpeg-turbo/lib/libturbojpeg.a
+/deps/nasm/bin/ndisasm
+/deps/opusfile/lib/libopusurl.a
