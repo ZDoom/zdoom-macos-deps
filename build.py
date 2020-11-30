@@ -77,15 +77,18 @@ class Target:
     def post_build(self, builder: 'Builder'):
         pass
 
-    def install(self, builder: 'Builder'):
+    def install(self, builder: 'Builder', options: 'CommandLineOptions' = None):
         if builder.xcode:
             return
 
         if os.path.exists(self.prefix):
             shutil.rmtree(self.prefix)
 
+        args = ['make', 'install']
+        args += options and options.to_list() or []
+
         work_path = builder.build_path + self.src_root
-        subprocess.check_call(['make', 'install'], cwd=work_path)
+        subprocess.check_call(args, cwd=work_path)
 
 
 class MakeTarget(Target):
