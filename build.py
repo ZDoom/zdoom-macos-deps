@@ -799,6 +799,11 @@ class Builder(object):
         self.jobs = arguments.jobs and arguments.jobs or \
             subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
 
+        if not self.sdk_path:
+            sdk_probe_path = f'{self.root_path}sdk{os.sep}MacOSX{self.os_version}.sdk'
+            if os.path.exists(sdk_probe_path):
+                self.sdk_path = sdk_probe_path
+
         self.target.initialize(self)
 
     def run(self):
