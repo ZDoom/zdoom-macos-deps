@@ -9,6 +9,9 @@
 
 /deps/bzip2/bin/
 /deps/bzip2/man/
+/deps/flac/bin/
+/deps/flac/include/FLAC++/
+/deps/flac/lib/libFLAC++.a
 /deps/jpeg-turbo/bin/
 /deps/jpeg-turbo/include/turbojpeg.h
 /deps/jpeg-turbo/lib/libturbojpeg.a
