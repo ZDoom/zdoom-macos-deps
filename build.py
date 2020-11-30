@@ -600,6 +600,30 @@ class QuakespasmTarget(MakeTarget):
         self.options[ldflags] = self.environment[ldflags]
 
 
+class Bzip2Target(MakeTarget):
+    def __init__(self, name='bzip2'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz',
+            'ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'bzlib.h')
+
+    def configure(self, builder: 'Builder'):
+        super().configure(builder)
+
+        # Copy compiler flags from environment to command line argument, they would be overridden by Makefile otherwise
+        cflags = 'CFLAGS'
+        self.options[cflags] = self.environment[cflags] + ' -D_FILE_OFFSET_BITS=64 -O2'
+
+    def post_build(self, builder: 'Builder'):
+        self.options['PREFIX'] = self.prefix
+        self.install(builder, self.options)
+
+
 class JpegTurboTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='jpeg-turbo'):
         super().__init__(name)
@@ -888,6 +912,7 @@ class Builder(object):
             QuakespasmTarget(),
 
             # Dependencies
+            Bzip2Target(),
             JpegTurboTarget(),
             NasmTarget(),
             OggTarget(),

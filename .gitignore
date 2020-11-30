@@ -7,6 +7,8 @@
 /deps/**/*.la
 /deps/**/*.pc
 
+/deps/bzip2/bin/
+/deps/bzip2/man/
 /deps/jpeg-turbo/bin/
 /deps/jpeg-turbo/include/turbojpeg.h
 /deps/jpeg-turbo/lib/libturbojpeg.a
