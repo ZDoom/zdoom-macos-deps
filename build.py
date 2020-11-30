@@ -278,7 +278,7 @@ class CMakeTarget(Target):
         subprocess.check_call(args, cwd=builder.build_path)
 
 
-class CMakeStaticDependencyTarget(Target):
+class CMakeStaticDependencyTarget(CMakeTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
