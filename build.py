@@ -688,6 +688,20 @@ class VorbisTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'vorbis.pc.in')
 
 
+class ZlibTarget(ConfigureMakeDependencyTarget):
+    def __init__(self, name='zlib'):
+        super().__init__(name)
+        self.options['--static'] = None
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://zlib.net/zlib-1.2.11.tar.gz',
+            'c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'zlib.pc.in')
+
+
 # Case insensitive dictionary class from
 # https://github.com/psf/requests/blob/v2.25.0/requests/structures.py
 
@@ -880,6 +894,7 @@ class Builder(object):
             OpusTarget(),
             OpusFileTarget(),
             VorbisTarget(),
+            ZlibTarget(),
         )
 
         self.targets = CaseInsensitiveDict({target.name: target for target in targets})
