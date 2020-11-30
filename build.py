@@ -34,13 +34,25 @@ import subprocess
 import urllib.request
 
 
+class CommandLineOptions(dict):
+    def to_list(self, prefix='') -> list:
+        result = []
+
+        for arg_name, arg_value in self.items():
+            option = prefix + arg_name
+            option += arg_value and ('=' + arg_value) or ''
+            result.append(option)
+
+        return result
+
+
 class Target:
     def __init__(self, name=None):
         self.name = name
         self.src_root = ''
         self.prefix = None
         self.environment = os.environ
-        self.options = {}
+        self.options = CommandLineOptions()
 
     def prepare_source(self, builder: 'Builder'):
         pass
@@ -106,9 +118,7 @@ class MakeTarget(Target):
             '-f', self.makefile,
             '-j', builder.jobs,
         ]
-
-        for arg_name, arg_value in self.options.items():
-            args.append(f'{arg_name}={arg_value}')
+        args += self.options.to_list()
 
         work_path = builder.build_path + self.src_root
         subprocess.check_call(args, cwd=work_path, env=self.environment)
@@ -146,10 +156,7 @@ class ConfigureMakeTarget(Target):
 
         work_path = builder.build_path + self.src_root
         args = [work_path + os.sep + 'configure']
-
-        for arg_name, arg_value in self.options.items():
-            args.append(f'{arg_name}={arg_value}')
-
+        args += self.options.to_list()
         subprocess.check_call(args, cwd=work_path, env=self.environment)
 
         self.make.build(builder)
@@ -222,9 +229,7 @@ class CMakeTarget(Target):
         if builder.sdk_path:
             args.append('-DCMAKE_OSX_SYSROOT=' + builder.sdk_path)
 
-        for arg_name, arg_value in self.options.items():
-            args.append(f'-D{arg_name}={arg_value}')
-
+        args += self.options.to_list('-D')
         args.append(builder.source_path + self.src_root)
 
         subprocess.check_call(args, cwd=builder.build_path, env=self.environment)
