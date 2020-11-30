@@ -587,7 +587,7 @@ class QuakespasmTarget(MakeTarget):
     def configure(self, builder: 'Builder'):
         super().configure(builder)
 
-        # Copy linker flags from enviroment to command line argument, they would be overridden by Makefile otherwise
+        # Copy linker flags from environment to command line argument, they would be overridden by Makefile otherwise
         ldflags = 'LDFLAGS'
         self.options[ldflags] = self.environment[ldflags]
 
