@@ -16,4 +16,5 @@
 /deps/jpeg-turbo/include/turbojpeg.h
 /deps/jpeg-turbo/lib/libturbojpeg.a
 /deps/nasm/bin/ndisasm
+/deps/openal/lib/cmake/
 /deps/opusfile/lib/libopusurl.a

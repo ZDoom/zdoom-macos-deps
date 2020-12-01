@@ -307,7 +307,7 @@ class ZDoomBaseTarget(CMakeTarget):
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
         # Explicit OpenAL configuration to avoid selection of Apple's framework
-        opts['OPENAL_INCLUDE_DIR'] = builder.include_path
+        opts['OPENAL_INCLUDE_DIR'] = builder.include_path + 'AL'
         opts['OPENAL_LIBRARY'] = builder.lib_path + 'libopenal.a'
 
 
@@ -699,6 +699,23 @@ class OggTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'ogg.pc.in')
 
 
+class OpenALTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='openal'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['ALSOFT_EXAMPLES'] = 'NO'
+        opts['ALSOFT_UTILS'] = 'NO'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://openal-soft.org/openal-releases/openal-soft-1.21.0.tar.bz2',
+            '2916b4fc24e23b0271ce0b3468832ad8b6d8441b1830215b28cc4fee6cc89297')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'openal.pc.in')
+
+
 class OpusTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='opus'):
         super().__init__(name)
@@ -945,6 +962,7 @@ class Builder(object):
             Mpg123Target(),
             NasmTarget(),
             OggTarget(),
+            OpenALTarget(),
             OpusTarget(),
             OpusFileTarget(),
             VorbisTarget(),
