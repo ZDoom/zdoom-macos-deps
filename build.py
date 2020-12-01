@@ -650,6 +650,20 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'turbojpeg.h')
 
 
+class Mpg123Target(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='mpg123'):
+        super().__init__(name)
+        self.options['--enable-modules'] = 'no'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://www.mpg123.de/download/mpg123-1.26.3.tar.bz2',
+            '30c998785a898f2846deefc4d17d6e4683a5a550b7eacf6ea506e30a7a736c6e')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'libmpg123.pc.in')
+
+
 class NasmTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='nasm'):
         super().__init__(name)
@@ -928,6 +942,7 @@ class Builder(object):
             Bzip2Target(),
             FlacTarget(),
             JpegTurboTarget(),
+            Mpg123Target(),
             NasmTarget(),
             OggTarget(),
             OpusTarget(),
