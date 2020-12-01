@@ -743,6 +743,23 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'opusfile.pc.in')
 
 
+class SndFileTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='sndfile'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['BUILD_REGTEST'] = 'NO'
+        opts['BUILD_TESTING'] = 'NO'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/libsndfile/libsndfile/releases/download/v1.0.30/libsndfile-1.0.30.tar.bz2',
+            '9df273302c4fa160567f412e10cc4f76666b66281e7ba48370fb544e87e4611a')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'sndfile.pc.in')
+
+
 class VorbisTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
@@ -965,6 +982,7 @@ class Builder(object):
             OpenALTarget(),
             OpusTarget(),
             OpusFileTarget(),
+            SndFileTarget(),
             VorbisTarget(),
             ZlibTarget(),
         )
