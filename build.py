@@ -624,7 +624,7 @@ class Bzip2Target(MakeTarget):
         self.install(builder, self.options)
 
 
-class FLACTurboTarget(ConfigureMakeStaticDependencyTarget):
+class FlacTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='flac'):
         super().__init__(name)
 
@@ -926,7 +926,7 @@ class Builder(object):
 
             # Dependencies
             Bzip2Target(),
-            FLACTurboTarget(),
+            FlacTarget(),
             JpegTurboTarget(),
             NasmTarget(),
             OggTarget(),
