@@ -726,6 +726,28 @@ class OggTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'ogg.pc.in')
 
 
+class NinjaTarget(MakeTarget):
+    def __init__(self, name='ninja'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/ninja-build/ninja/archive/v1.10.2.tar.gz',
+            'ce35865411f0490368a8fc383f29071de6690cbadc27704734978221f25e2bed')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'src/ninja.cc')
+
+    def build(self, builder: 'Builder'):
+        args = ('python3', './configure.py', '--bootstrap', '--verbose')
+        subprocess.check_call(args, cwd=builder.build_path)
+
+    def post_build(self, builder: 'Builder'):
+        dest_path = builder.deps_path + self.name  + os.sep + 'bin'
+        os.makedirs(dest_path, exist_ok=True)
+        shutil.copy(builder.build_path + self.name, dest_path)
+
+
 class OpenALTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='openal'):
         super().__init__(name)
@@ -1021,6 +1043,7 @@ class Builder(object):
             JpegTurboTarget(),
             Mpg123Target(),
             NasmTarget(),
+            NinjaTarget(),
             OggTarget(),
             OpenALTarget(),
             OpusTarget(),
