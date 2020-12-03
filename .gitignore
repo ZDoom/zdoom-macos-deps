@@ -12,6 +12,9 @@
 /deps/flac/bin/
 /deps/flac/include/FLAC++/
 /deps/flac/lib/libFLAC++.a
+/deps/iconv/bin/
+/deps/iconv/include/*charset.h
+/deps/iconv/lib/libcharset.a
 /deps/jpeg-turbo/bin/
 /deps/jpeg-turbo/include/turbojpeg.h
 /deps/jpeg-turbo/lib/libturbojpeg.a

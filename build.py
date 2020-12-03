@@ -650,6 +650,20 @@ class FlacTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'FLAC/flac.pc.in')
 
 
+class IconvTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='iconv'):
+        super().__init__(name)
+        self.options['--enable-extra-encodings'] = 'yes'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://ftp.gnu.org/gnu/libiconv/libiconv-1.16.tar.gz',
+            'e6a1b1b589654277ee790cce3734f07876ac4ccfaecbee8afa0b649cf529cc04')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'include/iconv.h.in')
+
+
 class JpegTurboTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='jpeg-turbo'):
         super().__init__(name)
@@ -989,6 +1003,7 @@ class Builder(object):
             Bzip2Target(),
             FfiTarget(),
             FlacTarget(),
+            IconvTarget(),
             JpegTurboTarget(),
             Mpg123Target(),
             NasmTarget(),
