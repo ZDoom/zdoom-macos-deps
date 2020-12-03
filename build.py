@@ -770,6 +770,20 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'opusfile.pc.in')
 
 
+class PcreTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='pcre'):
+        super().__init__(name)
+        self.options['--enable-unicode-properties'] = 'yes'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.bz2',
+            '19108658b23b3ec5058edc9f66ac545ea19f9537234be1ec62b714c84399366d')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'pcre.h.in')
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
@@ -1011,6 +1025,7 @@ class Builder(object):
             OpenALTarget(),
             OpusTarget(),
             OpusFileTarget(),
+            PcreTarget(),
             SndFileTarget(),
             VorbisTarget(),
             ZlibTarget(),

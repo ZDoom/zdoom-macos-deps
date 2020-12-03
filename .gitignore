@@ -21,6 +21,11 @@
 /deps/nasm/bin/ndisasm
 /deps/openal/lib/cmake/
 /deps/opusfile/lib/libopusurl.a
+/deps/pcre/bin/
+/deps/pcre/include/pcre_*.h
+/deps/pcre/include/pcrecpp*.h
+/deps/pcre/lib/libpcrecpp.a
+/deps/pcre/lib/libpcreposix.a
 /deps/sndfile/bin/
 /deps/sndfile/include/sndfile.hh
 /deps/sndfile/lib/cmake/
