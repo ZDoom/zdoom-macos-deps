@@ -624,6 +624,19 @@ class Bzip2Target(MakeTarget):
         self.install(builder, self.options)
 
 
+class FfiTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='ffi'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz',
+            '72fba7922703ddfa7a028d513ac15a85c8d54c8d67f55fa5a4802885dc652056')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'libffi.pc.in')
+
+
 class FlacTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='flac'):
         super().__init__(name)
@@ -974,6 +987,7 @@ class Builder(object):
 
             # Dependencies
             Bzip2Target(),
+            FfiTarget(),
             FlacTarget(),
             JpegTurboTarget(),
             Mpg123Target(),
