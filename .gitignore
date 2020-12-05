@@ -5,7 +5,6 @@
 
 /deps/*/share
 /deps/**/*.la
-/deps/**/*.pc
 
 /deps/bzip2/bin/
 /deps/bzip2/man/
