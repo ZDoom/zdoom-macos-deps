@@ -725,15 +725,6 @@ class OggTarget(ConfigureMakeStaticDependencyTarget):
             'https://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz',
             'fe5670640bd49e828d64d2879c31cb4dde9758681bb664f9bdbf159a01b0c76e')
 
-        test_arg = '--dry-run'
-        os_types_path = builder.source_path + 'include/ogg/os_types.h'
-        patch_path = builder.root_source_path + 'ogg.patch'
-        args = ['patch', test_arg, os_types_path, patch_path]
-
-        if subprocess.call(args) == 0:
-            args.remove(test_arg)
-            subprocess.check_call(args)
-
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'ogg.pc.in')
 
