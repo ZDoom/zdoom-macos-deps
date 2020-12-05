@@ -954,6 +954,7 @@ class Builder(object):
         self.include_path = self.prefix_path + 'include' + os.sep
         self.lib_path = self.prefix_path + 'lib' + os.sep
         self.root_source_path = self.root_path + 'source' + os.sep
+        self.patch_path = self.root_path + 'patch' + os.sep
 
         arguments = self._parse_arguments(args)
 
@@ -1155,7 +1156,7 @@ class Builder(object):
         if not first_path_component:
             raise Exception("Failed to figure out source code path for " + filename)
 
-        extract_path = source_path + first_path_component
+        extract_path = source_path + first_path_component + os.sep
 
         if not os.path.exists(extract_path):
             # Extract source code package
@@ -1165,8 +1166,21 @@ class Builder(object):
                 shutil.rmtree(extract_path, ignore_errors=True)
                 raise
 
+        # Apply patch if exists
+        patch_path = self.patch_path + self.target.name + '.patch'
+
+        if os.path.exists(patch_path):
+            # Check if patch is already applied
+            test_arg = '--dry-run'
+            args = ['patch', test_arg, '--strip=1', '--input=' + patch_path]
+
+            if subprocess.call(args, cwd=extract_path) == 0:
+                # Patch wasn't applied yet, do it now
+                args.remove(test_arg)
+                subprocess.check_call(args, cwd=extract_path)
+
         # Adjust source and build paths according to extracted source code
-        self.source_path = extract_path + os.sep
+        self.source_path = extract_path
         self.build_path = self.build_path + first_path_component + os.sep
 
 
