@@ -862,6 +862,15 @@ class ZlibTarget(ConfigureMakeDependencyTarget):
         return os.path.exists(builder.source_path + 'zlib.pc.in')
 
 
+class CleanTarget(BaseTarget):
+    def __init__(self, name='clean'):
+        super().__init__(name)
+
+    def build(self, builder: 'Builder'):
+        args = ('git', 'clean', '-dfX')
+        subprocess.check_call(args, cwd=builder.root_path)
+
+
 # Case insensitive dictionary class from
 # https://github.com/psf/requests/blob/v2.25.0/requests/structures.py
 
@@ -1064,6 +1073,9 @@ class Builder(object):
             SndFileTarget(),
             VorbisTarget(),
             ZlibTarget(),
+
+            # Special
+            CleanTarget(),
         )
 
         self.targets = CaseInsensitiveDict({target.name: target for target in targets})
