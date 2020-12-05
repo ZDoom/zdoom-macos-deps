@@ -46,22 +46,40 @@ class CommandLineOptions(dict):
         return result
 
 
-class Target:
+class BaseTarget:
     def __init__(self, name=None):
         self.name = name
-        self.src_root = ''
-        self.prefix = None
-        self.environment = os.environ
-        self.options = CommandLineOptions()
 
     def prepare_source(self, builder: 'Builder'):
         pass
 
     def initialize(self, builder: 'Builder'):
-        self.prefix = builder.deps_path + self.name
+        pass
 
     def detect(self, builder: 'Builder') -> bool:
         return False
+
+    def configure(self, builder: 'Builder'):
+        pass
+
+    def build(self, builder: 'Builder'):
+        pass
+
+    def post_build(self, builder: 'Builder'):
+        pass
+
+
+class Target(BaseTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+        self.src_root = ''
+        self.prefix = None
+        self.environment = os.environ
+        self.options = CommandLineOptions()
+
+    def initialize(self, builder: 'Builder'):
+        self.prefix = builder.deps_path + self.name
 
     def configure(self, builder: 'Builder'):
         os.makedirs(builder.build_path, exist_ok=True)
@@ -70,12 +88,6 @@ class Target:
             + os.pathsep + '/Applications/CMake.app/Contents/bin' \
             + os.pathsep + builder.bin_path
         self.environment['PKG_CONFIG_PATH'] = builder.lib_path + 'pkgconfig'
-
-    def build(self, builder: 'Builder'):
-        pass
-
-    def post_build(self, builder: 'Builder'):
-        pass
 
     def install(self, builder: 'Builder', options: 'CommandLineOptions' = None):
         if builder.xcode:
