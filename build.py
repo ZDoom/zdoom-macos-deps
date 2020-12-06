@@ -688,6 +688,43 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'turbojpeg.h')
 
 
+class MesonTarget(Target):
+    def __init__(self, name='meson'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/mesonbuild/meson/releases/download/0.56.0/meson-0.56.0.tar.gz',
+            '291dd38ff1cd55fcfca8fc985181dd39be0d3e5826e5f0013bf867be40117213')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'meson.py')
+
+    def post_build(self, builder: 'Builder'):
+        dest_path = builder.deps_path + self.name + os.sep
+        lib_path = 'lib' + os.sep + self.name + os.sep
+
+        dest_lib_path = dest_path + lib_path
+        os.makedirs(dest_lib_path, exist_ok=True)
+
+        script = 'meson.py'
+        shutil.copy(builder.source_path + script, dest_lib_path)
+
+        module = 'mesonbuild'
+        module_path = dest_lib_path + module
+        if os.path.exists(module_path):
+            shutil.rmtree(module_path)
+        shutil.copytree(builder.source_path + module, module_path)
+
+        dest_bin_path = dest_path + 'bin' + os.sep
+        os.makedirs(dest_bin_path, exist_ok=True)
+
+        exe_path = dest_bin_path + self.name
+        if os.path.exists(exe_path):
+            os.unlink(exe_path)
+        os.symlink(os.pardir + os.sep + lib_path + script, exe_path)
+
+
 class Mpg123Target(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mpg123'):
         super().__init__(name)
@@ -1053,6 +1090,7 @@ class Builder(object):
             FlacTarget(),
             IconvTarget(),
             JpegTurboTarget(),
+            MesonTarget(),
             Mpg123Target(),
             NasmTarget(),
             NinjaTarget(),
