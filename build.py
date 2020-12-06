@@ -850,7 +850,10 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
 class PcreTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='pcre'):
         super().__init__(name)
-        self.options['--enable-unicode-properties'] = 'yes'
+
+        opts = self.options
+        opts['--enable-unicode-properties'] = 'yes'
+        opts['--enable-cpp'] = 'no'
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
