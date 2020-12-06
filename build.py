@@ -87,7 +87,6 @@ class Target(BaseTarget):
         self.environment['PATH'] = self.environment['PATH'] \
             + os.pathsep + '/Applications/CMake.app/Contents/bin' \
             + os.pathsep + builder.bin_path
-        self.environment['PKG_CONFIG_PATH'] = builder.lib_path + 'pkgconfig'
 
         for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
             varname = f'{prefix}FLAGS'
