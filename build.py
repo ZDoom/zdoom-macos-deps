@@ -782,7 +782,7 @@ class NinjaTarget(MakeTarget):
         subprocess.check_call(args, cwd=builder.build_path)
 
     def post_build(self, builder: 'Builder'):
-        dest_path = builder.deps_path + self.name  + os.sep + 'bin'
+        dest_path = builder.deps_path + self.name + os.sep + 'bin'
         os.makedirs(dest_path, exist_ok=True)
         shutil.copy(builder.build_path + self.name, dest_path)
 
