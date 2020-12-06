@@ -166,14 +166,13 @@ class ConfigureMakeTarget(Target):
         super().configure(builder)
         self.make.configure(builder)
 
-    def build(self, builder: 'Builder'):
-        assert not builder.xcode
-
         work_path = builder.build_path + self.src_root
         args = [work_path + os.sep + 'configure']
         args += self.options.to_list()
         subprocess.check_call(args, cwd=work_path, env=self.environment)
 
+    def build(self, builder: 'Builder'):
+        assert not builder.xcode
         self.make.build(builder)
 
 
