@@ -675,6 +675,31 @@ class IconvTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'include/iconv.h.in')
 
 
+class IntlTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='intl'):
+        super().__init__(name)
+        self.src_root = 'gettext-runtime'
+        self.make.src_root += self.src_root + os.sep + 'intl'
+
+        opts = self.options
+        opts['--enable-csharp'] = 'no'
+        opts['--enable-java'] = 'no'
+        opts['--enable-libasprintf'] = 'no'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://ftp.gnu.org/gnu/gettext/gettext-0.21.tar.xz',
+            'd20fcbb537e02dcf1383197ba05bd0734ef7bf5db06bdb241eb69b7d16b73192')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'gettext-runtime')
+
+    def post_build(self, builder: 'Builder'):
+        # Do install of intl only, avoid complete gettext runtime
+        self.src_root = self.make.src_root
+        self.install(builder)
+
+
 class JpegTurboTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='jpeg-turbo'):
         super().__init__(name)
@@ -1080,6 +1105,7 @@ class Builder(object):
             FfiTarget(),
             FlacTarget(),
             IconvTarget(),
+            IntlTarget(),
             JpegTurboTarget(),
             MesonTarget(),
             Mpg123Target(),
