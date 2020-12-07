@@ -28,20 +28,3 @@ index eb8a32298916613f02a34e89f1174c9692521581..e655a1d6280dcd2839665929d899b84f
  
  #elif defined(__HAIKU__)
  
---- a/ogg.pc.in
-+++ b/ogg.pc.in
-@@ -1,6 +1,6 @@
- # ogg pkg-config file
- 
--prefix=@prefix@
-+prefix=
- exec_prefix=@exec_prefix@
- libdir=@libdir@
- includedir=@includedir@
-@@ -10,5 +10,5 @@
- Version: @VERSION@
- Requires:
- Conflicts:
--Libs: -L${libdir} -logg
-+Libs: ${libdir}/libogg.a
- Cflags: -I${includedir}
