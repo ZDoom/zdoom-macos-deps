@@ -78,6 +78,8 @@ class Target(BaseTarget):
         self.prefix = None
         self.environment = os.environ
         self.options = CommandLineOptions()
+        # Mapping of .pc files' base names to extra libraries' names
+        self.pkg_libs = {}
 
     def initialize(self, builder: 'Builder'):
         self.prefix = builder.deps_path + self.name
@@ -125,6 +127,43 @@ class Target(BaseTarget):
 
         work_path = builder.build_path + self.src_root
         subprocess.check_call(args, cwd=work_path)
+
+        self.update_pc_files(builder)
+
+    @staticmethod
+    def update_pc_file(path: str, extra_libs=None):
+        with open(path, 'r') as f:
+            content = f.readlines()
+
+        patched_content = []
+        prefix = 'prefix='
+
+        for line in content:
+            patched_line = line
+
+            if line.startswith(prefix):
+                # Clear prefix variable
+                patched_line = prefix + os.linesep
+            elif extra_libs and line.startswith('Libs:'):
+                # Append extra libraries to link with
+                patched_line = patched_line.strip('\n')
+                for lib in extra_libs:
+                    patched_line += f' -l{lib}'
+                patched_line += os.linesep
+
+            patched_content.append(patched_line)
+
+        with open(path, 'w') as f:
+            f.writelines(patched_content)
+
+    def update_pc_files(self, builder: 'Builder'):
+        for root, _, files in os.walk(builder.deps_path + self.name, followlinks=True):
+            for filename in files:
+                if filename.endswith('.pc'):
+                    file_path = root + os.sep + filename
+                    filename = os.path.splitext(filename)[0]
+                    extra_libs = self.pkg_libs[filename] if filename in self.pkg_libs else None
+                    Target.update_pc_file(file_path, extra_libs)
 
 
 class MakeTarget(Target):
