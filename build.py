@@ -661,6 +661,24 @@ class FlacTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'FLAC/flac.pc.in')
 
 
+class GettextTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='gettext'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['--enable-csharp'] = 'no'
+        opts['--enable-java'] = 'no'
+        opts['--enable-libasprintf'] = 'no'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://ftp.gnu.org/gnu/gettext/gettext-0.21.tar.xz',
+            'd20fcbb537e02dcf1383197ba05bd0734ef7bf5db06bdb241eb69b7d16b73192')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'gettext-runtime')
+
+
 class IconvTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='iconv'):
         super().__init__(name)
@@ -675,24 +693,11 @@ class IconvTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'include/iconv.h.in')
 
 
-class IntlTarget(ConfigureMakeStaticDependencyTarget):
+class IntlTarget(GettextTarget):
     def __init__(self, name='intl'):
         super().__init__(name)
         self.src_root = 'gettext-runtime'
         self.make.src_root += self.src_root + os.sep + 'intl'
-
-        opts = self.options
-        opts['--enable-csharp'] = 'no'
-        opts['--enable-java'] = 'no'
-        opts['--enable-libasprintf'] = 'no'
-
-    def prepare_source(self, builder: 'Builder'):
-        builder.download_source(
-            'https://ftp.gnu.org/gnu/gettext/gettext-0.21.tar.xz',
-            'd20fcbb537e02dcf1383197ba05bd0734ef7bf5db06bdb241eb69b7d16b73192')
-
-    def detect(self, builder: 'Builder') -> bool:
-        return os.path.exists(builder.source_path + 'gettext-runtime')
 
     def post_build(self, builder: 'Builder'):
         # Do install of intl only, avoid complete gettext runtime
