@@ -928,6 +928,11 @@ class SndFileTarget(CMakeStaticDependencyTarget):
 class VorbisTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
+        self.pkg_libs = {
+            'vorbis': ('ogg',),
+            'vorbisenc': ('vorbis', 'ogg'),
+            'vorbisfile': ('vorbis', 'ogg'),
+        }
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
