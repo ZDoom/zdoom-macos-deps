@@ -115,14 +115,14 @@ class Target(BaseTarget):
         if builder.os_version:
             self._update_env(varname, f'-mmacosx-version-min={builder.os_version}')
 
-    def install(self, builder: 'Builder', options: 'CommandLineOptions' = None):
+    def install(self, builder: 'Builder', options: 'CommandLineOptions' = None, tool: str = 'make'):
         if builder.xcode:
             return
 
         if os.path.exists(self.prefix):
             shutil.rmtree(self.prefix)
 
-        args = ['make', 'install']
+        args = [tool, 'install']
         args += options and options.to_list() or []
 
         work_path = builder.build_path + self.src_root
