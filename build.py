@@ -956,12 +956,27 @@ class ZlibTarget(ConfigureMakeDependencyTarget):
 
 
 class CleanTarget(BaseTarget):
-    def __init__(self, name='clean'):
+    def __init__(self, name=None):
         super().__init__(name)
+        self.args = ()
 
     def build(self, builder: 'Builder'):
-        args = ('git', 'clean', '-dfX')
+        args = ('git', 'clean') + self.args
         subprocess.check_call(args, cwd=builder.root_path)
+
+
+class CleanAllTarget(CleanTarget):
+    def __init__(self, name='clean-all'):
+        super().__init__(name)
+        self.args = ('-dX', '--force')
+
+
+class CleanDepsTarget(CleanAllTarget):
+    def __init__(self, name='clean-deps'):
+        super().__init__(name)
+
+    def configure(self, builder: 'Builder'):
+        self.args += (builder.deps_path,)
 
 
 # Case insensitive dictionary class from
@@ -1171,7 +1186,8 @@ class Builder(object):
             ZlibTarget(),
 
             # Special
-            CleanTarget(),
+            CleanAllTarget(),
+            CleanDepsTarget()
         )
 
         self.targets = CaseInsensitiveDict({target.name: target for target in targets})
