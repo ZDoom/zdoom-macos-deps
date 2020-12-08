@@ -131,7 +131,7 @@ class Target(BaseTarget):
         self.update_pc_files(builder)
 
     @staticmethod
-    def update_pc_file(path: str, extra_libs=None):
+    def update_pc_file(path: str, extra_libs: str = None):
         with open(path, 'r') as f:
             content = f.readlines()
 
@@ -146,10 +146,8 @@ class Target(BaseTarget):
                 patched_line = prefix + os.linesep
             elif extra_libs and line.startswith('Libs:'):
                 # Append extra libraries to link with
-                patched_line = patched_line.strip('\n')
-                for lib in extra_libs:
-                    patched_line += f' -l{lib}'
-                patched_line += os.linesep
+                if extra_libs not in line:
+                    patched_line = line.rstrip('\n') + ' ' + extra_libs + os.linesep
 
             patched_content.append(patched_line)
 
@@ -929,9 +927,9 @@ class VorbisTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
         self.pkg_libs = {
-            'vorbis': ('ogg',),
-            'vorbisenc': ('vorbis', 'ogg'),
-            'vorbisfile': ('vorbis', 'ogg'),
+            'vorbis': '-logg',
+            'vorbisenc': '-lvorbis -logg',
+            'vorbisfile': '-lvorbis -logg',
         }
 
     def prepare_source(self, builder: 'Builder'):
