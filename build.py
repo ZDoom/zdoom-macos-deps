@@ -31,6 +31,7 @@ import os
 import re
 import shutil
 import subprocess
+import typing
 import urllib.request
 import zipapp
 
@@ -141,7 +142,7 @@ class Target(BaseTarget):
         self.update_pc_files(builder)
 
     @staticmethod
-    def update_pc_file(path: str, extra_libs: str = None):
+    def update_pc_file(path: str, extra_libs: str = None, processor: typing.Callable = None):
         with open(path, 'r') as f:
             content = f.readlines()
 
@@ -158,6 +159,12 @@ class Target(BaseTarget):
                 # Append extra libraries to link with
                 if extra_libs not in line:
                     patched_line = line.rstrip('\n') + ' ' + extra_libs + os.linesep
+
+            if processor:
+                patched_line = processor(patched_line)
+
+                if not patched_line:
+                    continue
 
             patched_content.append(patched_line)
 
