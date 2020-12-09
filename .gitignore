@@ -18,6 +18,7 @@
 /deps/nasm/bin/ndisasm
 /deps/openal/lib/cmake/
 /deps/opusfile/lib/libopusurl.a
+/deps/opusfile/lib/pkgconfig/opusurl.pc
 /deps/pcre/bin/
 /deps/pcre/lib/pkgconfig/libpcreposix.pc
 /deps/pcre/lib/libpcreposix.a

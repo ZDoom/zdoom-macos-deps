@@ -881,6 +881,7 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='opusfile'):
         super().__init__(name)
         self.options['--enable-http'] = 'no'
+        self.pkg_libs = {'opusfile': '-lopus -logg'}
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
