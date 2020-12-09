@@ -1,0 +1,12 @@
+prefix=
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: sndfile
+Description: A library for reading and writing audio files
+Requires:
+Requires.private: flac ogg vorbis vorbisenc opus
+Version: 1.0.30
+Libs: -L${libdir} -lsndfile -lopus -lFLAC -lvorbisenc -lvorbis -logg
+Cflags: -I${includedir}
