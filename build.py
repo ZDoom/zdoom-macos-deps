@@ -36,12 +36,22 @@ import zipapp
 
 
 class CommandLineOptions(dict):
-    def to_list(self, prefix='') -> list:
+    # Rules to combine argument's name and value
+    MAKE_RULES = 0
+    CMAKE_RULES = 1
+
+    def to_list(self, rules=MAKE_RULES) -> list:
         result = []
 
         for arg_name, arg_value in self.items():
-            option = prefix + arg_name
-            option += arg_value and ('=' + arg_value) or ''
+            if rules == CommandLineOptions.MAKE_RULES:
+                option = arg_name + ('=' + arg_value) if arg_value else ''
+            elif rules == CommandLineOptions.CMAKE_RULES:
+                arg_value = arg_value if arg_value else ''
+                option = f'-D{arg_name}={arg_value}'
+            else:
+                assert False, 'Unknown argument rules'
+
             result.append(option)
 
         return result
@@ -280,7 +290,7 @@ class CMakeTarget(Target):
         if builder.sdk_path:
             args.append('-DCMAKE_OSX_SYSROOT=' + builder.sdk_path)
 
-        args += self.options.to_list('-D')
+        args += self.options.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(builder.source_path + self.src_root)
 
         subprocess.check_call(args, cwd=builder.build_path, env=self.environment)
