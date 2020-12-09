@@ -867,7 +867,8 @@ class NinjaTarget(MakeTarget):
 class OpenALTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='openal'):
         super().__init__(name)
-
+        self.pkg_libs = {'openal': '-framework ApplicationServices -framework AudioToolbox '
+                                   '-framework AudioUnit -framework CoreAudio'}
         opts = self.options
         opts['ALSOFT_EXAMPLES'] = 'NO'
         opts['ALSOFT_UTILS'] = 'NO'
@@ -879,6 +880,15 @@ class OpenALTarget(CMakeStaticDependencyTarget):
 
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'openal.pc.in')
+
+    def post_build(self, builder: 'Builder'):
+        super().post_build(builder)
+
+        def remote_private_libs(line: str):
+            return None if line.startswith('Libs.private:') else line
+
+        pc_file = builder.deps_path + self.name + os.sep + 'lib/pkgconfig/openal.pc'
+        Target.update_pc_file(pc_file, processor=remote_private_libs)
 
 
 class OpusTarget(ConfigureMakeStaticDependencyTarget):
