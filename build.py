@@ -912,6 +912,7 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
+        self.pkg_libs = {'sndfile': '-lopus -lFLAC -lvorbisenc -lvorbis -logg'}
 
         opts = self.options
         opts['BUILD_REGTEST'] = 'NO'
