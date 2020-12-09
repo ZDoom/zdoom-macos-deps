@@ -688,6 +688,8 @@ class FfiTarget(ConfigureMakeStaticDependencyTarget):
 class FlacTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='flac'):
         super().__init__(name)
+        self.options['--enable-cpplibs'] = 'no'
+        self.pkg_libs = {'flac': '-logg'}
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(

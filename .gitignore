@@ -9,8 +9,6 @@
 /deps/bzip2/bin/
 /deps/bzip2/man/
 /deps/flac/bin/
-/deps/flac/include/FLAC++/
-/deps/flac/lib/libFLAC++.a
 /deps/iconv/bin/
 /deps/iconv/include/*charset.h
 /deps/iconv/lib/libcharset.a
