@@ -805,6 +805,59 @@ class MesonTarget(Target):
         zipapp.create_archive(builder.build_path, dest_path + self.name, '/usr/bin/env python3', compressed=True)
 
 
+class MoltenVKTarget(MakeTarget):
+    def __init__(self, name='moltenvk'):
+        super().__init__(name)
+        self.options['macos'] = None
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/KhronosGroup/MoltenVK/archive/v1.1.1.tar.gz',
+            'cd1712c571d4155f4143c435c8551a5cb8cbb311ad7fff03595322ab971682c0')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'MoltenVKPackaging.xcodeproj')
+
+    def configure(self, builder: 'Builder'):
+        # Do not use specified macOS deployment target and SDK
+        # MoltenVK defines minimal OS version itself, and usually, it requires the very recent SDK
+        builder.os_version = None
+        builder.sdk_path = None
+
+        super().configure(builder)
+
+    def build(self, builder: 'Builder'):
+        args = ('./fetchDependencies', '--macos', '-v')
+        subprocess.check_call(args, cwd=builder.build_path)
+
+        super().build(builder)
+
+    def post_build(self, builder: 'Builder'):
+        if builder.xcode:
+            return
+
+        if os.path.exists(self.prefix):
+            shutil.rmtree(self.prefix)
+
+        lib_path = self.prefix + os.sep + 'lib' + os.sep
+        os.makedirs(lib_path)
+
+        src_path = builder.build_path + 'Package/Latest/MoltenVK/'
+        shutil.copytree(src_path + 'include', self.prefix + os.sep + 'include')
+        shutil.copy(builder.build_path + 'LICENSE', self.prefix + os.sep + 'apache2.txt')
+
+        # TODO: Replace lipo with the following line when ARM64 support will be ready
+        # shutil.copy(src_path + 'dylib/macOS/libMoltenVK.dylib', lib_path)
+        dylib_name = 'libMoltenVK.dylib'
+        args = (
+            'lipo',
+            f'{src_path}dylib/macOS/{dylib_name}',
+            '-thin', 'x86_64',
+            '-output', lib_path + dylib_name
+        )
+        subprocess.check_call(args)
+
+
 class Mpg123Target(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mpg123'):
         super().__init__(name)
@@ -1201,6 +1254,7 @@ class Builder(object):
             IntlTarget(),
             JpegTurboTarget(),
             MesonTarget(),
+            MoltenVKTarget(),
             Mpg123Target(),
             NasmTarget(),
             NinjaTarget(),
