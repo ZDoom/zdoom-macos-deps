@@ -50,12 +50,12 @@ typedef unsigned long MTLLanguageVersion;
  */
 #define MVK_VERSION_MAJOR   1
 #define MVK_VERSION_MINOR   1
-#define MVK_VERSION_PATCH   0
+#define MVK_VERSION_PATCH   1
 
 #define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
 #define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
 
-#define VK_MVK_MOLTENVK_SPEC_VERSION            28
+#define VK_MVK_MOLTENVK_SPEC_VERSION            29
 #define VK_MVK_MOLTENVK_EXTENSION_NAME          "VK_MVK_moltenvk"
 
 /**
@@ -120,12 +120,12 @@ typedef unsigned long MTLLanguageVersion;
  * 4.  Setting the MVK_ALLOW_METAL_FENCES or MVK_ALLOW_METAL_EVENTS runtime environment variable
  *     or MoltenVK compile-time build setting to 1 will cause MoltenVK to use MTLFence or MTLEvent,
  *     respectively, if it is available on the device, for VkSemaphore synchronization behaviour.
- *     If both variables are set, MVK_ALLOW_METAL_FENCES takes priority over MVK_ALLOW_METAL_EVENTS.
+ *     If both variables are set, MVK_ALLOW_METAL_EVENTS takes priority over MVK_ALLOW_METAL_FENCES.
  *     If both are disabled, or if MTLFence or MTLEvent is not available on the device, MoltenVK
  *     will use CPU synchronization to control VkSemaphore synchronization behaviour.
- *     By default, MVK_ALLOW_METAL_FENCES is enabled and MVK_ALLOW_METAL_EVENTS is disabled,
- *     meaning MoltenVK will use MTLFences, if they are available, to control VkSemaphore
- *     synchronization behaviour, by default.
+ *     By default, both MVK_ALLOW_METAL_FENCES and MVK_ALLOW_METAL_EVENTS are enabled, meaning 
+ *     MoltenVK will preferentially use MTLEvents if they are available, followed by MTLFences
+ *     if they are available, to control VkSemaphore synchronization behaviour, by default.
  *
  * 5.  The MVK_CONFIG_AUTO_GPU_CAPTURE_SCOPE runtime environment variable or MoltenVK compile-time
  *     build setting controls whether Metal should run an automatic GPU capture without the user
@@ -271,11 +271,16 @@ typedef struct {
 	 * command buffer. Depending on the number of command buffers that you use, you may also need to
 	 * change the value of the maxActiveMetalCommandBuffersPerQueue setting.
 	 *
-	 * In addition, if this feature is enabled, be aware that if you have recorded commands to a
-	 * Vulkan command buffer, and then choose to reset that command buffer instead of submitting it,
-	 * the corresponding prefilled Metal command buffer will still be submitted. This is because Metal
-	 * command buffers do not support the concept of being reset after being filled. Depending on when
-	 * and how often you do this, it may cause unexpected visual artifacts and unnecessary GPU load.
+	 * If this feature is enabled, be aware that if you have recorded commands to a Vulkan command buffer,
+	 * and then choose to reset that command buffer instead of submitting it, the corresponding prefilled
+	 * Metal command buffer will still be submitted. This is because Metal command buffers do not support
+	 * the concept of being reset after being filled. Depending on when and how often you do this,
+	 * it may cause unexpected visual artifacts and unnecessary GPU load.
+	 *
+	 * This feature is incompatible with updating descriptors after binding. If any of the
+	 * *UpdateAfterBind feature flags of VkPhysicalDeviceDescriptorIndexingFeaturesEXT or
+	 * VkPhysicalDeviceInlineUniformBlockFeaturesEXT have been enabled, the value of this
+	 * setting will be ignored and treated as if it is false.
 	 *
 	 * The value of this parameter may be changed at any time during application runtime,
 	 * and the changed value will immediately effect subsequent MoltenVK behaviour.
@@ -611,7 +616,7 @@ typedef struct {
 	VkBool32 placementHeaps;					/**< If true, MTLHeap objects support placement of resources. */
 	VkDeviceSize pushConstantSizeAlignment;		/**< The alignment used internally when allocating memory for push constants. Must be PoT. */
 	uint32_t maxTextureLayers;					/**< The maximum number of layers in an array texture. */
-    uint32_t subgroupSize;			            /**< The number of threads in a SIMD-group. */
+    uint32_t maxSubgroupSize;			        /**< The maximum number of threads in a SIMD-group. */
 	VkDeviceSize vertexStrideAlignment;         /**< The alignment used for the stride of vertex attribute bindings. */
 	VkBool32 indirectTessellationDrawing;		/**< If true, tessellation draw calls support parameters held in a GPU buffer. */
 	VkBool32 nonUniformThreadgroups;			/**< If true, the device supports arbitrary-sized grids in compute workloads. */
@@ -621,6 +626,15 @@ typedef struct {
 	VkBool32 depthResolve;						/**< If true, resolving depth textures with filters other than Sample0 is supported. */
 	VkBool32 stencilResolve;					/**< If true, resolving stencil textures with filters other than Sample0 is supported. */
 	uint32_t maxPerStageDynamicMTLBufferCount;	/**< The maximum number of inline buffers that can be set on a command buffer. */
+	uint32_t maxPerStageStorageTextureCount;    /**< The total number of per-stage Metal textures with read-write access available for writing to from a shader. */
+	VkBool32 astcHDRTextures;					/**< If true, ASTC HDR pixel formats are supported. */
+	VkBool32 renderLinearTextures;				/**< If true, linear textures are renderable. */
+	VkBool32 pullModelInterpolation;			/**< If true, explicit interpolation functions are supported. */
+	VkBool32 samplerMirrorClampToEdge;			/**< If true, the mirrored clamp to edge address mode is supported in samplers. */
+	VkBool32 quadPermute;						/**< If true, quadgroup permutation functions (vote, ballot, shuffle) are supported in shaders. */
+	VkBool32 simdPermute;						/**< If true, SIMD-group permutation functions (vote, ballot, shuffle) are supported in shaders. */
+	VkBool32 simdReduction;						/**< If true, SIMD-group reduction functions (arithmetic) are supported in shaders. */
+    uint32_t minSubgroupSize;			        /**< The minimum number of threads in a SIMD-group. */
 } MVKPhysicalDeviceMetalFeatures;
 
 /** MoltenVK performance of a particular type of activity. */
