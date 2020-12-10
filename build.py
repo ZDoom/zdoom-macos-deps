@@ -159,6 +159,9 @@ class Target(BaseTarget):
                 # Append extra libraries to link with
                 if extra_libs not in line:
                     patched_line = line.rstrip('\n') + ' ' + extra_libs + os.linesep
+            elif line.startswith('Libs.private:'):
+                # Remove private libraries
+                continue
 
             if processor:
                 patched_line = processor(patched_line)
@@ -880,15 +883,6 @@ class OpenALTarget(CMakeStaticDependencyTarget):
 
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'openal.pc.in')
-
-    def post_build(self, builder: 'Builder'):
-        super().post_build(builder)
-
-        def remote_private_libs(line: str):
-            return None if line.startswith('Libs.private:') else line
-
-        pc_file = builder.deps_path + self.name + os.sep + 'lib/pkgconfig/openal.pc'
-        Target.update_pc_file(pc_file, processor=remote_private_libs)
 
 
 class OpusTarget(ConfigureMakeStaticDependencyTarget):
