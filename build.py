@@ -832,19 +832,6 @@ class NasmTarget(ConfigureMakeDependencyTarget):
         return os.path.exists(builder.source_path + 'nasm.txt')
 
 
-class OggTarget(ConfigureMakeStaticDependencyTarget):
-    def __init__(self, name='ogg'):
-        super().__init__(name)
-
-    def prepare_source(self, builder: 'Builder'):
-        builder.download_source(
-            'https://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz',
-            'fe5670640bd49e828d64d2879c31cb4dde9758681bb664f9bdbf159a01b0c76e')
-
-    def detect(self, builder: 'Builder') -> bool:
-        return os.path.exists(builder.source_path + 'ogg.pc.in')
-
-
 class NinjaTarget(MakeTarget):
     def __init__(self, name='ninja'):
         super().__init__(name)
@@ -865,6 +852,19 @@ class NinjaTarget(MakeTarget):
         dest_path = builder.deps_path + self.name + os.sep + 'bin'
         os.makedirs(dest_path, exist_ok=True)
         shutil.copy(builder.build_path + self.name, dest_path)
+
+
+class OggTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='ogg'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz',
+            'fe5670640bd49e828d64d2879c31cb4dde9758681bb664f9bdbf159a01b0c76e')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'ogg.pc.in')
 
 
 class OpenALTarget(CMakeStaticDependencyTarget):
