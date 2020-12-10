@@ -1164,7 +1164,10 @@ class Builder(object):
                 os.makedirs(dst_subpath, exist_ok=True)
                 Builder.symlink_directory(entry.path, dst_subpath, cleanup=False)
             elif not os.path.exists(dst_subpath):
-                os.symlink(entry.path, dst_subpath)
+                if os.path.islink(entry.path):
+                    shutil.copy(entry.path, dst_subpath, follow_symlinks=False)
+                else:
+                    os.symlink(entry.path, dst_subpath)
 
     def _detect_target(self):
         for name, target in self.targets.items():
