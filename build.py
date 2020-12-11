@@ -738,6 +738,45 @@ class GettextTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'gettext-runtime')
 
 
+class GlibTarget(Target):
+    def __init__(self, name='glib'):
+        super().__init__(name)
+        self.pkg_libs = {
+            'glib-2.0': '-lffi -lpcre -framework CoreFoundation -framework Foundation',
+            'gobject-2.0': '-lffi'
+        }
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://download.gnome.org/sources/glib/2.66/glib-2.66.3.tar.xz',
+            '79f31365a99cb1cc9db028625635d1438890702acde9e2802eae0acebcf7b5b1')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'glib.doap')
+
+    def configure(self, builder: 'Builder'):
+        super().configure(builder)
+
+        environment = self.environment
+        environment['LDFLAGS'] += ' -framework CoreFoundation'
+
+        args = (
+            builder.bin_path + 'meson',
+            '--prefix=' + builder.deps_path + self.name,
+            '--buildtype=release',
+            '--default-library=static',
+            builder.source_path
+        )
+        subprocess.check_call(args, cwd=builder.build_path, env=environment)
+
+    def build(self, builder: 'Builder'):
+        args = ('ninja',)
+        subprocess.check_call(args, cwd=builder.build_path, env=self.environment)
+
+    def post_build(self, builder: 'Builder'):
+        self.install(builder, tool='ninja')
+
+
 class IconvTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='iconv'):
         super().__init__(name)
@@ -1250,6 +1289,7 @@ class Builder(object):
             Bzip2Target(),
             FfiTarget(),
             FlacTarget(),
+            GlibTarget(),
             IconvTarget(),
             IntlTarget(),
             JpegTurboTarget(),
