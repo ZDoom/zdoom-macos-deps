@@ -1076,6 +1076,23 @@ class VorbisTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'vorbis.pc.in')
 
 
+class VpxTarget(ConfigureMakeDependencyTarget):
+    def __init__(self, name='vpx'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['--disable-examples'] = None
+        opts['--disable-unit-tests'] = None
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/webmproject/libvpx/archive/v1.9.0.tar.gz',
+            'd279c10e4b9316bf11a570ba16c3d55791e1ad6faa4404c67422eb631782c80a')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'vpxstats.h')
+
+
 class YasmTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='yasm'):
         super().__init__(name)
@@ -1337,6 +1354,7 @@ class Builder(object):
             PkgConfigTarget(),
             SndFileTarget(),
             VorbisTarget(),
+            VpxTarget(),
             YasmTarget(),
             ZlibTarget(),
 
