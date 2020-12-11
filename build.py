@@ -1022,6 +1022,24 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'pcre.h.in')
 
 
+class PkgConfigTarget(ConfigureMakeDependencyTarget):
+    def __init__(self, name='pkg-config'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz',
+            '6fc69c01688c9458a57eb9a1664c9aba372ccda420a02bf4429fe610e7e7d591')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'pkg-config.1')
+
+    def post_build(self, builder: 'Builder'):
+        src_path = builder.build_path + 'pkg-config'
+        dst_path = builder.deps_path + self.name + os.sep + 'bin' + os.sep + 'pkg-config.exe'
+        shutil.copy(src_path, dst_path)
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
@@ -1303,6 +1321,7 @@ class Builder(object):
             OpusTarget(),
             OpusFileTarget(),
             PcreTarget(),
+            PkgConfigTarget(),
             SndFileTarget(),
             VorbisTarget(),
             ZlibTarget(),
