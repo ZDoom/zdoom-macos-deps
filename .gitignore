@@ -42,3 +42,7 @@
 /deps/sndfile/bin/
 /deps/sndfile/include/sndfile.hh
 /deps/sndfile/lib/cmake/
+/deps/yasm/bin/vsyasm
+/deps/yasm/bin/ytasm
+/deps/yasm/include/
+/deps/yasm/lib/

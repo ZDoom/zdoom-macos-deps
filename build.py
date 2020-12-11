@@ -1076,6 +1076,19 @@ class VorbisTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'vorbis.pc.in')
 
 
+class YasmTarget(ConfigureMakeDependencyTarget):
+    def __init__(self, name='yasm'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz',
+            '3dce6601b495f5b3d45b59f7d2492a340ee7e84b5beca17e48f862502bd5603f')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'libyasm.h')
+
+
 class ZlibTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='zlib'):
         super().__init__(name)
@@ -1324,6 +1337,7 @@ class Builder(object):
             PkgConfigTarget(),
             SndFileTarget(),
             VorbisTarget(),
+            YasmTarget(),
             ZlibTarget(),
 
             # Special
