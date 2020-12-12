@@ -776,6 +776,23 @@ class IconvTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'include/iconv.h.in')
 
 
+class InstPatchTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='instpatch'):
+        super().__init__(name)
+        self.options['LIB_SUFFIX'] = None
+
+        # Workaround for missing frameworks in dependencies, no clue what's wrong at the moment
+        self.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/swami/libinstpatch/archive/v1.1.5.tar.gz',
+            '5fd01cd2ba7377e7a72caaf3b565d8fe088b5c8a14e0ea91516f0c87524bcf8a')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'libinstpatch-1.0.pc.in')
+
+
 class IntlTarget(GettextTarget):
     def __init__(self, name='intl'):
         super().__init__(name)
@@ -1329,6 +1346,7 @@ class Builder(object):
             FlacTarget(),
             GlibTarget(),
             IconvTarget(),
+            InstPatchTarget(),
             IntlTarget(),
             JpegTurboTarget(),
             MesonTarget(),
