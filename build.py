@@ -980,6 +980,7 @@ class OpenALTarget(CMakeStaticDependencyTarget):
 class OpusTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='opus'):
         super().__init__(name)
+        self.options['--disable-extra-programs'] = None
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
