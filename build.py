@@ -89,7 +89,6 @@ class Target(BaseTarget):
         self.prefix = None
         self.environment = os.environ
         self.options = CommandLineOptions()
-        self.pkg_proc = None
 
     def initialize(self, builder: 'Builder'):
         self.prefix = builder.deps_path + self.name
@@ -171,7 +170,12 @@ class Target(BaseTarget):
             for filename in files:
                 if filename.endswith('.pc'):
                     file_path = root + os.sep + filename
-                    Target.update_pc_file(file_path, self.pkg_proc)
+                    Target.update_pc_file(file_path, self._process_pkg_config)
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        assert pcfile
+        return line
 
 
 class MakeTarget(Target):
@@ -712,7 +716,6 @@ class FlacTarget(ConfigureMakeStaticDependencyTarget):
 class FluidSynthTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='fluidsynth'):
         super().__init__(name)
-        self.pkg_proc = self._pkg_proc
 
         opts = self.options
         opts['LIB_SUFFIX'] = None
@@ -729,7 +732,7 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'fluidsynth.pc.in')
 
     @staticmethod
-    def _pkg_proc(_, line: str):
+    def _process_pkg_config(pcfile: str, line: str) -> str:
         if line.startswith('Version:'):
             # Add instpatch as private dependency which pulls all necessary libraries
             return line + 'Requires.private: libinstpatch-1.0' + os.linesep
@@ -992,7 +995,6 @@ class OggTarget(ConfigureMakeStaticDependencyTarget):
 class OpenALTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='openal'):
         super().__init__(name)
-        self.pkg_proc = OpenALTarget._pkg_proc
 
         opts = self.options
         opts['ALSOFT_EXAMPLES'] = 'NO'
@@ -1007,7 +1009,7 @@ class OpenALTarget(CMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'openal.pc.in')
 
     @staticmethod
-    def _pkg_proc(_, line: str):
+    def _process_pkg_config(pcfile: str, line: str) -> str:
         libs_private = 'Libs.private:'
 
         if line.startswith(libs_private):
