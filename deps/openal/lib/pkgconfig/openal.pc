@@ -7,5 +7,6 @@ Name: OpenAL
 Description: OpenAL is a cross-platform 3D audio API
 Requires: 
 Version: 1.21.0
-Libs: -L${libdir} -lopenal  -framework ApplicationServices -framework AudioToolbox -framework AudioUnit -framework CoreAudio
+Libs: -L${libdir} -lopenal 
+Libs.private: -framework ApplicationServices -framework AudioToolbox -framework AudioUnit -framework CoreAudio
 Cflags: -I${includedir} -I${includedir}/AL -DAL_LIBTYPE_STATIC

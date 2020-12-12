@@ -8,5 +8,5 @@ Version: 2.66.3
 Requires: glib-2.0
 Requires.private: libffi >=  3.0.0
 Libs: -L${libdir} -lgobject-2.0
-Libs.private: -lintl -liconv -lffi
+Libs.private: -lintl -liconv
 Cflags: -I${includedir}
