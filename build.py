@@ -1400,23 +1400,26 @@ class Builder(object):
         source_path = self.source_path
         os.makedirs(source_path, exist_ok=True)
 
-        filename = source_path + url.rsplit(os.sep, 1)[1]
+        filename = url.rsplit(os.sep, 1)[1]
+        filepath = source_path + filename
 
-        if os.path.exists(filename):
+        if os.path.exists(filepath):
             # Read existing source package
-            with open(filename, 'rb') as f:
+            with open(filepath, 'rb') as f:
                 data = f.read()
         else:
             # Download package with source code
+            print(f'Downloading {filename}')
+
             response = urllib.request.urlopen(url)
 
             try:
-                with open(filename, 'wb') as f:
+                with open(filepath, 'wb') as f:
                     data = response.read()
                     f.write(data)
 
             except IOError:
-                os.unlink(filename)
+                os.unlink(filepath)
                 raise
 
         # Verify package checksum
@@ -1425,28 +1428,28 @@ class Builder(object):
         file_checksum = file_hasher.hexdigest()
 
         if file_checksum != checksum:
-            os.unlink(filename)
-            raise Exception(f'Checksum of {filename} does not match, expected: {checksum}, actual: {file_checksum}')
+            os.unlink(filepath)
+            raise Exception(f'Checksum of {filepath} does not match, expected: {checksum}, actual: {file_checksum}')
 
         # Figure out path to extracted source code
-        filepaths = subprocess.check_output(['tar', '-tf', filename]).decode("utf-8")
+        filepaths = subprocess.check_output(['tar', '-tf', filepath]).decode("utf-8")
         filepaths = filepaths.split('\n')
         first_path_component = None
 
-        for filepath in filepaths:
-            if os.sep in filepath:
-                first_path_component = filepath[:filepath.find(os.sep)]
+        for path in filepaths:
+            if os.sep in path:
+                first_path_component = path[:path.find(os.sep)]
                 break
 
         if not first_path_component:
-            raise Exception("Failed to figure out source code path for " + filename)
+            raise Exception("Failed to figure out source code path for " + filepath)
 
         extract_path = source_path + first_path_component + os.sep
 
         if not os.path.exists(extract_path):
             # Extract source code package
             try:
-                subprocess.check_call(['tar', '-xf', filename], cwd=source_path)
+                subprocess.check_call(['tar', '-xf', filepath], cwd=source_path)
             except (IOError, subprocess.CalledProcessError):
                 shutil.rmtree(extract_path, ignore_errors=True)
                 raise
