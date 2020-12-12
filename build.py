@@ -1385,12 +1385,9 @@ class Builder(object):
             args = ['git', 'checkout', self.checkout_commit]
             subprocess.check_call(args, cwd=self.source_path)
 
-    def download_source(self, url: str, checksum: str):
-        source_path = self.source_path
-        os.makedirs(source_path, exist_ok=True)
-
+    def _read_source_package(self, url: str) -> (bytes, str):
         filename = url.rsplit(os.sep, 1)[1]
-        filepath = source_path + filename
+        filepath = self.source_path + filename
 
         if os.path.exists(filepath):
             # Read existing source package
@@ -1411,7 +1408,10 @@ class Builder(object):
                 os.unlink(filepath)
                 raise
 
-        # Verify package checksum
+        return data, filepath
+
+    @staticmethod
+    def _verify_checksum(checksum: str, data: bytes, filepath: str) -> None:
         file_hasher = hashlib.sha256()
         file_hasher.update(data)
         file_checksum = file_hasher.hexdigest()
@@ -1420,7 +1420,7 @@ class Builder(object):
             os.unlink(filepath)
             raise Exception(f'Checksum of {filepath} does not match, expected: {checksum}, actual: {file_checksum}')
 
-        # Figure out path to extracted source code
+    def _unpack_source_package(self, filepath: str) -> (str, str):
         filepaths = subprocess.check_output(['tar', '-tf', filepath]).decode("utf-8")
         filepaths = filepaths.split('\n')
         first_path_component = None
@@ -1433,28 +1433,41 @@ class Builder(object):
         if not first_path_component:
             raise Exception("Failed to figure out source code path for " + filepath)
 
-        extract_path = source_path + first_path_component + os.sep
+        extract_path = self.source_path + first_path_component + os.sep
 
         if not os.path.exists(extract_path):
             # Extract source code package
             try:
-                subprocess.check_call(['tar', '-xf', filepath], cwd=source_path)
+                subprocess.check_call(['tar', '-xf', filepath], cwd=self.source_path)
             except (IOError, subprocess.CalledProcessError):
                 shutil.rmtree(extract_path, ignore_errors=True)
                 raise
 
-        # Apply patch if exists
+        return first_path_component, extract_path
+
+    def _apply_source_patch(self, extract_path: str):
         patch_path = self.patch_path + self.target.name + '.patch'
 
-        if os.path.exists(patch_path):
-            # Check if patch is already applied
-            test_arg = '--dry-run'
-            args = ['patch', test_arg, '--strip=1', '--input=' + patch_path]
+        if not os.path.exists(patch_path):
+            return
 
-            if subprocess.call(args, cwd=extract_path) == 0:
-                # Patch wasn't applied yet, do it now
-                args.remove(test_arg)
-                subprocess.check_call(args, cwd=extract_path)
+        # Check if patch is already applied
+        test_arg = '--dry-run'
+        args = ['patch', test_arg, '--strip=1', '--input=' + patch_path]
+
+        if subprocess.call(args, cwd=extract_path) == 0:
+            # Patch wasn't applied yet, do it now
+            args.remove(test_arg)
+            subprocess.check_call(args, cwd=extract_path)
+
+    def download_source(self, url: str, checksum: str):
+        os.makedirs(self.source_path, exist_ok=True)
+
+        data, filepath = self._read_source_package(url)
+        Builder._verify_checksum(checksum, data, filepath)
+
+        first_path_component, extract_path = self._unpack_source_package(filepath)
+        self._apply_source_patch(extract_path)
 
         # Adjust source and build paths according to extracted source code
         self.source_path = extract_path
