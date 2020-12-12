@@ -89,8 +89,7 @@ class Target(BaseTarget):
         self.prefix = None
         self.environment = os.environ
         self.options = CommandLineOptions()
-        # Mapping of .pc files' base names to extra libraries' names
-        self.pkg_libs = {}
+        self.pkg_proc = None
 
     def initialize(self, builder: 'Builder'):
         self.prefix = builder.deps_path + self.name
@@ -142,7 +141,7 @@ class Target(BaseTarget):
         self.update_pc_files(builder)
 
     @staticmethod
-    def update_pc_file(path: str, extra_libs: str = None, processor: typing.Callable = None):
+    def update_pc_file(path: str, processor: typing.Callable = None):
         with open(path, 'r') as f:
             content = f.readlines()
 
@@ -155,16 +154,9 @@ class Target(BaseTarget):
             if line.startswith(prefix):
                 # Clear prefix variable
                 patched_line = prefix + os.linesep
-            elif extra_libs and line.startswith('Libs:'):
-                # Append extra libraries to link with
-                if extra_libs not in line:
-                    patched_line = line.rstrip('\n') + ' ' + extra_libs + os.linesep
-            elif line.startswith('Libs.private:'):
-                # Remove private libraries
-                continue
 
             if processor:
-                patched_line = processor(patched_line)
+                patched_line = processor(path, patched_line)
 
                 if not patched_line:
                     continue
@@ -179,9 +171,7 @@ class Target(BaseTarget):
             for filename in files:
                 if filename.endswith('.pc'):
                     file_path = root + os.sep + filename
-                    filename = os.path.splitext(filename)[0]
-                    extra_libs = self.pkg_libs[filename] if filename in self.pkg_libs else None
-                    Target.update_pc_file(file_path, extra_libs)
+                    Target.update_pc_file(file_path, self.pkg_proc)
 
 
 class MakeTarget(Target):
@@ -709,7 +699,6 @@ class FlacTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='flac'):
         super().__init__(name)
         self.options['--enable-cpplibs'] = 'no'
-        self.pkg_libs = {'flac': '-logg'}
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
@@ -741,10 +730,6 @@ class GettextTarget(ConfigureMakeStaticDependencyTarget):
 class GlibTarget(Target):
     def __init__(self, name='glib'):
         super().__init__(name)
-        self.pkg_libs = {
-            'glib-2.0': '-lffi -lpcre -framework CoreFoundation -framework Foundation',
-            'gobject-2.0': '-lffi'
-        }
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
@@ -962,8 +947,8 @@ class OggTarget(ConfigureMakeStaticDependencyTarget):
 class OpenALTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='openal'):
         super().__init__(name)
-        self.pkg_libs = {'openal': '-framework ApplicationServices -framework AudioToolbox '
-                                   '-framework AudioUnit -framework CoreAudio'}
+        self.pkg_proc = OpenALTarget._pkg_proc
+
         opts = self.options
         opts['ALSOFT_EXAMPLES'] = 'NO'
         opts['ALSOFT_UTILS'] = 'NO'
@@ -975,6 +960,17 @@ class OpenALTarget(CMakeStaticDependencyTarget):
 
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'openal.pc.in')
+
+    @staticmethod
+    def _pkg_proc(_, line: str):
+        libs_private = 'Libs.private:'
+
+        if line.startswith(libs_private):
+            # Fix full paths to OS frameworks
+            return libs_private + ' -framework ApplicationServices -framework AudioToolbox'\
+                                  ' -framework AudioUnit -framework CoreAudio' + os.linesep
+        else:
+            return line
 
 
 class OpusTarget(ConfigureMakeStaticDependencyTarget):
@@ -995,7 +991,6 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='opusfile'):
         super().__init__(name)
         self.options['--enable-http'] = 'no'
-        self.pkg_libs = {'opusfile': '-lopus -logg'}
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
@@ -1044,7 +1039,6 @@ class PkgConfigTarget(ConfigureMakeDependencyTarget):
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
-        self.pkg_libs = {'sndfile': '-lopus -lFLAC -lvorbisenc -lvorbis -logg'}
 
         opts = self.options
         opts['BUILD_REGTEST'] = 'NO'
@@ -1062,11 +1056,6 @@ class SndFileTarget(CMakeStaticDependencyTarget):
 class VorbisTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
-        self.pkg_libs = {
-            'vorbis': '-logg',
-            'vorbisenc': '-lvorbis -logg',
-            'vorbisfile': '-lvorbis -logg',
-        }
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
