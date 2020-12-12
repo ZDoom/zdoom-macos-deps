@@ -6,5 +6,6 @@ includedir=${prefix}/include
 Name: FluidSynth
 Description: Software SoundFont synth
 Version: 2.1.5
+Requires.private: libinstpatch-1.0
 Libs: -L${libdir} -lfluidsynth
 Cflags: -I${includedir}
