@@ -712,6 +712,7 @@ class FlacTarget(ConfigureMakeStaticDependencyTarget):
 class FluidSynthTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='fluidsynth'):
         super().__init__(name)
+        self.pkg_proc = self._pkg_proc
 
         opts = self.options
         opts['LIB_SUFFIX'] = None
@@ -726,6 +727,14 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
 
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'fluidsynth.pc.in')
+
+    @staticmethod
+    def _pkg_proc(_, line: str):
+        if line.startswith('Version:'):
+            # Add instpatch as private dependency which pulls all necessary libraries
+            return line + 'Requires.private: libinstpatch-1.0' + os.linesep
+
+        return line
 
 
 class GettextTarget(ConfigureMakeStaticDependencyTarget):
