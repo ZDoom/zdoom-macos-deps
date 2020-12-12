@@ -709,6 +709,25 @@ class FlacTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'FLAC/flac.pc.in')
 
 
+class FluidSynthTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='fluidsynth'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['LIB_SUFFIX'] = None
+        opts['enable-framework'] = 'NO'
+        opts['enable-readline'] = 'NO'
+        opts['enable-sdl2'] = 'NO'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/FluidSynth/fluidsynth/archive/v2.1.5.tar.gz',
+            'b539b7c65a650b56f01cd60a4e83c6125c217c5a63c0c214ef6274894a677d00')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'fluidsynth.pc.in')
+
+
 class GettextTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='gettext'):
         super().__init__(name)
@@ -1344,6 +1363,7 @@ class Builder(object):
             Bzip2Target(),
             FfiTarget(),
             FlacTarget(),
+            FluidSynthTarget(),
             GlibTarget(),
             IconvTarget(),
             InstPatchTarget(),

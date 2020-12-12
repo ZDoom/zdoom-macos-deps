@@ -9,6 +9,7 @@
 /deps/bzip2/bin/
 /deps/bzip2/man/
 /deps/flac/bin/
+/deps/fluidsynth/bin/
 /deps/glib/bin/gdbus*
 /deps/glib/bin/gio*
 /deps/glib/bin/glib-compile*
