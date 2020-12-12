@@ -38,7 +38,7 @@ def _main():
     environment = os.environ
     environment['PKG_CONFIG_PATH'] = config_path
 
-    args = [bin_path + 'pkg-config.exe', '--define-prefix'] + args
+    args = [bin_path + 'pkg-config.exe', '--define-prefix', '--static'] + args
     result = subprocess.run(args, env=environment, capture_output=True)
 
     stdout = result.stdout.decode('ascii')
