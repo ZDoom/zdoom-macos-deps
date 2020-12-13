@@ -432,25 +432,6 @@ class RazeTarget(ZDoomBaseTarget):
         builder.checkout_git('https://github.com/coelckers/Raze.git')
 
 
-class ZandronumTarget(CMakeTarget):
-    def __init__(self, name='zandronum'):
-        super().__init__(name)
-
-    def prepare_source(self, builder: 'Builder'):
-        # TODO: use official Mercurial repository
-        builder.checkout_git('https://github.com/TorrSamaho/zandronum.git')
-
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-
-        opts = self.options
-        opts['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit -framework Carbon -framework IOKit'
-        # TODO: Linking to FluidSynth is disabled because Zandronum doesn't support FluidSynth 2.x
-        # opts['DYN_FLUIDSYNTH'] = 'NO'
-        opts['FMOD_INCLUDE_DIR'] = builder.include_path
-        opts['FMOD_LIBRARY'] = builder.lib_path + 'libfmodex.dylib'
-
-
 class AccTarget(CMakeTarget):
     def __init__(self, name='acc'):
         super().__init__(name)
@@ -1360,7 +1341,6 @@ class Builder(object):
             QZDoomTarget(),
             LZDoomTarget(),
             RazeTarget(),
-            ZandronumTarget(),
             AccTarget(),
             PrBoomPlusTarget(),
             ChocolateDoomTarget(),
