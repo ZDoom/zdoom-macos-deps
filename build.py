@@ -140,14 +140,26 @@ class Target(BaseTarget):
         self.update_pc_files(builder)
 
     @staticmethod
-    def update_pc_file(path: str, processor: typing.Callable = None):
+    def update_text_file(path: str, processor: typing.Callable = None):
         with open(path, 'r') as f:
             content = f.readlines()
 
         patched_content = []
-        prefix = 'prefix='
 
         for line in content:
+            patched_line = processor(line)
+
+            if patched_line:
+                patched_content.append(patched_line)
+
+        with open(path, 'w') as f:
+            f.writelines(patched_content)
+
+    @staticmethod
+    def update_pc_file(path: str, processor: typing.Callable = None):
+        prefix = 'prefix='
+
+        def pc_proc(line: str) -> str:
             patched_line = line
 
             if line.startswith(prefix):
@@ -157,13 +169,9 @@ class Target(BaseTarget):
             if processor:
                 patched_line = processor(path, patched_line)
 
-                if not patched_line:
-                    continue
+            return patched_line
 
-            patched_content.append(patched_line)
-
-        with open(path, 'w') as f:
-            f.writelines(patched_content)
+        Target.update_text_file(path, pc_proc)
 
     def update_pc_files(self, builder: 'Builder'):
         for root, _, files in os.walk(builder.deps_path + self.name, followlinks=True):
