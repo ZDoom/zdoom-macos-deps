@@ -1138,6 +1138,62 @@ class ZlibTarget(ConfigureMakeDependencyTarget):
         return os.path.exists(builder.source_path + 'zlib.pc.in')
 
 
+class ZMusicTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='zmusic'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['DYN_FLUIDSYNTH'] = 'OFF'
+        opts['DYN_MPG123'] = 'OFF'
+        opts['DYN_SNDFILE'] = 'OFF'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/coelckers/ZMusic/archive/1.1.4.tar.gz',
+            '29a18a6a8d0db4978a9d5badbbd612be2337d64ef0d768e944ea70f526eae285')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'include/zmusic.h')
+
+    def post_build(self, builder: 'Builder'):
+        if builder.xcode:
+            return
+
+        if os.path.exists(self.prefix):
+            shutil.rmtree(self.prefix)
+
+        lib_path = self.prefix + os.sep + 'lib' + os.sep
+        os.makedirs(lib_path)
+
+        shutil.copytree(builder.source_path + 'include', self.prefix + os.sep + 'include')
+
+        args = (
+            'libtool',
+            '-static',
+            '-o', lib_path + 'libzmusic.a',
+            'source/libzmusic.a',
+            'thirdparty/adlmidi/libadl.a',
+            'thirdparty/dumb/libdumb.a',
+            'thirdparty/game-music-emu/gme/libgme.a',
+            'thirdparty/oplsynth/liboplsynth.a',
+            'thirdparty/opnmidi/libopn.a',
+            'thirdparty/timidity/libtimidity.a',
+            'thirdparty/timidityplus/libtimidityplus.a',
+            'thirdparty/wildmidi/libwildmidi.a',
+        )
+        subprocess.check_call(args, cwd=builder.build_path)
+
+        args = (
+            'libtool',
+            '-static',
+            '-o', lib_path + 'libzmusiclite.a',
+            'source/libzmusiclite.a',
+            'thirdparty/dumb/libdumb.a',
+            'thirdparty/game-music-emu/gme/libgme.a',
+        )
+        subprocess.check_call(args, cwd=builder.build_path)
+
+
 class CleanTarget(BaseTarget):
     def __init__(self, name=None):
         super().__init__(name)
@@ -1376,6 +1432,7 @@ class Builder(object):
             VpxTarget(),
             YasmTarget(),
             ZlibTarget(),
+            ZMusicTarget(),
 
             # Special
             CleanAllTarget(),
