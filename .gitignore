@@ -40,6 +40,8 @@
 /deps/pcre/bin/
 /deps/pcre/lib/pkgconfig/libpcreposix.pc
 /deps/pcre/lib/libpcreposix.a
+/deps/png/bin/png-fix-itxt
+/deps/png/bin/pngfix
 /deps/sndfile/bin/
 /deps/sndfile/include/sndfile.hh
 /deps/sndfile/lib/cmake/

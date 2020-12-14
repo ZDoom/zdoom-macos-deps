@@ -1072,6 +1072,32 @@ class PkgConfigTarget(ConfigureMakeDependencyTarget):
         shutil.copy(src_path, dst_path)
 
 
+class PngTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='png'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.sourceforge.net/libpng/libpng-1.6.37.tar.xz',
+            '505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'libpng.pc.in')
+
+    def post_build(self, builder: 'Builder'):
+        super().post_build(builder)
+
+        prefix = 'prefix='
+
+        def update_prefix(line: str) -> str:
+            if line.startswith(prefix):
+                return prefix + r'"$(cd "${0%/*}/.."; pwd)"' + os.linesep
+
+            return line
+
+        Target.update_text_file(builder.prefix_path + '/bin/libpng16-config', update_prefix)
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
@@ -1435,6 +1461,7 @@ class Builder(object):
             OpusFileTarget(),
             PcreTarget(),
             PkgConfigTarget(),
+            PngTarget(),
             SndFileTarget(),
             VorbisTarget(),
             VpxTarget(),
