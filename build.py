@@ -675,6 +675,34 @@ class Bzip2Target(MakeTarget):
         self.install(builder, self.options)
 
 
+class DumbTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='dumb'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['BUILD_ALLEGRO4'] = 'NO'
+        opts['BUILD_EXAMPLES'] = 'NO'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://github.com/kode54/dumb/archive/2.0.3.tar.gz',
+            '99bfac926aeb8d476562303312d9f47fd05b43803050cd889b44da34a9b2a4f9')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'include/dumb.h')
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        if line.startswith('libdir='):
+            return 'libdir=${exec_prefix}/lib\n'
+        elif line.startswith('includedir='):
+            return 'includedir=${prefix}/include\n'
+        elif line.startswith('Libs:'):
+            return 'Libs: -L${libdir} -ldumb\n'
+
+        return line
+
+
 class FfiTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='ffi'):
         super().__init__(name)
@@ -1455,6 +1483,7 @@ class Builder(object):
 
             # Dependencies
             Bzip2Target(),
+            DumbTarget(),
             FfiTarget(),
             FlacTarget(),
             FluidSynthTarget(),
