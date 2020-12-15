@@ -156,6 +156,18 @@ class Target(BaseTarget):
             f.writelines(patched_content)
 
     @staticmethod
+    def update_prefix_shell_script(path: str):
+        prefix = 'prefix='
+
+        def update_prefix(line: str) -> str:
+            if line.startswith(prefix):
+                return prefix + r'"$(cd "${0%/*}/.."; pwd)"' + os.linesep
+
+            return line
+
+        Target.update_text_file(path, update_prefix)
+
+    @staticmethod
     def update_pc_file(path: str, processor: typing.Callable = None):
         prefix = 'prefix='
 
@@ -1127,16 +1139,7 @@ class PngTarget(ConfigureMakeStaticDependencyTarget):
 
     def post_build(self, builder: 'Builder'):
         super().post_build(builder)
-
-        prefix = 'prefix='
-
-        def update_prefix(line: str) -> str:
-            if line.startswith(prefix):
-                return prefix + r'"$(cd "${0%/*}/.."; pwd)"' + os.linesep
-
-            return line
-
-        Target.update_text_file(builder.prefix_path + '/bin/libpng16-config', update_prefix)
+        Target.update_prefix_shell_script(builder.prefix_path + '/bin/libpng16-config')
 
 
 class SndFileTarget(CMakeStaticDependencyTarget):
