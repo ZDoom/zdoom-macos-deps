@@ -838,6 +838,19 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'turbojpeg.h')
 
 
+class MadTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='mad'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.sourceforge.net/project/mad/libmad/0.15.1b/libmad-0.15.1b.tar.gz',
+            'bbfac3ed6bfbc2823d3775ebb931087371e142bb0e9bb1bee51a76a6e0078690')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'mad.h')
+
+
 class MesonTarget(Target):
     def __init__(self, name='meson'):
         super().__init__(name)
@@ -1450,6 +1463,7 @@ class Builder(object):
             InstPatchTarget(),
             IntlTarget(),
             JpegTurboTarget(),
+            MadTarget(),
             MesonTarget(),
             MoltenVKTarget(),
             Mpg123Target(),
