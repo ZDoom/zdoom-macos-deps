@@ -919,6 +919,23 @@ class MesonTarget(Target):
         zipapp.create_archive(builder.build_path, dest_path + self.name, '/usr/bin/env python3', compressed=True)
 
 
+class MikmodTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='mikmod'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.sourceforge.net/project/mikmod/libmikmod/3.3.11.1/libmikmod-3.3.11.1.tar.gz',
+            'ad9d64dfc8f83684876419ea7cd4ff4a41d8bcd8c23ef37ecb3a200a16b46d19')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'libmikmod.pc.in')
+
+    def post_build(self, builder: 'Builder'):
+        super().post_build(builder)
+        Target.update_prefix_shell_script(builder.prefix_path + '/bin/libmikmod-config')
+
+
 class MoltenVKTarget(MakeTarget):
     def __init__(self, name='moltenvk'):
         super().__init__(name)
@@ -1497,6 +1514,7 @@ class Builder(object):
             JpegTurboTarget(),
             MadTarget(),
             MesonTarget(),
+            MikmodTarget(),
             MoltenVKTarget(),
             Mpg123Target(),
             NasmTarget(),
