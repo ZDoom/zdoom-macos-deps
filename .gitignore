@@ -10,6 +10,7 @@
 /deps/bzip2/man/
 /deps/flac/bin/
 /deps/fluidsynth/bin/
+/deps/freetype/lib/cmake/
 /deps/glib/bin/gdbus*
 /deps/glib/bin/gio*
 /deps/glib/bin/glib-compile*

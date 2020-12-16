@@ -769,6 +769,19 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         return line
 
 
+class FreetypeTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='freetype'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.sourceforge.net/project/freetype/freetype2/2.10.4/freetype-2.10.4.tar.xz',
+            '86a854d8905b19698bbc8f23b860bc104246ce4854dcea8e3b0fb21284f75784')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'include/freetype/freetype.h')
+
+
 class GettextTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='gettext'):
         super().__init__(name)
@@ -1566,6 +1579,7 @@ class Builder(object):
             FfiTarget(),
             FlacTarget(),
             FluidSynthTarget(),
+            FreetypeTarget(),
             GlibTarget(),
             IconvTarget(),
             InstPatchTarget(),
