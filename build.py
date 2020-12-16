@@ -1241,6 +1241,30 @@ class VpxTarget(ConfigureMakeDependencyTarget):
         return os.path.exists(builder.source_path + 'vpxstats.h')
 
 
+class WebpTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='webp'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['WEBP_BUILD_ANIM_UTILS'] = 'NO'
+        opts['WEBP_BUILD_CWEBP'] = 'NO'
+        opts['WEBP_BUILD_DWEBP'] = 'NO'
+        opts['WEBP_BUILD_GIF2WEBP'] = 'NO'
+        opts['WEBP_BUILD_IMG2WEBP'] = 'NO'
+        opts['WEBP_BUILD_VWEBP'] = 'NO'
+        opts['WEBP_BUILD_WEBPINFO'] = 'NO'
+        opts['WEBP_BUILD_WEBPMUX'] = 'NO'
+        opts['WEBP_BUILD_EXTRAS'] = 'NO'
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.1.0.tar.gz',
+            '98a052268cc4d5ece27f76572a7f50293f439c17a98e67c4ea0c7ed6f50ef043')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'src/libwebp.pc.in')
+
+
 class YasmTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='yasm'):
         super().__init__(name)
@@ -1566,6 +1590,7 @@ class Builder(object):
             SndFileTarget(),
             VorbisTarget(),
             VpxTarget(),
+            WebpTarget(),
             YasmTarget(),
             ZlibTarget(),
             ZMusicTarget(),

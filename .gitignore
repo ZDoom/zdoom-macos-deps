@@ -46,6 +46,9 @@
 /deps/sndfile/bin/
 /deps/sndfile/include/sndfile.hh
 /deps/sndfile/lib/cmake/
+/deps/webp/include/webp/demux.h
+/deps/webp/**/libwebpdecoder.*
+/deps/webp/**/libwebpdemux.*
 /deps/yasm/bin/vsyasm
 /deps/yasm/bin/ytasm
 /deps/yasm/include/
