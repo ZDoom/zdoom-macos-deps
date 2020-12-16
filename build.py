@@ -936,6 +936,28 @@ class MikmodTarget(ConfigureMakeStaticDependencyTarget):
         Target.update_prefix_shell_script(builder.prefix_path + '/bin/libmikmod-config')
 
 
+class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='modplug'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.sourceforge.net/project/modplug-xmms/libmodplug/0.8.9.0/libmodplug-0.8.9.0.tar.gz',
+            '457ca5a6c179656d66c01505c0d95fafaead4329b9dbaa0f997d00a3508ad9de')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'libmodplug.pc.in')
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        libs_private = 'Libs.private:'
+
+        if line.startswith(libs_private):
+            return libs_private + ' -lc++\n'
+
+        return line
+
+
 class MoltenVKTarget(MakeTarget):
     def __init__(self, name='moltenvk'):
         super().__init__(name)
@@ -1515,6 +1537,7 @@ class Builder(object):
             MadTarget(),
             MesonTarget(),
             MikmodTarget(),
+            ModPlugTarget(),
             MoltenVKTarget(),
             Mpg123Target(),
             NasmTarget(),
