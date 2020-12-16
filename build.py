@@ -1181,6 +1181,19 @@ class PngTarget(ConfigureMakeStaticDependencyTarget):
         Target.update_prefix_shell_script(builder.prefix_path + '/bin/libpng16-config')
 
 
+class SamplerateTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='samplerate'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'http://www.mega-nerd.com/SRC/libsamplerate-0.1.9.tar.gz',
+            '0a7eb168e2f21353fb6d84da152e4512126f7dc48ccb0be80578c565413444c1')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'samplerate.pc.in')
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
@@ -1549,6 +1562,7 @@ class Builder(object):
             PcreTarget(),
             PkgConfigTarget(),
             PngTarget(),
+            SamplerateTarget(),
             SndFileTarget(),
             VorbisTarget(),
             VpxTarget(),

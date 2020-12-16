@@ -42,6 +42,7 @@
 /deps/pcre/lib/libpcreposix.a
 /deps/png/bin/png-fix-itxt
 /deps/png/bin/pngfix
+/deps/samplerate/bin/
 /deps/sndfile/bin/
 /deps/sndfile/include/sndfile.hh
 /deps/sndfile/lib/cmake/
