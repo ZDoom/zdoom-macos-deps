@@ -147,7 +147,7 @@ class Target(BaseTarget):
         patched_content = []
 
         for line in content:
-            patched_line = processor(line)
+            patched_line = processor(line) if processor else line
 
             if patched_line:
                 patched_content.append(patched_line)
