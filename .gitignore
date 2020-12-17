@@ -44,6 +44,10 @@
 /deps/png/bin/png-fix-itxt
 /deps/png/bin/pngfix
 /deps/samplerate/bin/
+/deps/sdl2/include/SDL2/SDL_config_*.h
+/deps/sdl2/include/SDL2/SDL_copying.h
+/deps/sdl2/include/SDL2/SDL_test*.h
+/deps/sdl2/lib/cmake/
 /deps/sndfile/bin/
 /deps/sndfile/include/sndfile.hh
 /deps/sndfile/lib/cmake/

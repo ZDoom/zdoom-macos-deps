@@ -1249,6 +1249,44 @@ class SamplerateTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'samplerate.pc.in')
 
 
+class Sdl2FileTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='sdl2'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://libsdl.org/release/SDL2-2.0.12.tar.gz',
+            '349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'sdl2.pc.in')
+
+    LINKER_FLAGS = ' -L${libdir} -lSDL2'\
+        ' -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa'\
+        ' -framework CoreAudio -framework CoreFoundation -framework CoreVideo'\
+        ' -framework ForceFeedback -framework Foundation -framework IOKit\n'
+
+    def post_build(self, builder: 'Builder'):
+        super().post_build(builder)
+
+        def update_libs(line: str):
+            if line.startswith('      echo -L${exec_prefix}/lib'):
+                return '      echo' + Sdl2FileTarget.LINKER_FLAGS
+
+            return line
+
+        Target.update_prefix_shell_script(self.prefix + '/bin/sdl2-config', update_libs)
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        libs_private = 'Libs.private:'
+
+        if line.startswith(libs_private):
+            return libs_private + Sdl2FileTarget.LINKER_FLAGS
+
+        return line
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
@@ -1643,6 +1681,7 @@ class Builder(object):
             PkgConfigTarget(),
             PngTarget(),
             SamplerateTarget(),
+            Sdl2FileTarget(),
             SndFileTarget(),
             VorbisTarget(),
             VpxTarget(),
