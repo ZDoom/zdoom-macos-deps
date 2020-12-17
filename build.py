@@ -686,6 +686,24 @@ class Bzip2Target(MakeTarget):
         self.options['PREFIX'] = self.prefix
         self.install(builder, self.options)
 
+        # Write .pc file
+        pkgconfig_path = self.prefix + '/lib/pkgconfig/'
+        os.makedirs(pkgconfig_path, exist_ok=True)
+
+        pc_content = '''prefix=
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: bzip2
+Description: bzip2 compression library
+Version: 1.0.8
+Libs: -L${libdir} -lbz2
+Cflags: -I${includedir}
+'''
+        with open(pkgconfig_path + 'bzip2.pc', 'w') as f:
+            f.write(pc_content)
+
 
 class DumbTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='dumb'):
