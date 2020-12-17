@@ -156,14 +156,19 @@ class Target(BaseTarget):
             f.writelines(patched_content)
 
     @staticmethod
-    def update_prefix_shell_script(path: str):
+    def update_prefix_shell_script(path: str, processor: typing.Callable = None):
         prefix = 'prefix='
 
         def update_prefix(line: str) -> str:
             if line.startswith(prefix):
-                return prefix + r'"$(cd "${0%/*}/.."; pwd)"' + os.linesep
+                patched_line = prefix + r'"$(cd "${0%/*}/.."; pwd)"' + os.linesep
+            else:
+                patched_line = line
 
-            return line
+            if processor:
+                patched_line = processor(patched_line)
+
+            return patched_line
 
         Target.update_text_file(path, update_prefix)
 
