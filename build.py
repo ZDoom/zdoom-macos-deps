@@ -936,6 +936,10 @@ class MadTarget(ConfigureMakeStaticDependencyTarget):
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'mad.h')
 
+    def post_build(self, builder: 'Builder'):
+        super().post_build(builder)
+        self.write_pc_file(description='MPEG Audio Decoder', version='0.15.1b')
+
 
 class MesonTarget(Target):
     def __init__(self, name='meson'):
