@@ -87,7 +87,7 @@ class Target(BaseTarget):
 
         self.src_root = ''
         self.prefix = None
-        self.environment = os.environ
+        self.environment = os.environ.copy()
         self.options = CommandLineOptions()
 
     def initialize(self, builder: 'Builder'):
