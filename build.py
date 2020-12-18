@@ -803,6 +803,9 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         if line.startswith('Version:'):
             # Add instpatch as private dependency which pulls all necessary libraries
             return line + 'Requires.private: libinstpatch-1.0' + os.linesep
+        elif line.startswith('Libs:'):
+            # Add missing system frameworks to link with
+            return line + 'Libs.private: -framework AudioUnit -framework CoreAudio -framework CoreMIDI' + os.linesep
 
         return line
 
