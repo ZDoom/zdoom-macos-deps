@@ -1249,7 +1249,7 @@ class SamplerateTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'samplerate.pc.in')
 
 
-class Sdl2FileTarget(CMakeStaticDependencyTarget):
+class Sdl2Target(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2'):
         super().__init__(name)
 
@@ -1271,7 +1271,7 @@ class Sdl2FileTarget(CMakeStaticDependencyTarget):
 
         def update_libs(line: str):
             if line.startswith('      echo -L${exec_prefix}/lib'):
-                return '      echo' + Sdl2FileTarget.LINKER_FLAGS
+                return '      echo' + Sdl2Target.LINKER_FLAGS
 
             return line
 
@@ -1282,7 +1282,7 @@ class Sdl2FileTarget(CMakeStaticDependencyTarget):
         libs_private = 'Libs.private:'
 
         if line.startswith(libs_private):
-            return libs_private + Sdl2FileTarget.LINKER_FLAGS
+            return libs_private + Sdl2Target.LINKER_FLAGS
 
         return line
 
@@ -1681,7 +1681,7 @@ class Builder(object):
             PkgConfigTarget(),
             PngTarget(),
             SamplerateTarget(),
-            Sdl2FileTarget(),
+            Sdl2Target(),
             SndFileTarget(),
             VorbisTarget(),
             VpxTarget(),
