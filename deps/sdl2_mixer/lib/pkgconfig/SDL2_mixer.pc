@@ -7,7 +7,7 @@ Name: SDL2_mixer
 Description: mixer library for Simple DirectMedia Layer
 Version: 2.0.4
 Requires: sdl2 >= 2.0.7
-Requires.private: fluidsynth mpg123
+Requires.private: fluidsynth libmikmod libmodplug libmpg123 opusfile vorbisfile
 Libs: -L${libdir} -lSDL2_mixer
 Cflags: -I${includedir}/SDL2
 
