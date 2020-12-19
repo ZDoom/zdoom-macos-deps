@@ -1349,6 +1349,23 @@ class Sdl2NetTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'SDL2_net.pc.in')
 
 
+class Sdl2TtfTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='sdl2_ttf'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.15.tar.gz',
+            'a9eceb1ad88c1f1545cd7bd28e7cbc0b2c14191d40238f531a15b01b1b22cd33')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'SDL2_ttf.pc.in')
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        return line + 'Requires.private: freetype2\n' if line.startswith('Requires:') else line
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
@@ -1747,6 +1764,7 @@ class Builder(object):
             Sdl2ImageTarget(),
             Sdl2MixerTarget(),
             Sdl2NetTarget(),
+            Sdl2TtfTarget(),
             SndFileTarget(),
             VorbisTarget(),
             VpxTarget(),
