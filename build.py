@@ -1307,6 +1307,35 @@ class Sdl2ImageTarget(ConfigureMakeStaticDependencyTarget):
         return line + 'Requires.private: libwebp\n' if line.startswith('Requires:') else line
 
 
+class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='sdl2_mixer'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.4.tar.gz',
+            'b4cf5a382c061cd75081cf246c2aa2f9df8db04bdda8dcdc6b6cca55bede2419')
+
+    def configure(self, builder: 'Builder'):
+        # Set LDFLAGS explicitly to help with FluidSynth and FLAC detection
+        args = (builder.bin_path + 'pkg-config', '--libs', 'fluidsynth')
+        libs = subprocess.check_output(args, cwd=builder.build_path)
+        self.environment['LDFLAGS'] = libs.decode('ascii').strip('\n')
+
+        super().configure(builder)
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'SDL2_mixer.pc.in')
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        if line.startswith('Requires:'):
+            # Add fluidsynth as private dependency which pulls most of necessary libraries
+            return line + 'Requires.private: fluidsynth mpg123' + os.linesep
+
+        return line
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
@@ -1703,6 +1732,7 @@ class Builder(object):
             SamplerateTarget(),
             Sdl2Target(),
             Sdl2ImageTarget(),
+            Sdl2MixerTarget(),
             SndFileTarget(),
             VorbisTarget(),
             VpxTarget(),
