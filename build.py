@@ -535,30 +535,9 @@ class ChocolateDoomTarget(CMakeTarget):
 
     def initialize(self, builder: 'Builder'):
         super().initialize(builder)
-        self._link_with_sound_libraries(builder)
 
-        extra_linker_args = ' -lc++ -framework Cocoa -framework ForceFeedback -framework IOKit'
-
-        extra_libs = (
-            'mikmod',
-            'modplug',
-            'opusfile',
-            'vorbisfile',
-        )
-
-        for lib in extra_libs:
-            extra_linker_args += f' {builder.lib_path}lib{lib}.a'
-
-        sdl2_include_dir = builder.include_path + 'SDL2'
-
-        opts = self.options
-        opts['SDL2_INCLUDE_DIR'] = sdl2_include_dir
-        opts['SDL2_LIBRARY'] = builder.lib_path + 'libSDL2.a'
-        opts['SDL2_MIXER_INCLUDE_DIR'] = sdl2_include_dir
-        opts['SDL2_MIXER_LIBRARY'] = builder.lib_path + 'libSDL2_mixer.a'
-        opts['SDL2_NET_INCLUDE_DIR'] = sdl2_include_dir
-        opts['SDL2_NET_LIBRARY'] = builder.lib_path + 'libSDL2_net.a'
-        opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
+        # Get all libraries to link with from SDL2_mixer
+        self.options['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'SDL2_mixer')
 
 
 class CrispyDoomTarget(ChocolateDoomTarget):
