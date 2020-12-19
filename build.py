@@ -1290,6 +1290,23 @@ class Sdl2Target(CMakeStaticDependencyTarget):
         return line
 
 
+class Sdl2ImageTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='sdl2_image'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.5.tar.gz',
+            'bdd5f6e026682f7d7e1be0b6051b209da2f402a2dd8bd1c4bd9c25ad263108d0')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'SDL2_image.pc.in')
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        return line + 'Requires.private: libwebp\n' if line.startswith('Requires:') else line
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
@@ -1685,6 +1702,7 @@ class Builder(object):
             PngTarget(),
             SamplerateTarget(),
             Sdl2Target(),
+            Sdl2ImageTarget(),
             SndFileTarget(),
             VorbisTarget(),
             VpxTarget(),
