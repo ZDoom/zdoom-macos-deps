@@ -1336,6 +1336,19 @@ class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
         return line
 
 
+class Sdl2NetTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='sdl2_net'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://www.libsdl.org/projects/SDL_net/release/SDL2_net-2.0.1.tar.gz',
+            '15ce8a7e5a23dafe8177c8df6e6c79b6749a03fff1e8196742d3571657609d21')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'SDL2_net.pc.in')
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
@@ -1733,6 +1746,7 @@ class Builder(object):
             Sdl2Target(),
             Sdl2ImageTarget(),
             Sdl2MixerTarget(),
+            Sdl2NetTarget(),
             SndFileTarget(),
             VorbisTarget(),
             VpxTarget(),
