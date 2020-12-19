@@ -1310,6 +1310,7 @@ class Sdl2ImageTarget(ConfigureMakeStaticDependencyTarget):
 class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_mixer'):
         super().__init__(name)
+        self.options['--enable-music-mod-mikmod'] = 'yes'
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
@@ -1318,9 +1319,7 @@ class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
 
     def configure(self, builder: 'Builder'):
         # Set LDFLAGS explicitly to help with FluidSynth and FLAC detection
-        args = (builder.bin_path + 'pkg-config', '--libs', 'fluidsynth')
-        libs = subprocess.check_output(args, cwd=builder.build_path)
-        self.environment['LDFLAGS'] = libs.decode('ascii').strip('\n')
+        self.environment['LDFLAGS'] = builder.run_pkg_config('--libs', 'fluidsynth')
 
         super().configure(builder)
 
@@ -1330,8 +1329,7 @@ class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
         if line.startswith('Requires:'):
-            # Add fluidsynth as private dependency which pulls most of necessary libraries
-            return line + 'Requires.private: fluidsynth mpg123' + os.linesep
+            return line + 'Requires.private: fluidsynth libmikmod libmodplug libmpg123 opusfile vorbisfile\n'
 
         return line
 
