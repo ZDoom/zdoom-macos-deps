@@ -1898,6 +1898,14 @@ class Builder(object):
         self.source_path = extract_path
         self.build_path = self.build_path + first_path_component + os.sep
 
+    def run_pkg_config(self, *args) -> str:
+        os.makedirs(self.build_path, exist_ok=True)
+
+        args = (self.bin_path + 'pkg-config',) + args
+        result = subprocess.check_output(args, cwd=self.build_path)
+
+        return result.decode('utf-8').rstrip('\n')
+
 
 if __name__ == '__main__':
     Builder(sys.argv[1:]).run()
