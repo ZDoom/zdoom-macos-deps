@@ -237,7 +237,6 @@ Cflags: -I${{includedir}} {cflags}
 class MakeTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
-        self.makefile = 'Makefile'
 
     def configure(self, builder: 'Builder'):
         super().configure(builder)
@@ -249,7 +248,6 @@ class MakeTarget(Target):
 
         args = [
             'make',
-            '-f', self.makefile,
             '-j', builder.jobs,
         ]
         args += self.options.to_list()
