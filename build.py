@@ -272,8 +272,18 @@ class ConfigureMakeTarget(Target):
         self.make.configure(builder)
 
         work_path = builder.build_path + self.src_root
-        args = [work_path + os.sep + 'configure']
+        configure_path = work_path + os.sep + 'configure'
+
+        args = [configure_path]
         args += self.options.to_list()
+
+        # Detect dependency tracking support, and disable it
+        with open(configure_path) as f:
+            for line in f.readlines():
+                if 'dependency_tracking' in line:
+                    args.append('--disable-dependency-tracking')
+                    break
+
         subprocess.check_call(args, cwd=work_path, env=self.environment)
 
     def build(self, builder: 'Builder'):
