@@ -355,37 +355,6 @@ class CMakeTarget(Target):
 
         subprocess.check_call(args, cwd=builder.build_path, env=self.environment)
 
-    def _link_with_sound_libraries(self, builder: 'Builder'):
-        extra_libs = (
-            'mpg123',
-
-            # FluidSynth with dependencies
-            'fluidsynth',
-            'instpatch-1.0',
-            'glib-2.0',
-            'gobject-2.0',
-            'intl',
-            'iconv',
-            'ffi',
-            'pcre',
-
-            # Sndfile with dependencies
-            'sndfile',
-            'ogg',
-            'vorbis',
-            'vorbisenc',
-            'FLAC',
-            'opus',
-        )
-
-        linker_args = '-framework AudioUnit -framework AudioToolbox -framework Carbon ' \
-                      '-framework CoreAudio -framework CoreMIDI -framework CoreVideo'
-
-        for lib in extra_libs:
-            linker_args += f' {builder.lib_path}lib{lib}.a'
-
-        self.options['CMAKE_EXE_LINKER_FLAGS'] = linker_args
-
     def build(self, builder: 'Builder'):
         if builder.xcode:
             # TODO: support case-sensitive file system
@@ -417,16 +386,16 @@ class ZDoomBaseTarget(CMakeTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-        self._link_with_sound_libraries(builder)
-
+    def configure(self, builder: 'Builder'):
         opts = self.options
+        opts['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'fluidsynth', 'libmpg123')
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
         # Explicit OpenAL configuration to avoid selection of Apple's framework
         opts['OPENAL_INCLUDE_DIR'] = builder.include_path + 'AL'
         opts['OPENAL_LIBRARY'] = builder.lib_path + 'libopenal.a'
+
+        super().configure(builder)
 
 
 class GZDoomTarget(ZDoomBaseTarget):
