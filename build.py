@@ -610,28 +610,10 @@ class DevilutionXTarget(CMakeTarget):
     def prepare_source(self, builder: 'Builder'):
         builder.checkout_git('https://github.com/diasurgical/devilutionX.git')
 
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-        self._link_with_sound_libraries(builder)
+    def configure(self, builder: 'Builder'):
+        self.options['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_ttf')
 
-        extra_linker_args = ' -framework Cocoa -framework ForceFeedback -framework IOKit'
-
-        extra_libs = (
-            'bz2',
-            'freetype',
-            'mikmod',
-            'modplug',
-            'opusfile',
-            'png',
-            'vorbisfile',
-            'z',
-        )
-
-        for lib in extra_libs:
-            extra_linker_args += f' {builder.lib_path}lib{lib}.a'
-
-        opts = self.options
-        opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
+        super().configure(builder)
 
 
 class QuakespasmTarget(MakeTarget):
