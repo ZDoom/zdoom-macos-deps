@@ -32,13 +32,18 @@ def _main():
         log.write(f'% pkg-config {cmdline}\n')
 
     bin_path = os.path.dirname(os.path.abspath(__file__)) + os.sep
-    prefix_path = os.path.abspath(bin_path + os.pardir) + os.sep
-    config_path = prefix_path + 'lib/pkgconfig'
+    prefix_path = os.path.abspath(bin_path + os.pardir)
+    config_path = prefix_path + '/lib/pkgconfig'
 
     environment = os.environ
     environment['PKG_CONFIG_PATH'] = config_path
 
-    args = [bin_path + 'pkg-config.exe', '--define-prefix', '--static'] + args
+    predefined_args = [
+        bin_path + 'pkg-config.exe',
+        '--define-variable=prefix=' + prefix_path,
+        '--static'
+    ]
+    args = predefined_args + args
     result = subprocess.run(args, env=environment, capture_output=True)
 
     stdout = result.stdout.decode('ascii')
