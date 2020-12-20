@@ -1360,6 +1360,19 @@ class SndFileTarget(CMakeStaticDependencyTarget):
         return os.path.exists(builder.source_path + 'sndfile.pc.in')
 
 
+class SodiumTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='sodium'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz',
+            '6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'libsodium.pc.in')
+
+
 class VorbisTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
@@ -1743,6 +1756,7 @@ class Builder(object):
             Sdl2NetTarget(),
             Sdl2TtfTarget(),
             SndFileTarget(),
+            SodiumTarget(),
             VorbisTarget(),
             VpxTarget(),
             WebpTarget(),
