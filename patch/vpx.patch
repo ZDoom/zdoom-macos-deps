@@ -1,5 +1,5 @@
---- /Volumes/ramdisk/libvpx-1.9.0/build/make/configure.sh	2020-07-30 22:59:15.000000000 +0300
-+++ /Volumes/ramdisk/zdoom-macos-deps/source/vpx/libvpx-1.9.0/build/make/configure.sh	2020-12-20 13:14:55.000000000 +0200
+--- a/build/make/configure.sh
++++ b/build/make/configure.sh
 @@ -842,86 +842,6 @@
      IOS_VERSION_MIN="7.0"
    fi
