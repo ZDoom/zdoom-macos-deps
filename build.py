@@ -520,11 +520,10 @@ class ChocolateDoomTarget(CMakeTarget):
     def prepare_source(self, builder: 'Builder'):
         builder.checkout_git('https://github.com/chocolate-doom/chocolate-doom.git')
 
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-
-        # Get all libraries to link with from SDL2_mixer
+    def configure(self, builder: 'Builder'):
         self.options['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'SDL2_mixer')
+
+        super().configure(builder)
 
 
 class CrispyDoomTarget(ChocolateDoomTarget):
