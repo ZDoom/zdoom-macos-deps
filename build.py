@@ -550,13 +550,12 @@ class Doom64EXTarget(CMakeTarget):
     def prepare_source(self, builder: 'Builder'):
         builder.checkout_git('https://github.com/svkaiser/Doom64EX.git')
 
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-        self._link_with_sound_libraries(builder)
-
+    def configure(self, builder: 'Builder'):
         opts = self.options
         opts['ENABLE_SYSTEM_FLUIDSYNTH'] = 'YES'
-        opts['CMAKE_EXE_LINKER_FLAGS'] += ' -framework Cocoa -framework ForceFeedback -framework IOKit'
+        opts['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'SDL2', 'fluidsynth')
+
+        super().configure(builder)
 
 
 class DevilutionXTarget(CMakeTarget):
