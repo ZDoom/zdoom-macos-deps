@@ -555,37 +555,6 @@ class DoomRetroTarget(CMakeTarget):
     def prepare_source(self, builder: 'Builder'):
         builder.checkout_git('https://github.com/bradharding/doomretro.git')
 
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-        self._link_with_sound_libraries(builder)
-
-        extra_linker_args = ' -lc++ -framework Cocoa -framework ForceFeedback -framework IOKit'
-
-        extra_libs = (
-            'mikmod',
-            'modplug',
-            'opusfile',
-            'vorbisfile',
-            'webp'
-        )
-
-        for lib in extra_libs:
-            extra_linker_args += f' {builder.lib_path}lib{lib}.a'
-
-        sdl2_include_dir = builder.include_path + 'SDL2'
-
-        opts = self.options
-        opts['SDL2_INCLUDE_DIRS'] = sdl2_include_dir
-        opts['SDL2_LIBRARIES'] = builder.lib_path + 'libSDL2.a'
-        opts['SDL2_FOUND'] = 'YES'
-        opts['SDL2_IMAGE_INCLUDE_DIRS'] = sdl2_include_dir
-        opts['SDL2_IMAGE_LIBRARIES'] = builder.lib_path + 'libSDL2_image.a'
-        opts['SDL2_IMAGE_FOUND'] = 'YES'
-        opts['SDL2_MIXER_INCLUDE_DIRS'] = sdl2_include_dir
-        opts['SDL2_MIXER_LIBRARIES'] = builder.lib_path + 'libSDL2_mixer.a'
-        opts['SDL2_MIXER_FOUND'] = 'YES'
-        opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
-
 
 class Doom64EXTarget(CMakeTarget):
     def __init__(self, name='doom64ex'):
