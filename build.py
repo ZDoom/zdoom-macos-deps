@@ -504,26 +504,13 @@ class PrBoomPlusTarget(CMakeTarget):
     def prepare_source(self, builder: 'Builder'):
         builder.checkout_git('https://github.com/coelckers/prboom-plus.git')
 
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-        self._link_with_sound_libraries(builder)
-
-        extra_linker_args = ' -framework ForceFeedback -framework IOKit'
-
-        extra_libs = (
-            'mikmod',
-            'modplug',
-            'opusfile',
-            'webp',
-        )
-
-        for lib in extra_libs:
-            extra_linker_args += f' {builder.lib_path}lib{lib}.a'
-
+    def configure(self, builder: 'Builder'):
         opts = self.options
         opts['CMAKE_C_FLAGS'] = '-D_FILE_OFFSET_BITS=64'
-        opts['CMAKE_EXE_LINKER_FLAGS'] += extra_linker_args
+        opts['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_image')
         opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
+
+        super().configure(builder)
 
 
 class ChocolateDoomTarget(CMakeTarget):
