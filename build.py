@@ -1131,6 +1131,32 @@ class PngTarget(ConfigureMakeStaticDependencyTarget):
         Target.update_prefix_shell_script(builder.prefix_path + '/bin/libpng16-config')
 
 
+class PortMidiTarget(CMakeTarget):
+    def __init__(self, name='portmidi'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://downloads.sourceforge.net/project/portmedia/portmidi/217/portmidi-src-217.zip',
+            '08e9a892bd80bdb1115213fb72dc29a7bf2ff108b378180586aa65f3cfd42e0f')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'pm_common/portmidi.h')
+
+    def post_build(self, builder: 'Builder'):
+        if os.path.exists(self.prefix):
+            shutil.rmtree(self.prefix)
+
+        include_path = self.prefix + os.sep + 'include'
+        os.makedirs(include_path)
+        shutil.copy(builder.source_path + 'pm_common/portmidi.h', include_path)
+        shutil.copy(builder.source_path + 'porttime/porttime.h', include_path)
+
+        lib_path = self.prefix + os.sep + 'lib' + os.sep
+        os.makedirs(lib_path)
+        shutil.copy(builder.build_path + 'libportmidi_s.a', lib_path + 'libportmidi.a')
+
+
 class SamplerateTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='samplerate'):
         super().__init__(name)
@@ -1662,6 +1688,7 @@ class Builder(object):
             PcreTarget(),
             PkgConfigTarget(),
             PngTarget(),
+            PortMidiTarget(),
             SamplerateTarget(),
             Sdl2Target(),
             Sdl2ImageTarget(),
