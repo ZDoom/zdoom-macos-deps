@@ -237,6 +237,7 @@ Cflags: -I${{includedir}} {cflags}
 class MakeTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
+        self.tool = 'make'
 
     def configure(self, builder: 'Builder'):
         super().configure(builder)
@@ -246,10 +247,7 @@ class MakeTarget(Target):
     def build(self, builder: 'Builder'):
         assert not builder.xcode
 
-        args = [
-            'make',
-            '-j', builder.jobs,
-        ]
+        args = [self.tool, '-j', builder.jobs]
         args += self.options.to_list()
 
         work_path = builder.build_path + self.src_root
