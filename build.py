@@ -768,6 +768,24 @@ class GlibTarget(Target):
         self.install(builder, tool='ninja')
 
 
+class GmakeTarget(ConfigureMakeDependencyTarget):
+    def __init__(self, name='gmake'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.download_source(
+            'https://ftp.gnu.org/gnu/make/make-4.3.tar.lz',
+            'de1a441c4edf952521db30bfca80baae86a0ff1acd0a00402999344f04c45e82')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + 'doc/make.1')
+
+    def post_build(self, builder: 'Builder'):
+        bin_path = self.prefix + '/bin/'
+        os.makedirs(bin_path, exist_ok=True)
+        shutil.copy(builder.build_path + 'make', bin_path + self.name)
+
+
 class IconvTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='iconv'):
         super().__init__(name)
@@ -1669,6 +1687,7 @@ class Builder(object):
             FluidSynthTarget(),
             FreetypeTarget(),
             GlibTarget(),
+            GmakeTarget(),
             IconvTarget(),
             InstPatchTarget(),
             IntlTarget(),
