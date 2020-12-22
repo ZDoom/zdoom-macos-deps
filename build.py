@@ -545,6 +545,21 @@ class DevilutionXTarget(CMakeTarget):
         super().configure(builder)
 
 
+class NBloodTarget(MakeTarget):
+    def __init__(self, name='nblood'):
+        super().__init__(name)
+        self.tool = 'gmake'
+
+        for target in ('duke3d', 'sw', 'blood', 'rr', 'exhumed', 'tools'):
+            self.options[target] = None
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/nukeykt/NBlood.git')
+
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + os.sep + 'nblood.pk3')
+
+
 class QuakespasmTarget(MakeTarget):
     def __init__(self, name='quakespasm'):
         super().__init__(name)
@@ -1675,6 +1690,7 @@ class Builder(object):
             DoomRetroTarget(),
             Doom64EXTarget(),
             DevilutionXTarget(),
+            NBloodTarget(),
             QuakespasmTarget(),
 
             # Dependencies
