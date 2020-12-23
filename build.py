@@ -565,15 +565,6 @@ class QuakespasmTarget(MakeTarget):
         super().__init__(name)
         self.src_root = 'Quake'
 
-    def prepare_source(self, builder: 'Builder'):
-        builder.checkout_git('https://git.code.sf.net/p/quakespasm/quakespasm')
-
-    def detect(self, builder: 'Builder') -> bool:
-        return os.path.exists(builder.source_path + os.sep + 'Quakespasm.txt')
-
-    def initialize(self, builder: 'Builder'):
-        super().initialize(builder)
-
         # TODO: Use macOS specific Makefile which requires manual application bundle creation
         opts = self.options
         opts['USE_SDL2'] = '1'
@@ -581,27 +572,14 @@ class QuakespasmTarget(MakeTarget):
         opts['USE_CODEC_OPUS'] = '1'
         opts['USE_CODEC_MIKMOD'] = '1'
         opts['USE_CODEC_UMX'] = '1'
-        # TODO: Setup sdl2-config
-        opts['SDL_CFLAGS'] = f'-I{builder.include_path}SDL2'
-        opts['SDL_LIBS'] = f'{builder.lib_path}libSDL2.a'
-        opts['COMMON_LIBS'] = '-framework AudioToolbox -framework Carbon -framework Cocoa -framework CoreAudio' \
-            ' -framework CoreVideo -framework ForceFeedback -framework IOKit -framework OpenGL'
+        # Add main() alias to workaround executable linking without macOS launcher
+        opts['COMMON_LIBS'] = '-framework OpenGL -Wl,-alias -Wl,_SDL_main -Wl,_main'
 
-        self._update_env('CFLAGS', f'-I{builder.include_path}opus')
-        # Use main() alias to workaround executable linking without macOS launcher
-        self._update_env('LDFLAGS', f'-Wl,-alias -Wl,_SDL_main -Wl,_main')
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://git.code.sf.net/p/quakespasm/quakespasm')
 
-        for name in ('opus', 'opusfile'):
-            self._update_env('LDFLAGS', f'{builder.lib_path}lib{name}.a')
-
-        # TODO: Specify full paths for remaining libraries
-
-    def configure(self, builder: 'Builder'):
-        super().configure(builder)
-
-        # Copy linker flags from environment to command line argument, they would be overridden by Makefile otherwise
-        ldflags = 'LDFLAGS'
-        self.options[ldflags] = self.environment[ldflags]
+    def detect(self, builder: 'Builder') -> bool:
+        return os.path.exists(builder.source_path + os.sep + 'Quakespasm.txt')
 
 
 class Bzip2Target(MakeTarget):
