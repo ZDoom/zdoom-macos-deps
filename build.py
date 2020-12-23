@@ -545,6 +545,27 @@ class DevilutionXTarget(CMakeTarget):
         super().configure(builder)
 
 
+class EDuke32Target(MakeTarget):
+    def __init__(self, name='eduke32'):
+        super().__init__(name)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://voidpoint.io/terminx/eduke32.git')
+
+    def detect(self, builder: 'Builder') -> bool:
+        def has_bundle(name: str) -> bool:
+            probe_path = f'{builder.source_path}/platform/Apple/bundles/{name}.app'
+            return os.path.exists(probe_path)
+
+        return has_bundle('EDuke32') and not has_bundle('NBlood')
+
+    def configure(self, builder: 'Builder'):
+        super().configure(builder)
+
+        # Fix missing definition when building with SDK older than 10.12
+        self._update_env('CXXFLAGS', '-DCLOCK_MONOTONIC=0')
+
+
 class NBloodTarget(MakeTarget):
     def __init__(self, name='nblood'):
         super().__init__(name)
@@ -1668,6 +1689,7 @@ class Builder(object):
             DoomRetroTarget(),
             Doom64EXTarget(),
             DevilutionXTarget(),
+            EDuke32Target(),
             NBloodTarget(),
             QuakespasmTarget(),
 
