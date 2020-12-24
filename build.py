@@ -566,7 +566,7 @@ class EDuke32Target(MakeTarget):
         self._update_env('CXXFLAGS', '-DCLOCK_MONOTONIC=0')
 
 
-class NBloodTarget(MakeTarget):
+class NBloodTarget(EDuke32Target):
     def __init__(self, name='nblood'):
         super().__init__(name)
         self.tool = 'gmake'
