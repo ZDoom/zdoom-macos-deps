@@ -620,9 +620,13 @@ class Bzip2Target(MakeTarget):
     def configure(self, builder: 'Builder'):
         super().configure(builder)
 
+        opts = self.options
+        # Add explicit targets in order to skip testing step that is incompatible with cross-compilation
+        opts['bzip2'] = None
+        opts['bzip2recover'] = None
         # Copy compiler flags from environment to command line argument, they would be overridden by Makefile otherwise
         cflags = 'CFLAGS'
-        self.options[cflags] = self.environment[cflags] + ' -D_FILE_OFFSET_BITS=64 -O2'
+        opts[cflags] = self.environment[cflags] + ' -D_FILE_OFFSET_BITS=64 -O2'
 
     def post_build(self, builder: 'Builder'):
         self.options['PREFIX'] = self.prefix
