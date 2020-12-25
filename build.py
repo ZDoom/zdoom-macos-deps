@@ -61,6 +61,7 @@ class CommandLineOptions(dict):
 class BaseTarget:
     def __init__(self, name=None):
         self.name = name
+        self.multi_platform = False
 
     def prepare_source(self, builder: 'Builder'):
         pass
@@ -89,6 +90,7 @@ class Target(BaseTarget):
         self.prefix = None
         self.environment = os.environ.copy()
         self.options = CommandLineOptions()
+        self.multi_platform = True
 
     def initialize(self, builder: 'Builder'):
         self.prefix = builder.deps_path + self.name
@@ -874,6 +876,7 @@ class MadTarget(ConfigureMakeStaticDependencyTarget):
 class MesonTarget(Target):
     def __init__(self, name='meson'):
         super().__init__(name)
+        self.multi_platform = False
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
@@ -942,6 +945,8 @@ class MoltenVKTarget(MakeTarget):
     def __init__(self, name='moltenvk'):
         super().__init__(name)
         self.options['macos'] = None
+        # Building for multiple architectures is handled internally
+        self.multi_platform = False
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
