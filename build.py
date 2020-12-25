@@ -373,14 +373,20 @@ class CMakeTarget(Target):
         args = [
             'cmake',
             builder.xcode and '-GXcode' or '-GUnix Makefiles',
+            '-DCMAKE_C_COMPILER=' + builder.c_compiler(),
+            '-DCMAKE_CXX_COMPILER=' + builder.cxx_compiler(),
             '-DCMAKE_BUILD_TYPE=Release',
             '-DCMAKE_INSTALL_PREFIX=' + self.prefix,
             '-DCMAKE_PREFIX_PATH=' + builder.prefix_path,
-            '-DCMAKE_OSX_DEPLOYMENT_TARGET=' + builder.os_version,
         ]
 
-        if builder.sdk_path:
-            args.append('-DCMAKE_OSX_SYSROOT=' + builder.sdk_path)
+        os_version = builder.os_version()
+        if os_version:
+            args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + os_version)
+
+        sdk_path = builder.sdk_path()
+        if sdk_path:
+            args.append('-DCMAKE_OSX_SYSROOT=' + sdk_path)
 
         args += self.options.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(builder.source_path + self.src_root)
