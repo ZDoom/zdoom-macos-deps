@@ -1634,8 +1634,6 @@ class Builder(object):
         self.xcode = arguments.xcode
         self.checkout_commit = arguments.checkout_commit
         self.build_path = arguments.build_path
-        self.sdk_path = arguments.sdk_path
-        self.os_version = arguments.os_version
         self.verbose = arguments.verbose
 
         self.platform = None
@@ -1659,11 +1657,6 @@ class Builder(object):
 
         self.jobs = arguments.jobs and arguments.jobs or \
             subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
-
-        if not self.sdk_path:
-            sdk_probe_path = f'{self.root_path}sdk{os.sep}MacOSX{self.os_version}.sdk'
-            if os.path.exists(sdk_probe_path):
-                self.sdk_path = sdk_probe_path
 
         self.target.initialize(self)
 
@@ -1923,8 +1916,6 @@ class Builder(object):
         group.add_argument('--checkout-commit', metavar='commit',
                            help='target\'s source code commit or tag to checkout')
         group.add_argument('--build-path', metavar='path', help='target build path')
-        group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
-        group.add_argument('--os-version', metavar='version', default='10.9', help='macOS deployment version')
         group.add_argument('--sdk-path-x64', metavar='path', help='path to macOS SDK for x86_64')
         group.add_argument('--sdk-path-arm', metavar='path', help='path to macOS SDK for ARM64')
         group.add_argument('--os-version-x64', metavar='version', help='macOS deployment version for x86_64')
