@@ -137,7 +137,7 @@ class Target(BaseTarget):
         work_path = builder.build_path + self.src_root
         subprocess.check_call(args, cwd=work_path)
 
-        self.update_pc_files(builder)
+        self.update_pc_files()
 
     @staticmethod
     def update_text_file(path: str, processor: typing.Callable = None):
@@ -190,8 +190,8 @@ class Target(BaseTarget):
 
         Target.update_text_file(path, pc_proc)
 
-    def update_pc_files(self, builder: 'Builder'):
-        for root, _, files in os.walk(builder.deps_path + self.name, followlinks=True):
+    def update_pc_files(self):
+        for root, _, files in os.walk(self.prefix, followlinks=True):
             for filename in files:
                 if filename.endswith('.pc'):
                     file_path = root + os.sep + filename
