@@ -1,0 +1,2 @@
+#!/bin/sh
+nm -arch x86_64 $*
