@@ -1688,11 +1688,95 @@ class Builder(object):
     def run(self):
         self._create_prefix_directory()
 
-        target = self.target
-        target.prepare_source(self)
+        base_target = self.target
+        base_target.prepare_source(self)
+
+        if base_target.multi_platform and not self.xcode:
+            self._build_multiple_platforms(base_target)
+        else:
+            self._build(base_target)
+
+    def _build(self, target: 'Target'):
         target.configure(self)
         target.build(self)
         target.post_build(self)
+
+    def _build_multiple_platforms(self, base_target: 'Target'):
+        assert base_target.multi_platform
+
+        base_build_path = self.build_path
+        install_paths = []
+
+        for platform in self._platforms:
+            self.platform = platform
+            self.build_path = base_build_path + 'build_' + platform.architecture + os.sep
+
+            target = copy.deepcopy(base_target)
+            target.prefix = base_build_path + 'install_' + platform.architecture + os.sep
+
+            self._build(target)
+
+            install_paths.append(target.prefix)
+
+        Builder._merge_install_paths(install_paths, base_target.prefix)
+
+    @staticmethod
+    def _compare_files(paths: typing.Sequence[str]) -> bool:
+        content = None
+
+        for path in paths:
+            with open(path, 'rb') as f:
+                if content:
+                    if content != f.read():
+                        return False
+                else:
+                    content = f.read()
+
+        return True
+
+    @staticmethod
+    def _merge_install_paths(src_paths: typing.Sequence[str], dst_path: str):
+        if len(src_paths) <= 1:
+            return
+
+        if os.path.exists(dst_path):
+            shutil.rmtree(dst_path)
+
+        os.makedirs(dst_path)
+
+        for src in os.scandir(src_paths[0]):
+            src_sub_path = [path + os.sep + src.name for path in src_paths]
+
+            if src.is_dir():
+                Builder._merge_install_paths(src_sub_path, dst_path + os.sep + src.name)
+            elif src.name.endswith('.la'):
+                # Skip libtool files
+                continue
+            else:
+                with open(src.path, 'rb') as f:
+                    header = f.read(8)
+
+                is_executable = header[:4] == b'\xcf\xfa\xed\xfe'
+                is_library = header == b'!<arch>\n'
+
+                if is_executable or is_library:
+                    # Merge executable and library files
+                    dst_file = dst_path + os.sep + src.name
+
+                    args = ['lipo']
+                    args += src_sub_path
+                    args += ['-create', '-output', dst_file]
+                    subprocess.check_call(args)
+
+                    # TODO: check if ad-hoc code signing is really needed
+                    # See https://github.com/Homebrew/brew/commit/e945b1c42ab44feb1c6814f47cc833d76b1a921c
+                    if is_executable:
+                        args = ('codesign', '--sign', '-', dst_file)
+                        subprocess.check_call(args)
+                else:
+                    if not Builder._compare_files(src_sub_path):
+                        print(f'WARNING: Source files for {dst_path + os.sep + src.name} don\'t match')
+                    shutil.copy(src_sub_path[0], dst_path)
 
     def architecture(self) -> str:
         return self.platform.architecture if self.platform else ''
