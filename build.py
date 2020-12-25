@@ -26,6 +26,7 @@ if sys.hexversion < 0x3070000:
 
 import argparse
 import collections
+import copy
 import hashlib
 import os
 import re
@@ -273,8 +274,6 @@ class ConfigureMakeTarget(Target):
 
     def initialize(self, builder: 'Builder'):
         super().initialize(builder)
-        self.options['--prefix'] = self.prefix
-
         self.make.initialize(builder)
 
     def configure(self, builder: 'Builder'):
@@ -284,17 +283,32 @@ class ConfigureMakeTarget(Target):
         work_path = builder.build_path + self.src_root
         configure_path = work_path + os.sep + 'configure'
 
-        args = [configure_path]
-        args += self.options.to_list()
+        common_args = [
+            configure_path,
+            '--prefix=' + self.prefix,
+        ]
+        common_args += self.options.to_list()
 
-        # Detect dependency tracking support, and disable it
-        with open(configure_path) as f:
-            for line in f.readlines():
-                if 'dependency_tracking' in line:
-                    args.append('--disable-dependency-tracking')
-                    break
+        disable_dependency_tracking = '--disable-dependency-tracking'
+        host = '--host=' + builder.host()
 
-        subprocess.check_call(args, cwd=work_path, env=self.environment)
+        args = copy.copy(common_args)
+        args.append(host)
+        args.append(disable_dependency_tracking)
+
+        try:
+            # Try with host and disabled dependency tracking first
+            subprocess.check_call(args, cwd=work_path, env=self.environment)
+        except subprocess.CalledProcessError:
+            # If it fails, try with disabled dependency tracking only
+            args = copy.copy(common_args)
+            args.append(disable_dependency_tracking)
+
+            try:
+                subprocess.check_call(args, cwd=work_path, env=self.environment)
+            except subprocess.CalledProcessError:
+                # Use only common command line arguments
+                subprocess.check_call(common_args, cwd=work_path, env=self.environment)
 
     def build(self, builder: 'Builder'):
         assert not builder.xcode
