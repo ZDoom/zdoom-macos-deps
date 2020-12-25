@@ -26,7 +26,7 @@ jobs:
 
     - name: Build
       run: |
-        ./build.py --target ${{ matrix.config.name }}
+        ./build.py --disable-arm --target ${{ matrix.config.name }}
 
     - name: List Build Directory
       if: always()
