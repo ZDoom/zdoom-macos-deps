@@ -98,9 +98,12 @@ class Target(BaseTarget):
     def configure(self, builder: 'Builder'):
         os.makedirs(builder.build_path, exist_ok=True)
 
-        self.environment['PATH'] = self.environment['PATH'] \
+        env = self.environment
+        env['PATH'] = env['PATH'] \
             + os.pathsep + '/Applications/CMake.app/Contents/bin' \
             + os.pathsep + builder.bin_path
+        env['CC'] = builder.c_compiler()
+        env['CXX'] = builder.cxx_compiler()
 
         for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
             varname = f'{prefix}FLAGS'
@@ -119,12 +122,14 @@ class Target(BaseTarget):
         env[name] = env[name] + ' ' + value if name in env else value
 
     def _set_sdk(self, builder: 'Builder', varname: str):
-        if builder.sdk_path:
-            self._update_env(varname, f'-isysroot {builder.sdk_path}')
+        sdk_path = builder.sdk_path()
+        if sdk_path:
+            self._update_env(varname, '-isysroot ' + sdk_path)
 
     def _set_os_version(self, builder: 'Builder', varname: str):
-        if builder.os_version:
-            self._update_env(varname, f'-mmacosx-version-min={builder.os_version}')
+        os_version = builder.os_version()
+        if os_version:
+            self._update_env(varname, '-mmacosx-version-min=' + os_version)
 
     def install(self, builder: 'Builder', options: 'CommandLineOptions' = None, tool: str = 'make'):
         if builder.xcode:
