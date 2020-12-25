@@ -1668,15 +1668,17 @@ class Builder(object):
             sdk_probe_path = f'{self.root_path}sdk{os.sep}MacOSX{os_version}.sdk'
             return sdk_probe_path if os.path.exists(sdk_probe_path) else None
 
-        os_version = arguments.os_version_x64 if arguments.os_version_x64 else '10.9'
-        sdk_path = adjust_sdk_path(arguments.sdk_path_x64)
-        platform = TargetPlatform('x86_64', 'x86_64-apple-darwin', os_version, sdk_path, self.prefix_path)
-        self._platforms.append(platform)
+        if not arguments.disable_x64:
+            os_version = arguments.os_version_x64 if arguments.os_version_x64 else '10.9'
+            sdk_path = adjust_sdk_path(arguments.sdk_path_x64)
+            platform = TargetPlatform('x86_64', 'x86_64-apple-darwin', os_version, sdk_path, self.prefix_path)
+            self._platforms.append(platform)
 
-        os_version = arguments.os_version_arm if arguments.os_version_arm else '11.0'
-        sdk_path = adjust_sdk_path(arguments.sdk_path_arm)
-        platform = TargetPlatform('arm64', 'aarch64-apple-darwin', os_version, sdk_path, self.prefix_path)
-        self._platforms.append(platform)
+        if not arguments.disable_arm:
+            os_version = arguments.os_version_arm if arguments.os_version_arm else '11.0'
+            sdk_path = adjust_sdk_path(arguments.sdk_path_arm)
+            platform = TargetPlatform('arm64', 'aarch64-apple-darwin', os_version, sdk_path, self.prefix_path)
+            self._platforms.append(platform)
 
     def run(self):
         self._create_prefix_directory()
@@ -1922,6 +1924,10 @@ class Builder(object):
         group.add_argument('--os-version-arm', metavar='version', help='macOS deployment version for ARM64')
         group.add_argument('--verbose', action='store_true', help='enable verbose build output')
         group.add_argument('--jobs', help='number of parallel compilation jobs')
+
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument('--disable-x64', action='store_true', help='disable x86_64 support')
+        group.add_argument('--disable-arm', action='store_true', help='disable ARM64 support')
 
         return parser.parse_args(args)
 
