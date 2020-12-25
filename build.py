@@ -1576,6 +1576,16 @@ class CaseInsensitiveDict(collections.abc.MutableMapping):
         return str(dict(self.items()))
 
 
+class TargetPlatform:
+    def __init__(self, architecture: str, host: str, os_version: str, sdk_path: str, prefix_path: str):
+        self.architecture = architecture
+        self.host = host
+        self.os_version = os_version
+        self.sdk_path = sdk_path
+        self.c_compiler = f'{prefix_path}bin/{host}-gcc'
+        self.cxx_compiler = f'{prefix_path}bin/{host}-g++'
+
+
 class Builder(object):
     def __init__(self, args: list):
         self._create_targets()
@@ -1597,6 +1607,10 @@ class Builder(object):
         self.sdk_path = arguments.sdk_path
         self.os_version = arguments.os_version
         self.verbose = arguments.verbose
+
+        self.platform = None
+        self._platforms = []
+        self._populate_platforms(arguments)
 
         if arguments.target:
             self.target = self.targets[arguments.target]
@@ -1623,6 +1637,24 @@ class Builder(object):
 
         self.target.initialize(self)
 
+    def _populate_platforms(self, arguments):
+        def adjust_sdk_path(path: str) -> str:
+            if path:
+                return path
+
+            sdk_probe_path = f'{self.root_path}sdk{os.sep}MacOSX{os_version}.sdk'
+            return sdk_probe_path if os.path.exists(sdk_probe_path) else None
+
+        os_version = arguments.os_version_x64 if arguments.os_version_x64 else '10.9'
+        sdk_path = adjust_sdk_path(arguments.sdk_path_x64)
+        platform = TargetPlatform('x86_64', 'x86_64-apple-darwin', os_version, sdk_path, self.prefix_path)
+        self._platforms.append(platform)
+
+        os_version = arguments.os_version_arm if arguments.os_version_arm else '11.0'
+        sdk_path = adjust_sdk_path(arguments.sdk_path_arm)
+        platform = TargetPlatform('arm64', 'aarch64-apple-darwin', os_version, sdk_path, self.prefix_path)
+        self._platforms.append(platform)
+
     def run(self):
         self._create_prefix_directory()
 
@@ -1631,6 +1663,24 @@ class Builder(object):
         target.configure(self)
         target.build(self)
         target.post_build(self)
+
+    def architecture(self) -> str:
+        return self.platform.architecture if self.platform else ''
+
+    def host(self) -> str:
+        return self.platform.host if self.platform else ''
+
+    def os_version(self) -> str:
+        return self.platform.os_version if self.platform else ''
+
+    def sdk_path(self) -> str:
+        return self.platform.sdk_path if self.platform else ''
+
+    def c_compiler(self) -> str:
+        return self.platform.c_compiler if self.platform else ''
+
+    def cxx_compiler(self) -> str:
+        return self.platform.cxx_compiler if self.platform else ''
 
     def _create_prefix_directory(self):
         os.makedirs(self.prefix_path, exist_ok=True)
@@ -1761,6 +1811,10 @@ class Builder(object):
         group.add_argument('--build-path', metavar='path', help='target build path')
         group.add_argument('--sdk-path', metavar='path', help='path to macOS SDK')
         group.add_argument('--os-version', metavar='version', default='10.9', help='macOS deployment version')
+        group.add_argument('--sdk-path-x64', metavar='path', help='path to macOS SDK for x86_64')
+        group.add_argument('--sdk-path-arm', metavar='path', help='path to macOS SDK for ARM64')
+        group.add_argument('--os-version-x64', metavar='version', help='macOS deployment version for x86_64')
+        group.add_argument('--os-version-arm', metavar='version', help='macOS deployment version for ARM64')
         group.add_argument('--verbose', action='store_true', help='enable verbose build output')
         group.add_argument('--jobs', help='number of parallel compilation jobs')
 
