@@ -254,7 +254,12 @@ class MakeTarget(Target):
     def build(self, builder: 'Builder'):
         assert not builder.xcode
 
-        args = [self.tool, '-j', builder.jobs]
+        args = [
+            self.tool,
+            '-j', builder.jobs,
+            'CC=' + builder.c_compiler(),
+            'CXX=' + builder.cxx_compiler(),
+        ]
         args += self.options.to_list()
 
         work_path = builder.build_path + self.src_root
