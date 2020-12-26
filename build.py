@@ -898,6 +898,17 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'turbojpeg.h')
 
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        if line.startswith('exec_prefix='):
+            return 'exec_prefix=${prefix}\n'
+        elif line.startswith('libdir='):
+            return 'libdir=${exec_prefix}/lib\n'
+        elif line.startswith('includedir='):
+            return 'includedir=${prefix}/include\n'
+
+        return line
+
 
 class MadTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mad'):
