@@ -886,6 +886,15 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
             'https://downloads.sourceforge.net/project/libjpeg-turbo/2.0.6/libjpeg-turbo-2.0.6.tar.gz',
             'd74b92ac33b0e3657123ddcf6728788c90dc84dcb6a52013d758af3c4af481bb')
 
+    def configure(self, builder: 'Builder'):
+        if builder.architecture() == 'arm64':
+            opts = self.options
+            opts['CMAKE_SYSTEM_NAME'] = 'Darwin'
+            opts['CMAKE_SYSTEM_PROCESSOR'] = 'aarch64'
+            opts['CMAKE_AR'] = '/usr/bin/ar'
+
+        super().configure(builder)
+
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'turbojpeg.h')
 
