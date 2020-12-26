@@ -8,8 +8,12 @@ jobs:
     runs-on: "macos-latest"
     steps:
     - uses: actions/checkout@v1
-    - name: Prepare
-      run: ./build.py --target=clean-deps
-    - name: Run tests
-      run: test/test.py
 
+    - name: Prepare
+      run: |
+        ./build.py --target=clean-deps
+
+    - name: Run tests
+      run: |
+        # Remove SDKROOT when 11.0+ SDK will become the default one
+        SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.0.sdk test/test.py
