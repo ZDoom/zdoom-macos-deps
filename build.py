@@ -880,6 +880,7 @@ class IntlTarget(GettextTarget):
 class JpegTurboTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='jpeg-turbo'):
         super().__init__(name)
+        self.options['WITH_TURBOJPEG'] = 'NO'
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
