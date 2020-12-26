@@ -1025,7 +1025,6 @@ class MoltenVKTarget(MakeTarget):
 class Mpg123Target(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mpg123'):
         super().__init__(name)
-        self.options['--enable-modules'] = 'no'
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
