@@ -1747,6 +1747,19 @@ class Builder(object):
             platform = TargetPlatform('arm64', 'aarch64-apple-darwin', os_version, sdk_path, self.prefix_path)
             self._platforms.append(platform)
 
+        assert len(self._platforms) > 0
+
+        # Put native platform first in the list of platforms
+        if self._platforms[0].architecture == machine():
+            return
+
+        for platform in self._platforms:
+            if platform.architecture == machine():
+                native_platform = platform
+                self._platforms.remove(platform)
+                self._platforms.insert(0, native_platform)
+                break
+
     def run(self):
         self._create_prefix_directory()
 
