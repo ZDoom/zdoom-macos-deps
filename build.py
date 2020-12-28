@@ -705,6 +705,32 @@ class FfiTarget(ConfigureMakeStaticDependencyTarget):
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'libffi.pc.in')
 
+    def post_build(self, builder: 'Builder'):
+        super().post_build(builder)
+
+        include_path = self.prefix + os.sep + 'include' + os.sep
+        include_platform_path = include_path + builder.architecture()
+        os.makedirs(include_platform_path, exist_ok=True)
+
+        headers = ('ffi.h', 'ffitarget.h')
+
+        for header in headers:
+            root_header = include_path + header
+            shutil.move(root_header, include_platform_path)
+
+            with open(root_header, 'w') as f:
+                f.write(f'''
+#pragma once
+
+#if defined(__x86_64__)
+#   include "x86_64/{header}"
+#elif defined(__aarch64__)
+#   include "arm64/{header}"
+#else
+#   error Unknown architecture
+#endif
+''')
+
 
 class FlacTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='flac'):
