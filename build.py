@@ -830,11 +830,33 @@ class GlibTarget(Target):
         environment = self.environment
         environment['LDFLAGS'] += ' -framework CoreFoundation'
 
+        cpu = builder.architecture()
+        cpu_family = 'arm' if 'arm64' == cpu else cpu
+
+        cross_file = builder.build_path + builder.architecture() + '.txt'
+        with open(cross_file, 'w') as f:
+            f.write(f'''
+[binaries]
+c = '{builder.c_compiler()}'
+cpp = '{builder.cxx_compiler()}'
+objc = '{builder.c_compiler()}'
+objcpp = '{builder.cxx_compiler()}'
+pkgconfig = '{builder.prefix_path}/bin/pkg-config'
+strip = '/usr/bin/strip'
+
+[host_machine]
+system = 'darwin'
+cpu_family = '{cpu_family}'
+cpu = '{cpu}'
+endian = 'little'
+''')
+
         args = (
             builder.bin_path + 'meson',
-            '--prefix=' + builder.deps_path + self.name,
+            '--prefix=' + self.prefix,
             '--buildtype=release',
             '--default-library=static',
+            '--cross-file=' + cross_file,
             builder.source_path
         )
         subprocess.check_call(args, cwd=builder.build_path, env=environment)
