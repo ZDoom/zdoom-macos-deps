@@ -143,7 +143,7 @@ class Target(BaseTarget):
         args += options and options.to_list() or []
 
         work_path = builder.build_path + self.src_root
-        subprocess.check_call(args, cwd=work_path)
+        subprocess.check_call(args, cwd=work_path, env=self.environment)
 
         self.update_pc_files()
 
