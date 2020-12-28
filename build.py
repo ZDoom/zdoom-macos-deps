@@ -1720,6 +1720,7 @@ class Builder(object):
 
         self.source_path += os.sep
         self.build_path += os.sep
+        self.native_build_path = self.build_path
 
         self.jobs = arguments.jobs and arguments.jobs or \
             subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
@@ -1771,6 +1772,9 @@ class Builder(object):
         for platform in self._platforms:
             self.platform = platform
             self.build_path = base_build_path + 'build_' + platform.architecture + os.sep
+
+            if platform.architecture == machine():
+                self.native_build_path = self.build_path
 
             target = copy.deepcopy(base_target)
             target.prefix = base_build_path + 'install_' + platform.architecture + os.sep
