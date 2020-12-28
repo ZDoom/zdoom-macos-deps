@@ -29,6 +29,7 @@ import collections
 import copy
 import hashlib
 import os
+from platform import machine
 import re
 import shutil
 import subprocess
@@ -941,10 +942,12 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
             'd74b92ac33b0e3657123ddcf6728788c90dc84dcb6a52013d758af3c4af481bb')
 
     def configure(self, builder: 'Builder'):
-        if builder.architecture() == 'arm64':
+        architecture = builder.architecture()
+
+        if architecture != machine():
             opts = self.options
             opts['CMAKE_SYSTEM_NAME'] = 'Darwin'
-            opts['CMAKE_SYSTEM_PROCESSOR'] = 'aarch64'
+            opts['CMAKE_SYSTEM_PROCESSOR'] = 'aarch64' if architecture == 'arm64' else architecture
             opts['CMAKE_AR'] = '/usr/bin/ar'
 
         super().configure(builder)
