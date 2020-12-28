@@ -483,6 +483,8 @@ class GZDoomTarget(ZDoomBaseTarget):
             copy_func = builder.xcode and os.symlink or shutil.copy
             copy_func(src_path, dst_path)
 
+        super().post_build(builder)
+
 
 class QZDoomTarget(GZDoomTarget):
     def __init__(self, name='qzdoom'):
