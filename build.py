@@ -425,6 +425,10 @@ class ZDoomBaseTarget(CMakeTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
+    def initialize(self, builder: 'Builder'):
+        super().initialize(builder)
+        self.prefix = builder.output_path + self.name
+
     def configure(self, builder: 'Builder'):
         opts = self.options
         opts['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'fluidsynth', 'libmpg123')
@@ -434,7 +438,23 @@ class ZDoomBaseTarget(CMakeTarget):
         opts['OPENAL_INCLUDE_DIR'] = builder.include_path + 'AL'
         opts['OPENAL_LIBRARY'] = builder.lib_path + 'libopenal.a'
 
+        if builder.architecture() != machine():
+            opts['FORCE_CROSSCOMPILE'] = 'YES'
+            opts['IMPORT_EXECUTABLES'] = builder.native_build_path + 'ImportExecutables.cmake'
+
         super().configure(builder)
+
+    def post_build(self, builder: 'Builder'):
+        if builder.xcode:
+            return
+
+        if os.path.exists(self.prefix):
+            shutil.rmtree(self.prefix)
+
+        os.makedirs(self.prefix)
+
+        bundle_name = self.name + '.app'
+        shutil.copytree(builder.build_path + bundle_name, self.prefix + os.sep + bundle_name)
 
 
 class GZDoomTarget(ZDoomBaseTarget):
