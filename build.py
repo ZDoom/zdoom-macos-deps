@@ -1035,17 +1035,7 @@ class MoltenVKTarget(MakeTarget):
         src_path = builder.build_path + 'Package/Latest/MoltenVK/'
         shutil.copytree(src_path + 'include', self.prefix + os.sep + 'include')
         shutil.copy(builder.build_path + 'LICENSE', self.prefix + os.sep + 'apache2.txt')
-
-        # TODO: Replace lipo with the following line when ARM64 support will be ready
-        # shutil.copy(src_path + 'dylib/macOS/libMoltenVK.dylib', lib_path)
-        dylib_name = 'libMoltenVK.dylib'
-        args = (
-            'lipo',
-            f'{src_path}dylib/macOS/{dylib_name}',
-            '-thin', 'x86_64',
-            '-output', lib_path + dylib_name
-        )
-        subprocess.check_call(args)
+        shutil.copy(src_path + 'dylib/macOS/libMoltenVK.dylib', lib_path)
 
 
 class Mpg123Target(ConfigureMakeStaticDependencyTarget):
