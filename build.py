@@ -1688,6 +1688,7 @@ class Builder(object):
 
         self.root_path = os.path.dirname(os.path.abspath(__file__)) + os.sep
         self.deps_path = self.root_path + 'deps' + os.sep
+        self.output_path = self.root_path + 'output' + os.sep
         self.prefix_path = self.root_path + 'prefix' + os.sep
         self.bin_path = self.prefix_path + 'bin' + os.sep
         self.include_path = self.prefix_path + 'include' + os.sep
