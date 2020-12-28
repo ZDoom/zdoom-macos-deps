@@ -792,8 +792,8 @@ class GlibTarget(Target):
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
-            'https://download.gnome.org/sources/glib/2.66/glib-2.66.3.tar.xz',
-            '79f31365a99cb1cc9db028625635d1438890702acde9e2802eae0acebcf7b5b1')
+            'https://download.gnome.org/sources/glib/2.66/glib-2.66.4.tar.xz',
+            '97df8670e32f9fd4f7392b0980e661dd625012015d58350da1e58e343f4af984')
 
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'glib.doap')
