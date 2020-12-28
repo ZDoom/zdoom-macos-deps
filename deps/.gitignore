@@ -7,6 +7,7 @@
 /fluidsynth/bin/
 /freetype/lib/cmake/
 /glib/bin/gdbus*
+/glib/bin/glib-gettextize
 /glib/bin/gio*
 /glib/bin/glib-compile*
 /glib/bin/gobject*
