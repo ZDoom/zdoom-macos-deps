@@ -738,6 +738,11 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'fluidsynth.pc.in')
 
+    def configure(self, builder: 'Builder'):
+        # TODO: Figure out why private dependencies aren't pulled
+        self.options['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'glib-2.0')
+        super().configure(builder)
+
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
         if line.startswith('Version:'):
