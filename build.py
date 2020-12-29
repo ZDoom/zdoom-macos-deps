@@ -1061,7 +1061,7 @@ class MikmodTarget(ConfigureMakeStaticDependencyTarget):
 
     def post_build(self, builder: 'Builder'):
         super().post_build(builder)
-        Target.update_prefix_shell_script(builder.prefix_path + '/bin/libmikmod-config')
+        Target.update_prefix_shell_script(self.prefix + '/bin/libmikmod-config')
 
 
 class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
