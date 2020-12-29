@@ -421,13 +421,35 @@ class CMakeStaticDependencyTarget(CMakeTarget):
         self.install(builder)
 
 
-class ZDoomBaseTarget(CMakeTarget):
+class CMakeOutputTarget(CMakeTarget):
     def __init__(self, name=None):
         super().__init__(name)
+        self.outputs = (self.name + '.app',)
 
     def initialize(self, builder: 'Builder'):
         super().initialize(builder)
         self.prefix = builder.output_path + self.name
+
+    def post_build(self, builder: 'Builder'):
+        if builder.xcode:
+            return
+
+        if os.path.exists(self.prefix):
+            shutil.rmtree(self.prefix)
+
+        os.makedirs(self.prefix)
+
+        for output in self.outputs:
+            src = builder.build_path + output
+            dst = self.prefix + os.sep + output
+
+            copy_func = shutil.copytree if os.path.isdir(src) else shutil.copy
+            copy_func(src, dst)
+
+
+class ZDoomBaseTarget(CMakeOutputTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
 
     def configure(self, builder: 'Builder'):
         opts = self.options
@@ -443,18 +465,6 @@ class ZDoomBaseTarget(CMakeTarget):
             opts['IMPORT_EXECUTABLES'] = builder.native_build_path + 'ImportExecutables.cmake'
 
         super().configure(builder)
-
-    def post_build(self, builder: 'Builder'):
-        if builder.xcode:
-            return
-
-        if os.path.exists(self.prefix):
-            shutil.rmtree(self.prefix)
-
-        os.makedirs(self.prefix)
-
-        bundle_name = self.name + '.app'
-        shutil.copytree(builder.build_path + bundle_name, self.prefix + os.sep + bundle_name)
 
 
 class GZDoomTarget(ZDoomBaseTarget):
@@ -518,18 +528,20 @@ class RazeTarget(ZDoomBaseTarget):
         builder.checkout_git('https://github.com/coelckers/Raze.git')
 
 
-class AccTarget(CMakeTarget):
+class AccTarget(CMakeOutputTarget):
     def __init__(self, name='acc'):
         super().__init__(name)
+        self.outputs = ('acc',)
 
     def prepare_source(self, builder: 'Builder'):
         builder.checkout_git('https://github.com/rheit/acc.git')
 
 
-class PrBoomPlusTarget(CMakeTarget):
+class PrBoomPlusTarget(CMakeOutputTarget):
     def __init__(self, name='prboom-plus'):
         super().__init__(name)
         self.src_root = 'prboom2'
+        self.outputs = ('Launcher.app',)
 
     def prepare_source(self, builder: 'Builder'):
         builder.checkout_git('https://github.com/coelckers/prboom-plus.git')
@@ -543,7 +555,7 @@ class PrBoomPlusTarget(CMakeTarget):
         super().configure(builder)
 
 
-class ChocolateDoomTarget(CMakeTarget):
+class ChocolateDoomTarget(CMakeOutputTarget):
     def __init__(self, name='chocolate-doom'):
         super().__init__(name)
 
@@ -564,7 +576,7 @@ class CrispyDoomTarget(ChocolateDoomTarget):
         builder.checkout_git('https://github.com/fabiangreffrath/crispy-doom.git')
 
 
-class DoomRetroTarget(CMakeTarget):
+class DoomRetroTarget(CMakeOutputTarget):
     def __init__(self, name='doomretro'):
         super().__init__(name)
 
@@ -572,7 +584,7 @@ class DoomRetroTarget(CMakeTarget):
         builder.checkout_git('https://github.com/bradharding/doomretro.git')
 
 
-class Doom64EXTarget(CMakeTarget):
+class Doom64EXTarget(CMakeOutputTarget):
     def __init__(self, name='doom64ex'):
         super().__init__(name)
 
@@ -587,7 +599,7 @@ class Doom64EXTarget(CMakeTarget):
         super().configure(builder)
 
 
-class DevilutionXTarget(CMakeTarget):
+class DevilutionXTarget(CMakeOutputTarget):
     def __init__(self, name='devilutionx'):
         super().__init__(name)
 
