@@ -982,7 +982,6 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
             opts = self.options
             opts['CMAKE_SYSTEM_NAME'] = 'Darwin'
             opts['CMAKE_SYSTEM_PROCESSOR'] = 'aarch64' if architecture == 'arm64' else architecture
-            opts['CMAKE_AR'] = '/usr/bin/ar'
 
         super().configure(builder)
 
