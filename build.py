@@ -1289,7 +1289,7 @@ class PngTarget(ConfigureMakeStaticDependencyTarget):
 
     def post_build(self, builder: 'Builder'):
         super().post_build(builder)
-        Target.update_prefix_shell_script(builder.prefix_path + '/bin/libpng16-config')
+        Target.update_prefix_shell_script(self.prefix + '/bin/libpng16-config')
 
 
 class PortMidiTarget(CMakeTarget):
