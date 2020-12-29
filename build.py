@@ -1722,7 +1722,6 @@ class Builder(object):
 
         self.root_path = os.path.dirname(os.path.abspath(__file__)) + os.sep
         self.deps_path = self.root_path + 'deps' + os.sep
-        self.output_path = self.root_path + 'output' + os.sep
         self.prefix_path = self.root_path + 'prefix' + os.sep
         self.bin_path = self.prefix_path + 'bin' + os.sep
         self.include_path = self.prefix_path + 'include' + os.sep
@@ -1735,6 +1734,7 @@ class Builder(object):
         self.xcode = arguments.xcode
         self.checkout_commit = arguments.checkout_commit
         self.build_path = arguments.build_path
+        self.output_path = arguments.output_path
         self.verbose = arguments.verbose
 
         self.platform = None
@@ -1753,8 +1753,12 @@ class Builder(object):
             self.build_path = self.root_path + 'build' + os.sep + self.target.name + \
                 os.sep + (self.xcode and 'xcode' or 'make')
 
+        if not self.output_path:
+            self.output_path = self.root_path + 'output'
+
         self.source_path += os.sep
         self.build_path += os.sep
+        self.output_path += os.sep
         self.native_build_path = self.build_path
 
         self.jobs = arguments.jobs and arguments.jobs or \
@@ -2066,6 +2070,7 @@ class Builder(object):
         group.add_argument('--checkout-commit', metavar='commit',
                            help='target\'s source code commit or tag to checkout')
         group.add_argument('--build-path', metavar='path', help='target build path')
+        group.add_argument('--output-path', metavar='path', help='output path for main targets')
         group.add_argument('--sdk-path-x64', metavar='path', help='path to macOS SDK for x86_64')
         group.add_argument('--sdk-path-arm', metavar='path', help='path to macOS SDK for ARM64')
         group.add_argument('--os-version-x64', metavar='version', help='macOS deployment version for x86_64')
