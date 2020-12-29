@@ -1,0 +1,2 @@
+#!/bin/sh
+objdump --arch=x86_64 $*

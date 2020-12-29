@@ -1,0 +1,2 @@
+#!/bin/sh
+dsymutil --arch=x86_64 $*
