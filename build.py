@@ -1500,6 +1500,15 @@ class VpxTarget(ConfigureMakeDependencyTarget):
             'https://github.com/webmproject/libvpx/archive/v1.9.0.tar.gz',
             'd279c10e4b9316bf11a570ba16c3d55791e1ad6faa4404c67422eb631782c80a')
 
+    def configure(self, builder: 'Builder'):
+        hosts = {
+            'x86_64': 'x86_64-darwin13-gcc',
+            'arm64': 'arm64-darwin20-gcc',
+        }
+        self.options['--target'] = hosts[builder.architecture()]
+
+        super().configure(builder)
+
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'vpxstats.h')
 
