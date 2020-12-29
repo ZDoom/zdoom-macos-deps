@@ -1004,6 +1004,7 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
 class MadTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mad'):
         super().__init__(name)
+        self.options['--enable-fpm'] = '64bit'
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
