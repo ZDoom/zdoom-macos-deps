@@ -1,6 +1,35 @@
+--- a/configure
++++ b/configure
+@@ -99,6 +99,7 @@
+ # alphabetically by architecture, generic-gnu last.
+ all_platforms="${all_platforms} arm64-android-gcc"
+ all_platforms="${all_platforms} arm64-darwin-gcc"
++all_platforms="${all_platforms} arm64-darwin20-gcc"
+ all_platforms="${all_platforms} arm64-linux-gcc"
+ all_platforms="${all_platforms} arm64-win64-gcc"
+ all_platforms="${all_platforms} arm64-win64-vs15"
+@@ -150,6 +151,7 @@
+ all_platforms="${all_platforms} x86_64-darwin17-gcc"
+ all_platforms="${all_platforms} x86_64-darwin18-gcc"
+ all_platforms="${all_platforms} x86_64-darwin19-gcc"
++all_platforms="${all_platforms} x86_64-darwin20-gcc"
+ all_platforms="${all_platforms} x86_64-iphonesimulator-gcc"
+ all_platforms="${all_platforms} x86_64-linux-gcc"
+ all_platforms="${all_platforms} x86_64-linux-icc"
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
-@@ -842,86 +842,6 @@
+@@ -771,6 +771,10 @@
+         tgt_isa=x86_64
+         tgt_os=`echo $gcctarget | sed 's/.*\(darwin1[0-9]\).*/\1/'`
+         ;;
++      *darwin20*)
++        tgt_isa=`uname -m`
++        tgt_os=`echo $gcctarget | sed 's/.*\(darwin2[0-9]\).*/\1/'`
++        ;;
+       x86_64*mingw32*)
+         tgt_os=win64
+         ;;
+@@ -842,86 +846,6 @@
      IOS_VERSION_MIN="7.0"
    fi
  
@@ -87,3 +116,12 @@
    # Handle Solaris variants. Solaris 10 needs -lposix4
    case ${toolchain} in
      sparc-solaris-*)
+@@ -1084,7 +1008,7 @@
+           soft_enable unit_tests
+           ;;
+ 
+-        darwin*)
++        darwin)
+           if ! enabled external_build; then
+             XCRUN_FIND="xcrun --sdk iphoneos --find"
+             CXX="$(${XCRUN_FIND} clang++)"
