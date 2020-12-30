@@ -1369,6 +1369,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
         Target.update_prefix_shell_script(self.prefix + '/bin/sdl2-config', update_libs)
 
+        self.make_platform_header(builder, 'SDL2/SDL_config.h')
+
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
         libs = 'Libs:'
