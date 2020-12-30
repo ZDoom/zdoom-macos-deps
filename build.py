@@ -1340,8 +1340,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
-            'https://libsdl.org/release/SDL2-2.0.12.tar.gz',
-            '349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863')
+            'https://libsdl.org/release/SDL2-2.0.14.tar.gz',
+            'd8215b571a581be1332d2106f8036fcb03d12a70bae01e20f424976d275432bc')
 
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'sdl2.pc.in')
@@ -1364,10 +1364,10 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
-        libs_private = 'Libs.private:'
+        libs = 'Libs:'
 
-        if line.startswith(libs_private):
-            return libs_private + Sdl2Target.LINKER_FLAGS
+        if line.startswith(libs):
+            return libs + Sdl2Target.LINKER_FLAGS
 
         return line
 
