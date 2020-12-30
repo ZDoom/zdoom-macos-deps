@@ -242,6 +242,33 @@ Cflags: -I${{includedir}} {cflags}
         with open(pkgconfig_path + filename, 'w') as f:
             f.write(pc_content)
 
+    def make_platform_header(self, builder: 'Builder', header: str):
+        include_path = self.prefix + os.sep + 'include' + os.sep
+        include_platform_path = include_path
+
+        header_parts = header.rsplit(os.sep, 1)
+        if len(header_parts) == 1:
+            header_parts.insert(0, '')
+
+        include_platform_path += header_parts[0] + os.sep + builder.architecture()
+        os.makedirs(include_platform_path, exist_ok=True)
+
+        root_header = include_path + header
+        shutil.move(root_header, include_platform_path)
+
+        with open(root_header, 'w') as f:
+            f.write(f'''
+#pragma once
+
+#if defined(__x86_64__)
+#   include "x86_64/{header_parts[1]}"
+#elif defined(__aarch64__)
+#   include "arm64/{header_parts[1]}"
+#else
+#   error Unknown architecture
+#endif
+''')
+
 
 class MakeTarget(Target):
     def __init__(self, name=None):
@@ -743,28 +770,8 @@ class FfiTarget(ConfigureMakeStaticDependencyTarget):
     def post_build(self, builder: 'Builder'):
         super().post_build(builder)
 
-        include_path = self.prefix + os.sep + 'include' + os.sep
-        include_platform_path = include_path + builder.architecture()
-        os.makedirs(include_platform_path, exist_ok=True)
-
-        headers = ('ffi.h', 'ffitarget.h')
-
-        for header in headers:
-            root_header = include_path + header
-            shutil.move(root_header, include_platform_path)
-
-            with open(root_header, 'w') as f:
-                f.write(f'''
-#pragma once
-
-#if defined(__x86_64__)
-#   include "x86_64/{header}"
-#elif defined(__aarch64__)
-#   include "arm64/{header}"
-#else
-#   error Unknown architecture
-#endif
-''')
+        for header in ('ffi.h', 'ffitarget.h'):
+            self.make_platform_header(builder, header)
 
 
 class FlacTarget(ConfigureMakeStaticDependencyTarget):
