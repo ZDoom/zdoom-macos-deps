@@ -9,7 +9,7 @@ glib_mkenums=${bindir}/glib-mkenums
 
 Name: GLib
 Description: C Utility Library
-Version: 2.66.3
+Version: 2.66.4
 Requires.private: libpcre >=  8.31
 Libs: -L${libdir} -lglib-2.0 -lintl -liconv
 Libs.private: -Wl,-framework,CoreFoundation -Wl,-framework,Carbon -Wl,-framework,Foundation -Wl,-framework,AppKit -lm
