@@ -408,6 +408,12 @@ class CMakeTarget(Target):
             '-DCMAKE_PREFIX_PATH=' + builder.prefix_path,
         ]
 
+        if not builder.xcode:
+            architecture = builder.architecture()
+            if architecture != machine():
+                args.append('-DCMAKE_SYSTEM_NAME=Darwin')
+                args.append('-DCMAKE_SYSTEM_PROCESSOR=' + 'aarch64' if architecture == 'arm64' else architecture)
+
         os_version = builder.os_version()
         if os_version:
             args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + os_version)
@@ -981,16 +987,6 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
         builder.download_source(
             'https://downloads.sourceforge.net/project/libjpeg-turbo/2.0.6/libjpeg-turbo-2.0.6.tar.gz',
             'd74b92ac33b0e3657123ddcf6728788c90dc84dcb6a52013d758af3c4af481bb')
-
-    def configure(self, builder: 'Builder'):
-        architecture = builder.architecture()
-
-        if architecture != machine():
-            opts = self.options
-            opts['CMAKE_SYSTEM_NAME'] = 'Darwin'
-            opts['CMAKE_SYSTEM_PROCESSOR'] = 'aarch64' if architecture == 'arm64' else architecture
-
-        super().configure(builder)
 
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'turbojpeg.h')
