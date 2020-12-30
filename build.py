@@ -1338,6 +1338,13 @@ class Sdl2Target(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2'):
         super().__init__(name)
 
+        # Need to have uniform settings for x86_64 and arm64 because of linking with Metal framework
+        # TODO: Remove this when default target for x64 will become 10.11+
+        opts = self.options
+        opts['VIDEO_VULKAN'] = 'NO'
+        opts['VIDEO_METAL'] = 'NO'
+        opts['RENDER_METAL'] = 'NO'
+
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
             'https://libsdl.org/release/SDL2-2.0.14.tar.gz',
