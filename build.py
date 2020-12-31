@@ -1109,6 +1109,13 @@ class MoltenVKTarget(MakeTarget):
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'MoltenVKPackaging.xcodeproj')
 
+    def configure(self, builder: 'Builder'):
+        # Unset platform to avoid using specified macOS deployment target and SDK
+        # MoltenVK defines minimal OS version itself, and usually, it requires the very recent SDK
+        builder.platform = None
+
+        super().configure(builder)
+
     def build(self, builder: 'Builder'):
         args = ('./fetchDependencies', '--macos', '-v')
         subprocess.check_call(args, cwd=builder.build_path)
