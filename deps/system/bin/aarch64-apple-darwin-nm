@@ -1,2 +1,2 @@
 #!/bin/sh
-nm -arch arm64 $*
+nm -arch arm64 "$@"

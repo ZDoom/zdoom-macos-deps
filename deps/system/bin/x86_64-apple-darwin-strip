@@ -1,2 +1,2 @@
 #!/bin/sh
-strip -arch x86_64 $*
+strip -arch x86_64 "$@"

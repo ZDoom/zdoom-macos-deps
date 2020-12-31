@@ -1,2 +1,2 @@
 #!/bin/sh
-dsymutil --arch=arm64 $*
+dsymutil --arch=arm64 "$@"

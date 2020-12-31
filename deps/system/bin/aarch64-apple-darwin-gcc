@@ -1,2 +1,2 @@
 #!/bin/sh
-gcc -arch arm64 $*
+gcc -arch arm64 "$@"

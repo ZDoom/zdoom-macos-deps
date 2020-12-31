@@ -1,2 +1,2 @@
 #!/bin/sh
-nmedit -arch x86_64 $*
+nmedit -arch x86_64 "$@"

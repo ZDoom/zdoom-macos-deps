@@ -1,2 +1,2 @@
 #!/bin/sh
-otool -arch x86_64 $*
+otool -arch x86_64 "$@"

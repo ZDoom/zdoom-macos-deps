@@ -1,2 +1,2 @@
 #!/bin/sh
-objdump --arch=arm64 $*
+objdump --arch=arm64 "$@"
