@@ -484,6 +484,14 @@ class CMakeOutputTarget(CMakeTarget):
             copy_func = shutil.copytree if os.path.isdir(src) else shutil.copy
             copy_func(src, dst)
 
+    def _force_cross_compilation(self, builder: 'Builder'):
+        if builder.architecture() == machine():
+            return
+
+        opts = self.options
+        opts['FORCE_CROSSCOMPILE'] = 'YES'
+        opts['IMPORT_EXECUTABLES'] = builder.native_build_path + 'ImportExecutables.cmake'
+
 
 class ZDoomBaseTarget(CMakeOutputTarget):
     def __init__(self, name=None):
@@ -498,9 +506,7 @@ class ZDoomBaseTarget(CMakeOutputTarget):
         opts['OPENAL_INCLUDE_DIR'] = builder.include_path + 'AL'
         opts['OPENAL_LIBRARY'] = builder.lib_path + 'libopenal.a'
 
-        if builder.architecture() != machine():
-            opts['FORCE_CROSSCOMPILE'] = 'YES'
-            opts['IMPORT_EXECUTABLES'] = builder.native_build_path + 'ImportExecutables.cmake'
+        self._force_cross_compilation(builder)
 
         super().configure(builder)
 
@@ -589,6 +595,8 @@ class PrBoomPlusTarget(CMakeOutputTarget):
         opts['CMAKE_C_FLAGS'] = '-D_FILE_OFFSET_BITS=64'
         opts['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_image')
         opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
+
+        self._force_cross_compilation(builder)
 
         super().configure(builder)
 
