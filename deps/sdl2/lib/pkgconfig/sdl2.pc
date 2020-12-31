@@ -7,9 +7,8 @@ includedir=${prefix}/include
 
 Name: sdl2
 Description: Simple DirectMedia Layer is a cross-platform multimedia library designed to provide low level access to audio, keyboard, mouse, joystick, 3D hardware via OpenGL, and 2D video framebuffer.
-Version: 2.0.12
+Version: 2.0.14
 Requires:
 Conflicts:
-Libs: -L${libdir}  -lSDL2 
-Libs.private: -L${libdir} -lSDL2 -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreFoundation -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit
+Libs: -L${libdir} -lSDL2 -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreFoundation -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit
 Cflags: -I${includedir}/SDL2  -D_THREAD_SAFE
