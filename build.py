@@ -104,20 +104,22 @@ class Target(BaseTarget):
         env['PATH'] = env['PATH'] \
             + os.pathsep + '/Applications/CMake.app/Contents/bin' \
             + os.pathsep + builder.bin_path
-        env['CC'] = builder.c_compiler()
-        env['CXX'] = builder.cxx_compiler()
 
-        for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
-            varname = f'{prefix}FLAGS'
+        if not builder.xcode:
+            env['CC'] = builder.c_compiler()
+            env['CXX'] = builder.cxx_compiler()
 
-            self._update_env(varname, f'-I{builder.include_path}')
-            self._set_sdk(builder, varname)
-            self._set_os_version(builder, varname)
+            for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
+                varname = f'{prefix}FLAGS'
 
-        ldflags = 'LDFLAGS'
-        self._update_env(ldflags, f'-L{builder.lib_path}')
-        self._set_sdk(builder, ldflags)
-        self._set_os_version(builder, ldflags)
+                self._update_env(varname, f'-I{builder.include_path}')
+                self._set_sdk(builder, varname)
+                self._set_os_version(builder, varname)
+
+            ldflags = 'LDFLAGS'
+            self._update_env(ldflags, f'-L{builder.lib_path}')
+            self._set_sdk(builder, ldflags)
+            self._set_os_version(builder, ldflags)
 
     def _update_env(self, name: str, value: str):
         env = self.environment
@@ -400,15 +402,18 @@ class CMakeTarget(Target):
 
         args = [
             'cmake',
-            builder.xcode and '-GXcode' or '-GUnix Makefiles',
-            '-DCMAKE_C_COMPILER=' + builder.c_compiler(),
-            '-DCMAKE_CXX_COMPILER=' + builder.cxx_compiler(),
             '-DCMAKE_BUILD_TYPE=Release',
             '-DCMAKE_INSTALL_PREFIX=' + self.prefix,
             '-DCMAKE_PREFIX_PATH=' + builder.prefix_path,
         ]
 
-        if not builder.xcode:
+        if builder.xcode:
+            args.append('-GXcode')
+        else:
+            args.append('-GUnix Makefiles')
+            args.append('-DCMAKE_C_COMPILER=' + builder.c_compiler())
+            args.append('-DCMAKE_CXX_COMPILER=' + builder.cxx_compiler())
+
             architecture = builder.architecture()
             if architecture != machine():
                 args.append('-DCMAKE_SYSTEM_NAME=Darwin')
@@ -1758,9 +1763,9 @@ class Builder(object):
         self.output_path = arguments.output_path
         self.verbose = arguments.verbose
 
-        self.platform = None
         self._platforms = []
         self._populate_platforms(arguments)
+        self.platform = self._platforms[0]
 
         if arguments.target:
             self.target = self.targets[arguments.target]
