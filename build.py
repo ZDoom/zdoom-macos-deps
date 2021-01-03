@@ -1943,7 +1943,7 @@ class Builder(object):
 
     @staticmethod
     def _merge_install_paths(src_paths: typing.Sequence[str], dst_path: str, missing_files_only=False):
-        if len(src_paths) <= 1:
+        if len(src_paths) == 0:
             return
 
         if not missing_files_only:
