@@ -552,6 +552,7 @@ class QZDoomTarget(GZDoomTarget):
 class LZDoomTarget(ZDoomBaseTarget):
     def __init__(self, name='lzdoom'):
         super().__init__(name)
+        self.unsupported_architectures = ('arm64',)
 
     def prepare_source(self, builder: 'Builder'):
         builder.checkout_git('https://github.com/drfrag666/gzdoom.git')
