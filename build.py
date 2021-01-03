@@ -64,6 +64,7 @@ class BaseTarget:
     def __init__(self, name=None):
         self.name = name
         self.multi_platform = False
+        self.unsupported_architectures = ()
 
     def prepare_source(self, builder: 'Builder'):
         pass
@@ -1863,6 +1864,9 @@ class Builder(object):
         install_paths = []
 
         for platform in self._platforms:
+            if platform.architecture in base_target.unsupported_architectures:
+                continue
+
             self.platform = platform
             self.build_path = base_build_path + 'build_' + platform.architecture + os.sep
 
