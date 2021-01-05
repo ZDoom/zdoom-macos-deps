@@ -821,8 +821,8 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, builder: 'Builder'):
         builder.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/v2.1.5.tar.gz',
-            'b539b7c65a650b56f01cd60a4e83c6125c217c5a63c0c214ef6274894a677d00')
+            'https://github.com/FluidSynth/fluidsynth/archive/v2.1.6.tar.gz',
+            '328fc290b5358544d8dea573f81cb1e97806bdf49e8507db067621242f3f0b8a')
 
     def detect(self, builder: 'Builder') -> bool:
         return os.path.exists(builder.source_path + 'fluidsynth.pc.in')
