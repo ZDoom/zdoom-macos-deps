@@ -1917,11 +1917,10 @@ class Builder(object):
             args += ['-create', '-output', dst_file]
             subprocess.check_call(args)
 
-            # TODO: check if ad-hoc code signing is really needed
-            # See https://github.com/Homebrew/brew/commit/e945b1c42ab44feb1c6814f47cc833d76b1a921c
-            # if is_executable:
-            #     args = ('codesign', '--sign', '-', dst_file)
-            #     subprocess.check_call(args)
+            # Apply ad-hoc code signing on executable files outside of application bundles
+            if is_executable and '.app/Contents/' not in src.path:
+                args = ('codesign', '--sign', '-', dst_file)
+                subprocess.check_call(args)
         else:
             if not Builder._compare_files(src_sub_paths):
                 print(f'WARNING: Source files for {dst_path + os.sep + src.name} don\'t match')
