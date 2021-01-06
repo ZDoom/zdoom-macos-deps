@@ -1996,8 +1996,8 @@ class Builder(object):
             if dep.is_dir():
                 Builder.symlink_directory(dep.path, self.prefix_path, cleanup)
 
-            # Do symlink cleanup only once
-            cleanup = False
+                # Do symlink cleanup only once
+                cleanup = False
 
     @staticmethod
     def symlink_directory(src_path: str, dst_path: str, cleanup=True):
