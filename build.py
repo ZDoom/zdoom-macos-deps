@@ -1295,8 +1295,11 @@ class PkgConfigTarget(ConfigureMakeDependencyTarget):
         return os.path.exists(builder.source_path + 'pkg-config.1')
 
     def post_build(self, builder: 'Builder'):
+        bin_path = self.prefix + '/bin/'
+        os.makedirs(bin_path, exist_ok=True)
+
         src_path = builder.build_path + 'pkg-config'
-        dst_path = builder.deps_path + self.name + os.sep + 'bin' + os.sep + 'pkg-config.exe'
+        dst_path = bin_path + 'pkg-config.exe'
         shutil.copy(src_path, dst_path)
 
 
