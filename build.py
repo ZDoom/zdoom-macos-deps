@@ -958,9 +958,7 @@ class GmakeTarget(ConfigureMakeDependencyTarget):
         return os.path.exists(builder.source_path + 'doc/make.1')
 
     def post_build(self, builder: 'Builder'):
-        bin_path = self.prefix + '/bin/'
-        os.makedirs(bin_path, exist_ok=True)
-        shutil.copy(builder.build_path + 'make', bin_path + self.name)
+        self.copy_to_bin(builder, 'make', self.name)
 
 
 class IconvTarget(ConfigureMakeStaticDependencyTarget):
@@ -1204,9 +1202,7 @@ class NinjaTarget(MakeTarget):
         subprocess.check_call(args, cwd=builder.build_path)
 
     def post_build(self, builder: 'Builder'):
-        dest_path = builder.deps_path + self.name + os.sep + 'bin'
-        os.makedirs(dest_path, exist_ok=True)
-        shutil.copy(builder.build_path + self.name, dest_path)
+        self.copy_to_bin(builder)
 
 
 class OggTarget(ConfigureMakeStaticDependencyTarget):
@@ -1308,12 +1304,7 @@ class PkgConfigTarget(ConfigureMakeDependencyTarget):
         return os.path.exists(builder.source_path + 'pkg-config.1')
 
     def post_build(self, builder: 'Builder'):
-        bin_path = self.prefix + '/bin/'
-        os.makedirs(bin_path, exist_ok=True)
-
-        src_path = builder.build_path + 'pkg-config'
-        dst_path = bin_path + 'pkg-config.exe'
-        shutil.copy(src_path, dst_path)
+        self.copy_to_bin(builder, new_filename=self.name + '.exe')
 
 
 class PngTarget(ConfigureMakeStaticDependencyTarget):
