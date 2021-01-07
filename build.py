@@ -272,6 +272,19 @@ Cflags: -I${{includedir}} {cflags}
 #endif
 ''')
 
+    def copy_to_bin(self, builder: 'Builder', filename: str = None, new_filename: str = None):
+        bin_path = self.prefix + '/bin/'
+        os.makedirs(bin_path, exist_ok=True)
+
+        if not filename:
+            filename = self.name
+        if not new_filename:
+            new_filename = filename
+
+        src_path = builder.build_path + filename
+        dst_path = bin_path + new_filename
+        shutil.copy(src_path, dst_path)
+
 
 class MakeTarget(Target):
     def __init__(self, name=None):
