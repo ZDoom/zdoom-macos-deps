@@ -1198,8 +1198,13 @@ class NinjaTarget(MakeTarget):
         return os.path.exists(builder.source_path + 'src/ninja.cc')
 
     def build(self, builder: 'Builder'):
-        args = ('python3', './configure.py', '--bootstrap', '--verbose')
-        subprocess.check_call(args, cwd=builder.build_path)
+        cmdlines = (
+            ('python3', './configure.py', '--verbose'),
+            ('ninja', '--verbose'),
+        )
+
+        for args in cmdlines:
+            subprocess.run(args, check=True, cwd=builder.build_path, env=self.environment)
 
     def post_build(self, builder: 'Builder'):
         self.copy_to_bin(builder)
