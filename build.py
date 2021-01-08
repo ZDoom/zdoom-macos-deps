@@ -617,22 +617,41 @@ class PrBoomPlusTarget(CMakeOutputTarget):
         super().configure(builder)
 
 
-class ChocolateDoomTarget(CMakeOutputTarget):
-    def __init__(self, name='chocolate-doom'):
+class ChocolateDoomBaseTarget(CMakeOutputTarget):
+    def __init__(self, name=None):
         super().__init__(name)
-
-    def prepare_source(self, builder: 'Builder'):
-        builder.checkout_git('https://github.com/chocolate-doom/chocolate-doom.git')
 
     def configure(self, builder: 'Builder'):
         self.options['CMAKE_EXE_LINKER_FLAGS'] = builder.run_pkg_config('--libs', 'SDL2_mixer')
 
         super().configure(builder)
 
+    def _fill_outputs(self, exe_prefix: str):
+        self.outputs = (
+            f'src/{exe_prefix}-doom',
+            f'src/{exe_prefix}-heretic',
+            f'src/{exe_prefix}-hexen',
+            f'src/{exe_prefix}-server',
+            f'src/{exe_prefix}-setup',
+            f'src/{exe_prefix}-strife',
+            f'src/midiread',
+            f'src/mus2mid',
+        )
 
-class CrispyDoomTarget(ChocolateDoomTarget):
+
+class ChocolateDoomTarget(ChocolateDoomBaseTarget):
+    def __init__(self, name='chocolate-doom'):
+        super().__init__(name)
+        self._fill_outputs('chocolate')
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/chocolate-doom/chocolate-doom.git')
+
+
+class CrispyDoomTarget(ChocolateDoomBaseTarget):
     def __init__(self, name='crispy-doom'):
         super().__init__(name)
+        self._fill_outputs('crispy')
 
     def prepare_source(self, builder: 'Builder'):
         builder.checkout_git('https://github.com/fabiangreffrath/crispy-doom.git')
