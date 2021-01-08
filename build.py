@@ -657,6 +657,19 @@ class CrispyDoomTarget(ChocolateDoomBaseTarget):
         builder.checkout_git('https://github.com/fabiangreffrath/crispy-doom.git')
 
 
+class RudeTarget(ChocolateDoomBaseTarget):
+    def __init__(self, name='rude'):
+        super().__init__(name)
+        self._fill_outputs('rude')
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/drfrag666/RUDE.git')
+
+    def post_build(self, builder: 'Builder'):
+        super().post_build(builder)
+        shutil.copy(builder.source_path + '/data/rude.wad', self.prefix)
+
+
 class DoomRetroTarget(CMakeOutputTarget):
     def __init__(self, name='doomretro'):
         super().__init__(name)
@@ -2075,6 +2088,7 @@ class Builder(object):
             PrBoomPlusTarget(),
             ChocolateDoomTarget(),
             CrispyDoomTarget(),
+            RudeTarget(),
             DoomRetroTarget(),
             Doom64EXTarget(),
             DevilutionXTarget(),
