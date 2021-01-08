@@ -493,7 +493,8 @@ class CMakeOutputTarget(CMakeTarget):
 
         for output in self.outputs:
             src = builder.build_path + output
-            dst = self.prefix + os.sep + output
+            dst_sep_pos = output.rfind(os.sep)
+            dst = self.prefix + os.sep + (output if dst_sep_pos == -1 else output[dst_sep_pos + 1:])
 
             copy_func = shutil.copytree if os.path.isdir(src) else shutil.copy
             copy_func(src, dst)
