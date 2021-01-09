@@ -1832,9 +1832,11 @@ class Builder(object):
         if arguments.target:
             self.target = self.targets[arguments.target]
             self.source_path = self.root_source_path + self.target.name + os.sep
+            self.external_source = False
         else:
             assert arguments.source_path
             self.source_path = arguments.source_path + os.sep
+            self.external_source = True
             self._detect_target()
 
         if not self.build_path:
@@ -2259,6 +2261,9 @@ class Builder(object):
             subprocess.check_call(args, cwd=extract_path)
 
     def download_source(self, url: str, checksum: str):
+        if self.external_source:
+            return
+
         os.makedirs(self.source_path, exist_ok=True)
 
         data, filepath = self._read_source_package(url)
