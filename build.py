@@ -1831,10 +1831,10 @@ class Builder(object):
 
         if arguments.target:
             self.target = self.targets[arguments.target]
-            self.source_path = self.root_source_path + self.target.name
+            self.source_path = self.root_source_path + self.target.name + os.sep
         else:
             assert arguments.source_path
-            self.source_path = arguments.source_path
+            self.source_path = arguments.source_path + os.sep
             self._detect_target()
 
         if not self.build_path:
@@ -1844,7 +1844,6 @@ class Builder(object):
         if not self.output_path:
             self.output_path = self.root_path + 'output'
 
-        self.source_path += os.sep
         self.build_path += os.sep
         self.output_path += os.sep
         self.native_build_path = self.build_path
