@@ -670,6 +670,15 @@ class RudeTarget(ChocolateDoomBaseTarget):
         shutil.copy(builder.source_path + '/data/rude.wad', self.prefix)
 
 
+class WoofTarget(ChocolateDoomBaseTarget):
+    def __init__(self, name='woof'):
+        super().__init__(name)
+        self.outputs = ('Source/woof',)
+
+    def prepare_source(self, builder: 'Builder'):
+        builder.checkout_git('https://github.com/fabiangreffrath/woof.git')
+
+
 class DoomRetroTarget(CMakeOutputTarget):
     def __init__(self, name='doomretro'):
         super().__init__(name)
@@ -2090,6 +2099,7 @@ class Builder(object):
             ChocolateDoomTarget(),
             CrispyDoomTarget(),
             RudeTarget(),
+            WoofTarget(),
             DoomRetroTarget(),
             Doom64EXTarget(),
             DevilutionXTarget(),
