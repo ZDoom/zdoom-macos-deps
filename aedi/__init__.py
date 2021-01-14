@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 #
 #    Helper module to build macOS version of various source ports
 #    Copyright (C) 2020-2021 Alexey Lysiuk
@@ -18,15 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys
+from .builder import Builder
 
-if sys.hexversion < 0x3070000:
-    print('Build module requires Python 3.7 or newer')
-    exit(1)
-
-sys.dont_write_bytecode = True
-
-from aedi import Builder
-
-if __name__ == '__main__':
-    Builder(sys.argv[1:]).run()
+__all__ = [
+    'Builder',
+]

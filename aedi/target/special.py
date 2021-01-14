@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 #
 #    Helper module to build macOS version of various source ports
 #    Copyright (C) 2020-2021 Alexey Lysiuk
@@ -18,15 +16,31 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys
+import subprocess
 
-if sys.hexversion < 0x3070000:
-    print('Build module requires Python 3.7 or newer')
-    exit(1)
+from .base import Target
+from ..state import BuildState
 
-sys.dont_write_bytecode = True
 
-from aedi import Builder
+class CleanTarget(Target):
+    def __init__(self, name=None):
+        super().__init__(name)
+        self.args = ()
 
-if __name__ == '__main__':
-    Builder(sys.argv[1:]).run()
+    def build(self, state: BuildState):
+        args = ('git', 'clean') + self.args
+        subprocess.check_call(args, cwd=state.root_path)
+
+
+class CleanAllTarget(CleanTarget):
+    def __init__(self, name='clean-all'):
+        super().__init__(name)
+        self.args = ('-dX', '--force')
+
+
+class CleanDepsTarget(CleanAllTarget):
+    def __init__(self, name='clean-deps'):
+        super().__init__(name)
+
+    def configure(self, state: BuildState):
+        self.args += (state.deps_path,)
