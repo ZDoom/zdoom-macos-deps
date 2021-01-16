@@ -48,8 +48,8 @@ class Builder(object):
         state.platform = self._platforms[0]
 
         if arguments.target:
-            self.target = self._targets[arguments.target]
-            state.source_path = state.root_source_path + self.target.name + os.sep
+            self._target = self._targets[arguments.target]
+            state.source_path = state.root_source_path + self._target.name + os.sep
             state.external_source = False
         else:
             assert arguments.source_path
@@ -57,13 +57,15 @@ class Builder(object):
             state.external_source = True
             self._detect_target()
 
-        patch_path = f'{state.root_path}patch/{self.target.name}.patch'
+        del self._targets
+
+        patch_path = f'{state.root_path}patch/{self._target.name}.patch'
         if os.path.exists(patch_path):
             state.patch_path = patch_path
 
         if not state.build_path:
-            state.build_path = state.root_path + 'build' + os.sep + self.target.name + \
-                os.sep + (state.xcode and 'xcode' or 'make')
+            state.build_path = state.root_path + 'build' + os.sep + self._target.name + \
+                               os.sep + (state.xcode and 'xcode' or 'make')
 
         if not state.output_path:
             state.output_path = state.root_path + 'output'
@@ -74,7 +76,7 @@ class Builder(object):
         state.jobs = arguments.jobs and arguments.jobs or \
             subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
 
-        self.target.initialize(state)
+        self._target.initialize(state)
 
     def _populate_platforms(self, arguments):
         state = self._state
@@ -115,7 +117,7 @@ class Builder(object):
         self._create_prefix_directory()
 
         state = self._state
-        target = self.target
+        target = self._target
         target.prepare_source(state)
 
         if target.destination == Target.DESTINATION_DEPS:
@@ -134,8 +136,8 @@ class Builder(object):
         state = self._state
 
         target.configure(state)
-        target.build(state)
-        target.post_build(state)
+        # target.build(state)
+        # target.post_build(state)
 
     def _build_multiple_platforms(self, base_target: Target):
         assert base_target.multi_platform
@@ -266,10 +268,10 @@ class Builder(object):
     def _detect_target(self):
         for name, target in self._targets.items():
             if target.detect(self._state):
-                self.target = self._targets[name]
+                self._target = self._targets[name]
                 break
 
-        assert self.target
+        assert self._target
 
     def _parse_arguments(self, args: list):
         assert self._targets
