@@ -70,7 +70,6 @@ class Builder(object):
 
         state.build_path += os.sep
         state.output_path += os.sep
-        state.native_build_path = state.build_path
 
         state.jobs = arguments.jobs and arguments.jobs or \
             subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
