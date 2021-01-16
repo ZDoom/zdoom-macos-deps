@@ -136,8 +136,8 @@ class Builder(object):
         state = self._state
 
         target.configure(state)
-        # target.build(state)
-        # target.post_build(state)
+        target.build(state)
+        target.post_build(state)
 
     def _build_multiple_platforms(self, base_target: Target):
         assert base_target.multi_platform
