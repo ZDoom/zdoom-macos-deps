@@ -86,5 +86,6 @@ def targets():
 
         # Special
         CleanAllTarget(),
-        CleanDepsTarget()
+        CleanDepsTarget(),
+        TestDepsTarget(),
     )

@@ -16,9 +16,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import os
+import shlex
 import subprocess
 
-from .base import Target
+from .base import Target, BuildTarget
 from ..state import BuildState
 
 
@@ -44,3 +46,31 @@ class CleanDepsTarget(CleanAllTarget):
 
     def configure(self, state: BuildState):
         self.args += (state.deps_path,)
+
+
+class TestDepsTarget(BuildTarget):
+    def __init__(self, name='test-deps'):
+        super().__init__(name)
+        self.multi_platform = False
+
+    def build(self, state: BuildState):
+        test_path = state.root_path + 'test'
+
+        for entry in os.scandir(test_path):
+            if not entry.name.endswith('.cpp'):
+                continue
+
+            test_name = os.path.splitext(entry.name)[0]
+            pkg_config_output = state.run_pkg_config('--cflags', '--libs', test_name)
+            exe_name = state.build_path + test_name
+
+            args = [
+                'clang',
+                '-arch', 'x86_64',
+                '-arch', 'arm64',
+                '-o', exe_name,
+                entry.path,
+            ]
+            args += shlex.split(pkg_config_output)
+            subprocess.run(args, cwd=state.build_path, check=True)
+            subprocess.run((exe_name,), check=True)
