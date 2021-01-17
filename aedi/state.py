@@ -32,9 +32,9 @@ class BuildState:
         self.bin_path = self.prefix_path + 'bin' + os.sep
         self.include_path = self.prefix_path + 'include' + os.sep
         self.lib_path = self.prefix_path + 'lib' + os.sep
-        self.root_source_path = self.root_path + 'source' + os.sep
+        self.source_path = self.root_path + 'source' + os.sep
 
-        self.source_path = None
+        self.source = None
         self.external_source = True
         self.patch_path = None
 
@@ -69,19 +69,19 @@ class BuildState:
         return self.platform.cxx_compiler if self.platform else ''
 
     def checkout_git(self, url: str):
-        if not os.path.exists(self.source_path):
-            args = ('git', 'clone', '--recurse-submodules', url, self.source_path)
+        if not os.path.exists(self.source):
+            args = ('git', 'clone', '--recurse-submodules', url, self.source)
             subprocess.check_call(args, cwd=self.root_path)
 
         if self.checkout_commit:
             args = ['git', 'checkout', self.checkout_commit]
-            subprocess.check_call(args, cwd=self.source_path)
+            subprocess.check_call(args, cwd=self.source)
 
     def download_source(self, url: str, checksum: str):
         if self.external_source:
             return
 
-        os.makedirs(self.source_path, exist_ok=True)
+        os.makedirs(self.source, exist_ok=True)
 
         data, filepath = self._read_source_package(url)
         self._verify_checksum(checksum, data, filepath)
@@ -90,12 +90,12 @@ class BuildState:
         self._apply_source_patch(extract_path)
 
         # Adjust source and build paths according to extracted source code
-        self.source_path = extract_path
+        self.source = extract_path
         self.build_path = self.build_path + first_path_component + os.sep
 
     def _read_source_package(self, url: str) -> (bytes, str):
         filename = url.rsplit(os.sep, 1)[1]
-        filepath = self.source_path + filename
+        filepath = self.source + filename
 
         if os.path.exists(filepath):
             # Read existing source package
@@ -141,12 +141,12 @@ class BuildState:
         if not first_path_component:
             raise Exception("Failed to figure out source code path for " + filepath)
 
-        extract_path = self.source_path + first_path_component + os.sep
+        extract_path = self.source + first_path_component + os.sep
 
         if not os.path.exists(extract_path):
             # Extract source code package
             try:
-                subprocess.check_call(['tar', '-xf', filepath], cwd=self.source_path)
+                subprocess.check_call(['tar', '-xf', filepath], cwd=self.source)
             except (IOError, subprocess.CalledProcessError):
                 shutil.rmtree(extract_path, ignore_errors=True)
                 raise

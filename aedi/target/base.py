@@ -265,7 +265,7 @@ class MakeTarget(BuildTarget):
     def configure(self, state: BuildState):
         super().configure(state)
 
-        symlink_directory(state.source_path, state.build_path)
+        symlink_directory(state.source, state.build_path)
 
     def build(self, state: BuildState):
         assert not state.xcode
@@ -336,7 +336,7 @@ class CMakeTarget(BuildTarget):
 
     def detect(self, state: BuildState) -> bool:
         src_root = self.src_root and os.sep + self.src_root or ''
-        cmakelists_path = state.source_path + src_root + os.sep + 'CMakeLists.txt'
+        cmakelists_path = state.source + src_root + os.sep + 'CMakeLists.txt'
 
         if not os.path.exists(cmakelists_path):
             return False
@@ -399,7 +399,7 @@ class CMakeTarget(BuildTarget):
             args.append('-DCMAKE_OSX_SYSROOT=' + sdk_path)
 
         args += self.options.to_list(CommandLineOptions.CMAKE_RULES)
-        args.append(state.source_path + self.src_root)
+        args.append(state.source + self.src_root)
 
         subprocess.check_call(args, cwd=state.build_path, env=self.environment)
 

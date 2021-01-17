@@ -49,11 +49,11 @@ class Builder(object):
 
         if arguments.target:
             self._target = self._targets[arguments.target]
-            state.source_path = state.root_source_path + self._target.name + os.sep
+            state.source = state.source_path + self._target.name + os.sep
             state.external_source = False
         else:
-            assert arguments.source_path
-            state.source_path = arguments.source_path + os.sep
+            assert arguments.source
+            state.source = arguments.source + os.sep
             state.external_source = True
             self._detect_target()
 
@@ -280,12 +280,14 @@ class Builder(object):
 
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument('--target', choices=self._targets.keys(), help='target to build')
-        group.add_argument('--source-path', metavar='path', help='path to target\'s source code')
+        group.add_argument('--source', metavar='path', help='path to target\'s source code')
 
         group = parser.add_argument_group()
         group.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
         group.add_argument('--checkout-commit', metavar='commit',
                            help='target\'s source code commit or tag to checkout')
+        group.add_argument('--source-path', metavar='path',
+                           help='path to store downloaded and checked out source code')
         group.add_argument('--build-path', metavar='path', help='target build path')
         group.add_argument('--output-path', metavar='path', help='output path for main targets')
         group.add_argument('--sdk-path-x64', metavar='path', help='path to macOS SDK for x86_64')

@@ -64,7 +64,7 @@ class Bzip2Target(MakeTarget):
             'ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'bzlib.h')
+        return os.path.exists(state.source + 'bzlib.h')
 
     def configure(self, state: BuildState):
         super().configure(state)
@@ -98,7 +98,7 @@ class DumbTarget(CMakeStaticDependencyTarget):
             '99bfac926aeb8d476562303312d9f47fd05b43803050cd889b44da34a9b2a4f9')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'include/dumb.h')
+        return os.path.exists(state.source + 'include/dumb.h')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -122,7 +122,7 @@ class FfiTarget(ConfigureMakeStaticDependencyTarget):
             '72fba7922703ddfa7a028d513ac15a85c8d54c8d67f55fa5a4802885dc652056')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'libffi.pc.in')
+        return os.path.exists(state.source + 'libffi.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -142,7 +142,7 @@ class FlacTarget(ConfigureMakeStaticDependencyTarget):
             '213e82bd716c9de6db2f98bcadbc4c24c7e2efe8c75939a1a84e28539c4e1748')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'FLAC/flac.pc.in')
+        return os.path.exists(state.source + 'FLAC/flac.pc.in')
 
 
 class FluidSynthTarget(CMakeStaticDependencyTarget):
@@ -161,7 +161,7 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
             '328fc290b5358544d8dea573f81cb1e97806bdf49e8507db067621242f3f0b8a')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'fluidsynth.pc.in')
+        return os.path.exists(state.source + 'fluidsynth.pc.in')
 
     def configure(self, state: BuildState):
         # TODO: Figure out why private dependencies aren't pulled
@@ -190,7 +190,7 @@ class FreetypeTarget(CMakeStaticDependencyTarget):
             '86a854d8905b19698bbc8f23b860bc104246ce4854dcea8e3b0fb21284f75784')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'include/freetype/freetype.h')
+        return os.path.exists(state.source + 'include/freetype/freetype.h')
 
 
 class GettextTarget(ConfigureMakeStaticDependencyTarget):
@@ -208,7 +208,7 @@ class GettextTarget(ConfigureMakeStaticDependencyTarget):
             'd20fcbb537e02dcf1383197ba05bd0734ef7bf5db06bdb241eb69b7d16b73192')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'gettext-runtime')
+        return os.path.exists(state.source + 'gettext-runtime')
 
 
 class GlibTarget(BuildTarget):
@@ -221,7 +221,7 @@ class GlibTarget(BuildTarget):
             '97df8670e32f9fd4f7392b0980e661dd625012015d58350da1e58e343f4af984')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'glib.doap')
+        return os.path.exists(state.source + 'glib.doap')
 
     def configure(self, state: BuildState):
         super().configure(state)
@@ -256,7 +256,7 @@ endian = 'little'
             '--buildtype=release',
             '--default-library=static',
             '--cross-file=' + cross_file,
-            state.source_path
+            state.source
         )
         subprocess.check_call(args, cwd=state.build_path, env=environment)
 
@@ -278,7 +278,7 @@ class GmakeTarget(ConfigureMakeDependencyTarget):
             'de1a441c4edf952521db30bfca80baae86a0ff1acd0a00402999344f04c45e82')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'doc/make.1')
+        return os.path.exists(state.source + 'doc/make.1')
 
     def post_build(self, state: BuildState):
         self.copy_to_bin(state, 'make', self.name)
@@ -295,7 +295,7 @@ class IconvTarget(ConfigureMakeStaticDependencyTarget):
             'e6a1b1b589654277ee790cce3734f07876ac4ccfaecbee8afa0b649cf529cc04')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'include/iconv.h.in')
+        return os.path.exists(state.source + 'include/iconv.h.in')
 
 
 class InstPatchTarget(CMakeStaticDependencyTarget):
@@ -312,7 +312,7 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
             '5fd01cd2ba7377e7a72caaf3b565d8fe088b5c8a14e0ea91516f0c87524bcf8a')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'libinstpatch-1.0.pc.in')
+        return os.path.exists(state.source + 'libinstpatch-1.0.pc.in')
 
 
 class IntlTarget(GettextTarget):
@@ -338,7 +338,7 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
             'd74b92ac33b0e3657123ddcf6728788c90dc84dcb6a52013d758af3c4af481bb')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'turbojpeg.h')
+        return os.path.exists(state.source + 'turbojpeg.h')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -363,7 +363,7 @@ class MadTarget(ConfigureMakeStaticDependencyTarget):
             'bbfac3ed6bfbc2823d3775ebb931087371e142bb0e9bb1bee51a76a6e0078690')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'mad.h')
+        return os.path.exists(state.source + 'mad.h')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -381,17 +381,17 @@ class MesonTarget(BuildTarget):
             '291dd38ff1cd55fcfca8fc985181dd39be0d3e5826e5f0013bf867be40117213')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'meson.py')
+        return os.path.exists(state.source + 'meson.py')
 
     def post_build(self, state: BuildState):
         script = '__main__.py'
-        shutil.copy(state.source_path + script, state.build_path)
+        shutil.copy(state.source + script, state.build_path)
 
         module = 'mesonbuild'
         module_path = state.build_path + module
         if os.path.exists(module_path):
             shutil.rmtree(module_path)
-        shutil.copytree(state.source_path + module, module_path)
+        shutil.copytree(state.source + module, module_path)
 
         dest_path = state.install_path + 'bin' + os.sep
         os.makedirs(dest_path, exist_ok=True)
@@ -409,7 +409,7 @@ class MikmodTarget(ConfigureMakeStaticDependencyTarget):
             'ad9d64dfc8f83684876419ea7cd4ff4a41d8bcd8c23ef37ecb3a200a16b46d19')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'libmikmod.pc.in')
+        return os.path.exists(state.source + 'libmikmod.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -426,7 +426,7 @@ class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
             '457ca5a6c179656d66c01505c0d95fafaead4329b9dbaa0f997d00a3508ad9de')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'libmodplug.pc.in')
+        return os.path.exists(state.source + 'libmodplug.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -451,7 +451,7 @@ class MoltenVKTarget(MakeTarget):
             'cd1712c571d4155f4143c435c8551a5cb8cbb311ad7fff03595322ab971682c0')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'MoltenVKPackaging.xcodeproj')
+        return os.path.exists(state.source + 'MoltenVKPackaging.xcodeproj')
 
     def configure(self, state: BuildState):
         # Unset platform to avoid using specified macOS deployment target and SDK
@@ -492,7 +492,7 @@ class Mpg123Target(ConfigureMakeStaticDependencyTarget):
             '081991540df7a666b29049ad870f293cfa28863b36488ab4d58ceaa7b5846454')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'libmpg123.pc.in')
+        return os.path.exists(state.source + 'libmpg123.pc.in')
 
 
 class NasmTarget(ConfigureMakeDependencyTarget):
@@ -505,7 +505,7 @@ class NasmTarget(ConfigureMakeDependencyTarget):
             '3caf6729c1073bf96629b57cee31eeb54f4f8129b01902c73428836550b30a3f')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'nasm.txt')
+        return os.path.exists(state.source + 'nasm.txt')
 
 
 class NinjaTarget(MakeTarget):
@@ -518,7 +518,7 @@ class NinjaTarget(MakeTarget):
             'ce35865411f0490368a8fc383f29071de6690cbadc27704734978221f25e2bed')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'src/ninja.cc')
+        return os.path.exists(state.source + 'src/ninja.cc')
 
     def build(self, state: BuildState):
         cmdlines = (
@@ -543,7 +543,7 @@ class OggTarget(ConfigureMakeStaticDependencyTarget):
             'fe5670640bd49e828d64d2879c31cb4dde9758681bb664f9bdbf159a01b0c76e')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'ogg.pc.in')
+        return os.path.exists(state.source + 'ogg.pc.in')
 
 
 class OpenALTarget(CMakeStaticDependencyTarget):
@@ -560,7 +560,7 @@ class OpenALTarget(CMakeStaticDependencyTarget):
             '2916b4fc24e23b0271ce0b3468832ad8b6d8441b1830215b28cc4fee6cc89297')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'openal.pc.in')
+        return os.path.exists(state.source + 'openal.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -585,7 +585,7 @@ class OpusTarget(ConfigureMakeStaticDependencyTarget):
             '65b58e1e25b2a114157014736a3d9dfeaad8d41be1c8179866f144a2fb44ff9d')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'opus.pc.in')
+        return os.path.exists(state.source + 'opus.pc.in')
 
 
 class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
@@ -599,7 +599,7 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
             '118d8601c12dd6a44f52423e68ca9083cc9f2bfe72da7a8c1acb22a80ae3550b')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'opusfile.pc.in')
+        return os.path.exists(state.source + 'opusfile.pc.in')
 
 
 class PcreTarget(ConfigureMakeStaticDependencyTarget):
@@ -616,7 +616,7 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
             '19108658b23b3ec5058edc9f66ac545ea19f9537234be1ec62b714c84399366d')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'pcre.h.in')
+        return os.path.exists(state.source + 'pcre.h.in')
 
 
 class PkgConfigTarget(ConfigureMakeDependencyTarget):
@@ -629,7 +629,7 @@ class PkgConfigTarget(ConfigureMakeDependencyTarget):
             '6fc69c01688c9458a57eb9a1664c9aba372ccda420a02bf4429fe610e7e7d591')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'pkg-config.1')
+        return os.path.exists(state.source + 'pkg-config.1')
 
     def post_build(self, state: BuildState):
         self.copy_to_bin(state, new_filename=self.name + '.exe')
@@ -645,7 +645,7 @@ class PngTarget(ConfigureMakeStaticDependencyTarget):
             '505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'libpng.pc.in')
+        return os.path.exists(state.source + 'libpng.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -662,7 +662,7 @@ class PortMidiTarget(CMakeTarget):
             '08e9a892bd80bdb1115213fb72dc29a7bf2ff108b378180586aa65f3cfd42e0f')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'pm_common/portmidi.h')
+        return os.path.exists(state.source + 'pm_common/portmidi.h')
 
     def post_build(self, state: BuildState):
         if os.path.exists(state.install_path):
@@ -670,8 +670,8 @@ class PortMidiTarget(CMakeTarget):
 
         include_path = state.install_path + os.sep + 'include'
         os.makedirs(include_path)
-        shutil.copy(state.source_path + 'pm_common/portmidi.h', include_path)
-        shutil.copy(state.source_path + 'porttime/porttime.h', include_path)
+        shutil.copy(state.source + 'pm_common/portmidi.h', include_path)
+        shutil.copy(state.source + 'porttime/porttime.h', include_path)
 
         lib_path = state.install_path + os.sep + 'lib' + os.sep
         os.makedirs(lib_path)
@@ -688,7 +688,7 @@ class SamplerateTarget(ConfigureMakeStaticDependencyTarget):
             '0a7eb168e2f21353fb6d84da152e4512126f7dc48ccb0be80578c565413444c1')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'samplerate.pc.in')
+        return os.path.exists(state.source + 'samplerate.pc.in')
 
 
 class Sdl2Target(CMakeStaticDependencyTarget):
@@ -708,7 +708,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
             'd8215b571a581be1332d2106f8036fcb03d12a70bae01e20f424976d275432bc')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'sdl2.pc.in')
+        return os.path.exists(state.source + 'sdl2.pc.in')
 
     LINKER_FLAGS = ' -L${libdir} -lSDL2'\
         ' -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa'\
@@ -747,7 +747,7 @@ class Sdl2ImageTarget(ConfigureMakeStaticDependencyTarget):
             'bdd5f6e026682f7d7e1be0b6051b209da2f402a2dd8bd1c4bd9c25ad263108d0')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'SDL2_image.pc.in')
+        return os.path.exists(state.source + 'SDL2_image.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -771,7 +771,7 @@ class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'SDL2_mixer.pc.in')
+        return os.path.exists(state.source + 'SDL2_mixer.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -791,7 +791,7 @@ class Sdl2NetTarget(ConfigureMakeStaticDependencyTarget):
             '15ce8a7e5a23dafe8177c8df6e6c79b6749a03fff1e8196742d3571657609d21')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'SDL2_net.pc.in')
+        return os.path.exists(state.source + 'SDL2_net.pc.in')
 
 
 class Sdl2TtfTarget(ConfigureMakeStaticDependencyTarget):
@@ -804,7 +804,7 @@ class Sdl2TtfTarget(ConfigureMakeStaticDependencyTarget):
             'a9eceb1ad88c1f1545cd7bd28e7cbc0b2c14191d40238f531a15b01b1b22cd33')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'SDL2_ttf.pc.in')
+        return os.path.exists(state.source + 'SDL2_ttf.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -825,7 +825,7 @@ class SndFileTarget(CMakeStaticDependencyTarget):
             '9df273302c4fa160567f412e10cc4f76666b66281e7ba48370fb544e87e4611a')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'sndfile.pc.in')
+        return os.path.exists(state.source + 'sndfile.pc.in')
 
 
 class SodiumTarget(ConfigureMakeStaticDependencyTarget):
@@ -838,7 +838,7 @@ class SodiumTarget(ConfigureMakeStaticDependencyTarget):
             '6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'libsodium.pc.in')
+        return os.path.exists(state.source + 'libsodium.pc.in')
 
 
 class VorbisTarget(ConfigureMakeStaticDependencyTarget):
@@ -851,7 +851,7 @@ class VorbisTarget(ConfigureMakeStaticDependencyTarget):
             'b33cc4934322bcbf6efcbacf49e3ca01aadbea4114ec9589d1b1e9d20f72954b')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'vorbis.pc.in')
+        return os.path.exists(state.source + 'vorbis.pc.in')
 
 
 class VpxTarget(ConfigureMakeDependencyTarget):
@@ -877,7 +877,7 @@ class VpxTarget(ConfigureMakeDependencyTarget):
         super().configure(state)
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'vpxstats.h')
+        return os.path.exists(state.source + 'vpxstats.h')
 
 
 class WebpTarget(CMakeStaticDependencyTarget):
@@ -901,7 +901,7 @@ class WebpTarget(CMakeStaticDependencyTarget):
             '98a052268cc4d5ece27f76572a7f50293f439c17a98e67c4ea0c7ed6f50ef043')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'src/libwebp.pc.in')
+        return os.path.exists(state.source + 'src/libwebp.pc.in')
 
 
 class YasmTarget(ConfigureMakeDependencyTarget):
@@ -914,7 +914,7 @@ class YasmTarget(ConfigureMakeDependencyTarget):
             '3dce6601b495f5b3d45b59f7d2492a340ee7e84b5beca17e48f862502bd5603f')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'libyasm.h')
+        return os.path.exists(state.source + 'libyasm.h')
 
 
 class ZlibTarget(ConfigureMakeDependencyTarget):
@@ -928,7 +928,7 @@ class ZlibTarget(ConfigureMakeDependencyTarget):
             'c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'zlib.pc.in')
+        return os.path.exists(state.source + 'zlib.pc.in')
 
 
 class ZMusicTarget(CMakeStaticDependencyTarget):
@@ -946,7 +946,7 @@ class ZMusicTarget(CMakeStaticDependencyTarget):
             '29a18a6a8d0db4978a9d5badbbd612be2337d64ef0d768e944ea70f526eae285')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + 'include/zmusic.h')
+        return os.path.exists(state.source + 'include/zmusic.h')
 
     def post_build(self, state: BuildState):
         if state.xcode:
@@ -958,7 +958,7 @@ class ZMusicTarget(CMakeStaticDependencyTarget):
         lib_path = state.install_path + os.sep + 'lib' + os.sep
         os.makedirs(lib_path)
 
-        shutil.copytree(state.source_path + 'include', state.install_path + os.sep + 'include')
+        shutil.copytree(state.source + 'include', state.install_path + os.sep + 'include')
 
         args = (
             'libtool',

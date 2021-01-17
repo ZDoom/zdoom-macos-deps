@@ -223,7 +223,7 @@ class RudeTarget(ChocolateDoomBaseTarget):
 
     def post_build(self, state: BuildState):
         super().post_build(state)
-        shutil.copy(state.source_path + '/data/rude.wad', state.install_path)
+        shutil.copy(state.source + '/data/rude.wad', state.install_path)
 
 
 class WoofTarget(ChocolateDoomBaseTarget):
@@ -280,7 +280,7 @@ class EDuke32Target(MakeMainTarget):
 
     def detect(self, state: BuildState) -> bool:
         def has_bundle(name: str) -> bool:
-            probe_path = f'{state.source_path}/platform/Apple/bundles/{name}.app'
+            probe_path = f'{state.source}/platform/Apple/bundles/{name}.app'
             return os.path.exists(probe_path)
 
         return has_bundle('EDuke32') and not has_bundle('NBlood')
@@ -304,7 +304,7 @@ class NBloodTarget(EDuke32Target):
         state.checkout_git('https://github.com/nukeykt/NBlood.git')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + os.sep + 'nblood.pk3')
+        return os.path.exists(state.source + os.sep + 'nblood.pk3')
 
 
 class QuakespasmTarget(MakeMainTarget):
@@ -327,4 +327,4 @@ class QuakespasmTarget(MakeMainTarget):
         state.checkout_git('https://git.code.sf.net/p/quakespasm/quakespasm')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source_path + os.sep + 'Quakespasm.txt')
+        return os.path.exists(state.source + os.sep + 'Quakespasm.txt')
