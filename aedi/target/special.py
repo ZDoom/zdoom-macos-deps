@@ -30,6 +30,8 @@ class CleanTarget(Target):
         self.args = ()
 
     def build(self, state: BuildState):
+        assert not state.xcode
+
         args = ('git', 'clean') + self.args
         subprocess.check_call(args, cwd=state.root_path)
 
@@ -54,6 +56,8 @@ class TestDepsTarget(BuildTarget):
         self.multi_platform = False
 
     def build(self, state: BuildState):
+        assert not state.xcode
+
         test_path = state.root_path + 'test'
 
         for entry in os.scandir(test_path):
