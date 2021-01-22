@@ -405,8 +405,7 @@ class CMakeTarget(BuildTarget):
 
     def build(self, state: BuildState):
         if state.xcode:
-            # TODO: support case-sensitive file system
-            args = ('open', self.name + '.xcodeproj')
+            args = ('cmake', '--open', '.')
         else:
             args = ['make', '-j', state.jobs]
 
