@@ -413,4 +413,4 @@ class CMakeTarget(BuildTarget):
             if state.verbose:
                 args.append('VERBOSE=1')
 
-        subprocess.check_call(args, cwd=state.build_path)
+        subprocess.check_call(args, cwd=state.build_path, env=self.environment)
