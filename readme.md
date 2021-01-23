@@ -6,19 +6,19 @@ This repository contains all binary dependencies required to build macOS applica
 
 Download source code, and build a target
 
-```
+```sh
 build.py --target=<target-name>
 ```
 
 Build target from existing source code
 
-```
+```sh
 build.py --source=<path-to-source-code>
 ```
 
 Generate Xcode project instead of building target, and open it
 
-```
+```sh
 build.py --source=...|--target=... --xcode
 ```
 
