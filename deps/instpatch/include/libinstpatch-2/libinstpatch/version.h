@@ -26,7 +26,7 @@
  * IPATCH_VERSION: (skip)
  * libInstPatch version static string.
  */
-#define IPATCH_VERSION       "1.1.5"
+#define IPATCH_VERSION       "1.1.6"
 
 /**
  * IPATCH_VERSION_MAJOR: (skip)
@@ -44,7 +44,7 @@
  * IPATCH_VERSION_MICRO: (skip)
  * libInstPatch micro version integer.
  */
-#define IPATCH_VERSION_MICRO 5
+#define IPATCH_VERSION_MICRO 6
 
 void ipatch_version (guint *major, guint *minor, guint *micro);
 
