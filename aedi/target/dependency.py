@@ -308,8 +308,8 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/swami/libinstpatch/archive/v1.1.5.tar.gz',
-            '5fd01cd2ba7377e7a72caaf3b565d8fe088b5c8a14e0ea91516f0c87524bcf8a')
+            'https://github.com/swami/libinstpatch/archive/v1.1.6.tar.gz',
+            '8e9861b04ede275d712242664dab6ffa9166c7940fea3b017638681d25e10299')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'libinstpatch-1.0.pc.in')
