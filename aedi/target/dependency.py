@@ -678,7 +678,7 @@ class PortMidiTarget(CMakeTarget):
         shutil.copy(state.build_path + 'libportmidi_s.a', lib_path + 'libportmidi.a')
 
 
-class SamplerateTarget(ConfigureMakeStaticDependencyTarget):
+class SamplerateTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='samplerate'):
         super().__init__(name)
 

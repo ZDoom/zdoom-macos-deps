@@ -39,6 +39,7 @@
 /png/bin/png-fix-itxt
 /png/bin/pngfix
 /samplerate/bin/
+/samplerate/lib/cmake/
 /sdl2/include/SDL2/SDL_config_*.h
 /sdl2/include/SDL2/SDL_copying.h
 /sdl2/include/SDL2/SDL_test*.h
