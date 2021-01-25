@@ -821,8 +821,8 @@ class SndFileTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsndfile/libsndfile/releases/download/v1.0.30/libsndfile-1.0.30.tar.bz2',
-            '9df273302c4fa160567f412e10cc4f76666b66281e7ba48370fb544e87e4611a')
+            'https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2',
+            'a8cfb1c09ea6e90eff4ca87322d4168cdbe5035cb48717b40bf77e751cc02163')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'sndfile.pc.in')
