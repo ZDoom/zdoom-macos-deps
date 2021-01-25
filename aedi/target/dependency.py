@@ -684,8 +684,8 @@ class SamplerateTarget(ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'http://www.mega-nerd.com/SRC/libsamplerate-0.1.9.tar.gz',
-            '0a7eb168e2f21353fb6d84da152e4512126f7dc48ccb0be80578c565413444c1')
+            'https://github.com/libsndfile/libsamplerate/releases/download/0.2.1/libsamplerate-0.2.1.tar.bz2',
+            'f6323b5e234753579d70a0af27796dde4ebeddf58aae4be598e39b3cee00c90a')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'samplerate.pc.in')
