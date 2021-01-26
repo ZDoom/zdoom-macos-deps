@@ -271,6 +271,12 @@ class DevilutionXTarget(CMakeMainTarget):
         super().configure(state)
 
 
+class DevilutionXHellfireTarget(DevilutionXTarget):
+    def __init__(self, name='devilutionx-hellfire'):
+        super().__init__(name)
+        self.options['HELLFIRE'] = 'ON'
+
+
 class EDuke32Target(MakeMainTarget):
     def __init__(self, name='eduke32'):
         super().__init__(name)

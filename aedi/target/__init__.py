@@ -36,6 +36,7 @@ def targets():
         DoomRetroTarget(),
         Doom64EXTarget(),
         DevilutionXTarget(),
+        DevilutionXHellfireTarget(),
         EDuke32Target(),
         NBloodTarget(),
         QuakespasmTarget(),
