@@ -25,7 +25,7 @@ def targets():
     return (
         GZDoomTarget(),
         QZDoomTarget(),
-        LZDoomTarget(),
+        LZDoom3Target(),
         RazeTarget(),
         AccTarget(),
         PrBoomPlusTarget(),

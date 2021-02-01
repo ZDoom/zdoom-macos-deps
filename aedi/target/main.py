@@ -119,13 +119,14 @@ class QZDoomTarget(GZDoomTarget):
         state.checkout_git('https://github.com/madame-rachelle/qzdoom.git')
 
 
-class LZDoomTarget(ZDoomBaseTarget):
-    def __init__(self, name='lzdoom'):
+class LZDoom3Target(ZDoomBaseTarget):
+    def __init__(self, name='lzdoom3'):
         super().__init__(name)
         self.unsupported_architectures = ('arm64',)
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/drfrag666/gzdoom.git')
+        # TODO: checkout g3.3mgw branch
 
     def initialize(self, state: BuildState):
         super().initialize(state)
