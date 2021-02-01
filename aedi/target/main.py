@@ -119,6 +119,14 @@ class QZDoomTarget(GZDoomTarget):
         state.checkout_git('https://github.com/madame-rachelle/qzdoom.git')
 
 
+class LZDoomTarget(GZDoomTarget):
+    def __init__(self, name='lzdoom'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/drfrag666/gzdoom.git')
+
+
 class LZDoom3Target(ZDoomBaseTarget):
     def __init__(self, name='lzdoom3'):
         super().__init__(name)
