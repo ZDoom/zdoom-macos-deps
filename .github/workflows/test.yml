@@ -12,4 +12,4 @@ jobs:
     - name: Run tests
       run: |
         # Remove SDKROOT when 11.0+ SDK will become the default one
-        SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.0.sdk ./build.py --target=test-deps
+        SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk ./build.py --target=test-deps
