@@ -556,8 +556,8 @@ class OpenALTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://openal-soft.org/openal-releases/openal-soft-1.21.0.tar.bz2',
-            '2916b4fc24e23b0271ce0b3468832ad8b6d8441b1830215b28cc4fee6cc89297')
+            'https://openal-soft.org/openal-releases/openal-soft-1.21.1.tar.bz2',
+            'c8ad767e9a3230df66756a21cc8ebf218a9d47288f2514014832204e666af5d8')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'openal.pc.in')
