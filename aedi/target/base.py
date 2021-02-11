@@ -218,26 +218,23 @@ Cflags: -I${{includedir}} {cflags}
     @staticmethod
     def make_platform_header(state: BuildState, header: str):
         include_path = state.install_path + os.sep + 'include' + os.sep
-        include_platform_path = include_path
-
         header_parts = header.rsplit(os.sep, 1)
+
         if len(header_parts) == 1:
             header_parts.insert(0, '')
 
-        include_platform_path += header_parts[0] + os.sep + state.architecture()
-        os.makedirs(include_platform_path, exist_ok=True)
+        common_header = include_path + header
+        platform_header = f'{include_path}{header_parts[0]}/_aedi_{state.architecture()}_{header_parts[1]}'
+        shutil.move(common_header, platform_header)
 
-        root_header = include_path + header
-        shutil.move(root_header, include_platform_path)
-
-        with open(root_header, 'w') as f:
+        with open(common_header, 'w') as f:
             f.write(f'''
 #pragma once
 
 #if defined(__x86_64__)
-#   include "x86_64/{header_parts[1]}"
+#   include "_aedi_x86_64_{header_parts[1]}"
 #elif defined(__aarch64__)
-#   include "arm64/{header_parts[1]}"
+#   include "_aedi_arm64_{header_parts[1]}"
 #else
 #   error Unknown architecture
 #endif
