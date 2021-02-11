@@ -2,9 +2,9 @@
 #pragma once
 
 #if defined(__x86_64__)
-#   include "x86_64/ffitarget.h"
+#   include "_aedi_x86_64_ffitarget.h"
 #elif defined(__aarch64__)
-#   include "arm64/ffitarget.h"
+#   include "_aedi_arm64_ffitarget.h"
 #else
 #   error Unknown architecture
 #endif
