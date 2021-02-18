@@ -133,8 +133,7 @@ class LZDoom3Target(ZDoomBaseTarget):
         self.unsupported_architectures = ('arm64',)
 
     def prepare_source(self, state: BuildState):
-        state.checkout_git('https://github.com/drfrag666/gzdoom.git')
-        # TODO: checkout g3.3mgw branch
+        state.checkout_git('https://github.com/drfrag666/gzdoom.git', branch='g3.3mgw')
 
     def initialize(self, state: BuildState):
         super().initialize(state)
