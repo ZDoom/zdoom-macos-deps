@@ -69,9 +69,12 @@ class BuildState:
         return self.platform.cxx_compiler if self.platform else ''
 
     def checkout_git(self, url: str, branch: str = 'master'):
-        if not os.path.exists(self.source):
+        if os.path.exists(self.source):
+            args = ('git', 'fetch', '--all', '--tags')
+            subprocess.run(args, cwd=self.source, check=True)
+        else:
             args = ('git', 'clone', '--recurse-submodules', url, self.source)
-            subprocess.check_call(args, cwd=self.root_path)
+            subprocess.run(args, cwd=self.root_path, check=True)
 
         if self.checkout_commit:
             checkout_args = (self.checkout_commit,)
