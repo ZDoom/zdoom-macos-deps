@@ -78,6 +78,7 @@ class BuildState:
 
         if self.checkout_commit:
             checkout_args = (self.checkout_commit,)
+            need_pull = False
         else:
             args = ('git', 'show-ref', '--quiet', 'refs/heads/' + branch)
             branch_exists = 0 == subprocess.run(args, cwd=self.source).returncode
@@ -87,8 +88,14 @@ class BuildState:
             else:
                 checkout_args = ('-b', branch, 'origin/' + branch)
 
+            need_pull = True
+
         args = ('git', 'checkout') + checkout_args
         subprocess.run(args, cwd=self.source, check=True)
+
+        if need_pull:
+            args = ('git', 'pull')
+            subprocess.run(args, cwd=self.source, check=True)
 
     def download_source(self, url: str, checksum: str):
         if self.external_source:
