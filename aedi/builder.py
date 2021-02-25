@@ -53,7 +53,7 @@ class Builder(object):
             state.external_source = False
         else:
             assert arguments.source
-            state.source = arguments.source + os.sep
+            state.source = os.path.abspath(arguments.source) + os.sep
             state.external_source = True
             self._detect_target()
 
