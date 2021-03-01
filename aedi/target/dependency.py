@@ -942,46 +942,8 @@ class ZMusicTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/coelckers/ZMusic/archive/1.1.4.tar.gz',
-            '29a18a6a8d0db4978a9d5badbbd612be2337d64ef0d768e944ea70f526eae285')
+            'https://github.com/coelckers/ZMusic/archive/1.1.5.tar.gz',
+            '4f57555629a5093f866fab03c3b0ba74a650949824904ce4983c860039700090')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'include/zmusic.h')
-
-    def post_build(self, state: BuildState):
-        if state.xcode:
-            return
-
-        if os.path.exists(state.install_path):
-            shutil.rmtree(state.install_path)
-
-        lib_path = state.install_path + os.sep + 'lib' + os.sep
-        os.makedirs(lib_path)
-
-        shutil.copytree(state.source + 'include', state.install_path + os.sep + 'include')
-
-        args = (
-            'libtool',
-            '-static',
-            '-o', lib_path + 'libzmusic.a',
-            'source/libzmusic.a',
-            'thirdparty/adlmidi/libadl.a',
-            'thirdparty/dumb/libdumb.a',
-            'thirdparty/game-music-emu/gme/libgme.a',
-            'thirdparty/oplsynth/liboplsynth.a',
-            'thirdparty/opnmidi/libopn.a',
-            'thirdparty/timidity/libtimidity.a',
-            'thirdparty/timidityplus/libtimidityplus.a',
-            'thirdparty/wildmidi/libwildmidi.a',
-        )
-        subprocess.check_call(args, cwd=state.build_path)
-
-        args = (
-            'libtool',
-            '-static',
-            '-o', lib_path + 'libzmusiclite.a',
-            'source/libzmusiclite.a',
-            'thirdparty/dumb/libdumb.a',
-            'thirdparty/game-music-emu/gme/libgme.a',
-        )
-        subprocess.check_call(args, cwd=state.build_path)
