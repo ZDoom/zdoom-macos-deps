@@ -47,6 +47,9 @@ class Builder(object):
 
         state.platform = self._platforms[0]
 
+        if arguments.source_path:
+            state.source_path = os.path.abspath(arguments.source_path)
+
         if arguments.target:
             self._target = self._targets[arguments.target]
             state.source = state.source_path + self._target.name + os.sep
