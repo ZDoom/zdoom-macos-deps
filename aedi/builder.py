@@ -38,8 +38,6 @@ class Builder(object):
         state = self._state = BuildState()
         state.xcode = arguments.xcode
         state.checkout_commit = arguments.checkout_commit
-        state.build_path = arguments.build_path
-        state.output_path = arguments.output_path
         state.verbose = arguments.verbose
 
         self._platforms = []
@@ -66,11 +64,15 @@ class Builder(object):
         if os.path.exists(patch_path):
             state.patch_path = patch_path
 
-        if not state.build_path:
+        if arguments.build_path:
+            state.build_path = os.path.abspath(arguments.build_path)
+        else:
             state.build_path = state.root_path + 'build' + os.sep + self._target.name + \
-                               os.sep + (state.xcode and 'xcode' or 'make')
+                               os.sep + ('xcode' if state.xcode else 'make')
 
-        if not state.output_path:
+        if arguments.output_path:
+            state.output_path = os.path.abspath(arguments.output_path)
+        else:
             state.output_path = state.root_path + 'output'
 
         state.build_path += os.sep
@@ -86,7 +88,7 @@ class Builder(object):
 
         def adjust_sdk_path(path: str) -> str:
             if path:
-                return path
+                return os.path.abspath(path)
 
             sdk_probe_path = f'{state.root_path}sdk{os.sep}MacOSX{os_version}.sdk'
             return sdk_probe_path if os.path.exists(sdk_probe_path) else None
