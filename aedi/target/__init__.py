@@ -30,6 +30,7 @@ def targets():
         RazeTarget(),
         AccTarget(),
         PrBoomPlusTarget(),
+        DsdaDoom(),
         ChocolateDoomTarget(),
         CrispyDoomTarget(),
         RudeTarget(),

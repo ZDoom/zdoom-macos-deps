@@ -181,6 +181,14 @@ class PrBoomPlusTarget(CMakeMainTarget):
         super().configure(state)
 
 
+class DsdaDoom(PrBoomPlusTarget):
+    def __init__(self, name='dsda-doom'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/kraflab/dsda-doom.git')
+
+
 class ChocolateDoomBaseTarget(CMakeMainTarget):
     def __init__(self, name=None):
         super().__init__(name)
