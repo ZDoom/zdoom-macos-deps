@@ -44,9 +44,11 @@ class BuildState:
         self.output_path = None
         self.install_path = None
 
+        self.checkout_commit = None
+        self.skip_checkout = False
+
         self.platform = None
         self.xcode = False
-        self.checkout_commit = None
         self.verbose = False
         self.jobs = 1
 
@@ -70,9 +72,13 @@ class BuildState:
 
     def checkout_git(self, url: str, branch: str = 'master'):
         if os.path.exists(self.source):
+            if self.skip_checkout:
+                return
+
             args = ('git', 'fetch', '--all', '--tags')
             subprocess.run(args, cwd=self.source, check=True)
         else:
+            assert not self.skip_checkout
             args = ('git', 'clone', '--recurse-submodules', url, self.source)
             subprocess.run(args, cwd=self.root_path, check=True)
 
