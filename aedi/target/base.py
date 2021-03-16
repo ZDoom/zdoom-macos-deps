@@ -105,7 +105,7 @@ class BuildTarget(Target):
         if os_version:
             self._update_env(varname, '-mmacosx-version-min=' + os_version)
 
-    def install(self, state: BuildState, options: CommandLineOptions = None, tool: str = 'make'):
+    def install(self, state: BuildState, options: CommandLineOptions = None, tool: str = 'gmake'):
         if state.xcode:
             return
 
@@ -257,7 +257,7 @@ Cflags: -I${{includedir}} {cflags}
 class MakeTarget(BuildTarget):
     def __init__(self, name=None):
         super().__init__(name)
-        self.tool = 'make'
+        self.tool = 'gmake'
 
     def configure(self, state: BuildState):
         super().configure(state)
@@ -404,7 +404,7 @@ class CMakeTarget(BuildTarget):
         if state.xcode:
             args = ('cmake', '--open', '.')
         else:
-            args = ['make', '-j', state.jobs]
+            args = ['gmake', '-j', state.jobs]
 
             if state.verbose:
                 args.append('VERBOSE=1')
