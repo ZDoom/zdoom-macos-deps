@@ -928,7 +928,26 @@ class ZlibTarget(ConfigureMakeDependencyTarget):
             'c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'zlib.pc.in')
+        return os.path.exists(state.source + 'zlib.pc.in') \
+            and not os.path.exists(state.source + 'zlib-ng.h')
+
+
+class ZlibNgTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='zlib-ng'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['ZLIB_COMPAT'] = 'YES'
+        opts['ZLIB_ENABLE_TESTS'] = 'NO'
+        opts['ZLIB_FULL_VERSION'] = '1.2.11'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/zlib-ng/zlib-ng/archive/2.0.1.tar.gz',
+            '8599893f9b78bf979c1a1d6549b730367c9186560c6879590354998cc55428cf')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'zlib-ng.h')
 
 
 class ZMusicTarget(CMakeStaticDependencyTarget):

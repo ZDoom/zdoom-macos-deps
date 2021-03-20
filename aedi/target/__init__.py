@@ -84,6 +84,7 @@ def targets():
         WebpTarget(),
         YasmTarget(),
         ZlibTarget(),
+        ZlibNgTarget(),
         ZMusicTarget(),
 
         # Special
