@@ -83,7 +83,6 @@ def targets():
         VpxTarget(),
         WebpTarget(),
         YasmTarget(),
-        ZlibTarget(),
         ZlibNgTarget(),
         ZMusicTarget(),
 

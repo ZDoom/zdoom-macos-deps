@@ -917,21 +917,6 @@ class YasmTarget(ConfigureMakeDependencyTarget):
         return os.path.exists(state.source + 'libyasm.h')
 
 
-class ZlibTarget(ConfigureMakeDependencyTarget):
-    def __init__(self, name='zlib'):
-        super().__init__(name)
-        self.options['--static'] = None
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://zlib.net/zlib-1.2.11.tar.gz',
-            'c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1')
-
-    def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'zlib.pc.in') \
-            and not os.path.exists(state.source + 'zlib-ng.h')
-
-
 class ZlibNgTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='zlib-ng'):
         super().__init__(name)
