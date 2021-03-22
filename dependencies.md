@@ -43,6 +43,20 @@
 |TiMidity|||ZMusic||
 |TiMidity++|[Homepage](http://timidity.sourceforge.net/)|[timidity.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/timidity.rb)|ZMusic||
 |WildMIDI|[Homepage](https://www.mindwerks.net/projects/wildmidi) / [Download](https://github.com/Mindwerks/wildmidi/releases)||ZMusic||
+|zlib-ng|[Homepage](https://github.com/zlib-ng/zlib-ng)|[zlib-ng.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/zlib-ng.rb)|*ZDoom||
 |ZMusic|[Homepage](https://github.com/coelckers/ZMusic)||*ZDoom||
 
 Note: OPL implementations used by ZMusic are not listed
+
+**Other dependencies**
+
+|Name|Links|Homebrew Formula|Pulled by|Notes|
+|---|---|---|---|---|
+|freetype|[Homepage](https://www.freetype.org/)|[freetype.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/freetype.rb)|SDL2_ttf||
+|libsodium|[Homepage](https://libsodium.org/)|[libsodium.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libsodium.rb)|DevilutionX||
+|libvpx|[Homepage](https://www.webmproject.org/code/)|[libvpx.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libvpx.rb)|Raze||
+|SDL2|[Homepage](https://www.libsdl.org/)|[sdl2.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2.rb)|PrBoom+, DevilutionX, *ZDoom SDL backend||
+|SDL2_image|[Homepage](https://www.libsdl.org/projects/SDL_image/)|[sdl2_image.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_image.rb)|PrBoom+||
+|SDL2_mixer|[Homepage](https://www.libsdl.org/projects/SDL_mixer/)|[sdl2_mixer.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_mixer.rb)|PrBoom+, DevilutionX||
+|SDL2_net|[Homepage](https://www.libsdl.org/projects/SDL_net/)|[sdl2_net.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_net.rb)|PrBoom+||
+|SDL2_ttf|[Homepage](https://www.libsdl.org/projects/SDL_ttf/)|[sdl2_ttf.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_ttf.rb)|DevilutionX||
