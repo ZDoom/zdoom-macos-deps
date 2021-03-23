@@ -28,7 +28,8 @@
 |GLib|[Homepage](https://developer.gnome.org/glib/)|[glib.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/glib.rb)|FluidSynth||
 |libADLMIDI|[Homepage](https://github.com/Wohlstand/libADLMIDI)||ZMusic||
 |libffi|[Homepage](https://sourceware.org/libffi/)|[libffi.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libffi.rb)|GLib|For libinstpatch|
-|libflac|[Homepage](https://xiph.org/flac/) / [Download](https://github.com/xiph/flac/releases)|[flac.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/flac.rb)|libsndfile||
+|libFLAC|[Homepage](https://xiph.org/flac/) / [Download](https://github.com/xiph/flac/releases)|[flac.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/flac.rb)|libsndfile||
+|libiconv|[Homepage](https://www.gnu.org/software/libiconv/)|[libiconv.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libiconv.rb)|gettext||
 |libinstpatch|[Homepage](https://github.com/swami/libinstpatch/)||FluidSynth||
 |libjpeg-turbo|[Homepage](https://libjpeg-turbo.org/)|[jpeg-turbo.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/jpeg-turbo.rb)|*ZDoom||
 |libogg|[Homepage](https://www.xiph.org/ogg/) / [Download](https://github.com/xiph/ogg/releases)|[libogg.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libogg.rb)|libsndfile||
@@ -53,8 +54,14 @@ Note: OPL implementations used by ZMusic are not listed
 |Name|Links|Homebrew Formula|Pulled by|Notes|
 |---|---|---|---|---|
 |freetype|[Homepage](https://www.freetype.org/)|[freetype.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/freetype.rb)|SDL2_ttf||
+|GNU Make|[Homepage](https://www.gnu.org/software/make/)|[make.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/make.rb)|||
+|libmikmod|[Homepage](https://mikmod.sourceforge.io/)|[libmikmod.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libmikmod.rb)|SDL2_mixer||
 |libsodium|[Homepage](https://libsodium.org/)|[libsodium.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libsodium.rb)|DevilutionX||
 |libvpx|[Homepage](https://www.webmproject.org/code/)|[libvpx.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libvpx.rb)|Raze||
+|mad|[Homepage](https://www.underbit.com/products/mad/)|[mad.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/mad.rb)|PrBoom+||
+|meson|[Homepage](https://mesonbuild.com/)|[meson.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/meson.rb)|GLib|build only|
+|nasm|[Homepage](https://www.nasm.us/)|[nasm.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/nasm.rb)|libFLAC|build only|
+|ninja|[Homepage](https://ninja-build.org/)|[ninja.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/ninja.rb)|GLib|build only|
 |SDL2|[Homepage](https://www.libsdl.org/)|[sdl2.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2.rb)|PrBoom+, DevilutionX, *ZDoom SDL backend||
 |SDL2_image|[Homepage](https://www.libsdl.org/projects/SDL_image/)|[sdl2_image.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_image.rb)|PrBoom+||
 |SDL2_mixer|[Homepage](https://www.libsdl.org/projects/SDL_mixer/)|[sdl2_mixer.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_mixer.rb)|PrBoom+, DevilutionX||
