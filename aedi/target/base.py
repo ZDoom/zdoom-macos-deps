@@ -66,7 +66,6 @@ class BuildTarget(Target):
         self.environment = os.environ.copy()
         self.options = CommandLineOptions()
         self.multi_platform = True
-        self.search_prefix = True
 
     def configure(self, state: BuildState):
         os.makedirs(state.build_path, exist_ok=True)
@@ -85,17 +84,13 @@ class BuildTarget(Target):
         for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
             varname = f'{prefix}FLAGS'
 
-            if self.search_prefix:
-                self._update_env(varname, f'-I{state.include_path}')
-
+            self._update_env(varname, f'-I{state.include_path}')
             self._set_sdk(state, varname)
             self._set_os_version(state, varname)
 
         ldflags = 'LDFLAGS'
 
-        if self.search_prefix:
-            self._update_env(ldflags, f'-L{state.lib_path}')
-
+        self._update_env(ldflags, f'-L{state.lib_path}')
         self._set_sdk(state, ldflags)
         self._set_os_version(state, ldflags)
 

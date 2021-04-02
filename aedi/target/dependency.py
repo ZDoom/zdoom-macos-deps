@@ -862,8 +862,6 @@ class VpxTarget(ConfigureMakeDependencyTarget):
         opts['--disable-examples'] = None
         opts['--disable-unit-tests'] = None
 
-        self.search_prefix = False
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/webmproject/libvpx/archive/v1.10.0.tar.gz',
