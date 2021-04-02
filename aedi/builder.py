@@ -120,8 +120,6 @@ class Builder(object):
                 break
 
     def run(self):
-        self._create_prefix_directory()
-
         state = self._state
         target = self._target
         target.prepare_source(state)
@@ -132,6 +130,11 @@ class Builder(object):
             state.install_path = state.output_path + target.name + os.sep
 
         assert state.install_path
+
+        if os.path.exists(state.install_path):
+            shutil.rmtree(state.install_path)
+
+        self._create_prefix_directory()
 
         if target.multi_platform and not state.xcode:
             self._build_multiple_platforms(target)
