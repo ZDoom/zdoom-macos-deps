@@ -131,7 +131,7 @@ class Builder(object):
 
         assert state.install_path
 
-        if os.path.exists(state.install_path):
+        if not state.xcode and os.path.exists(state.install_path):
             shutil.rmtree(state.install_path)
 
         self._create_prefix_directory()
