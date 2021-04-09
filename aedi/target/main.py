@@ -149,7 +149,7 @@ class LZDoom3Target(ZDoomBaseTarget):
         opts['DYN_SNDFILE'] = 'NO'
 
 
-class RazeTarget(ZDoomBaseTarget):
+class RazeTarget(ZDoomVulkanBaseTarget):
     def __init__(self, name='raze'):
         super().__init__(name)
 
