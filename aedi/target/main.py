@@ -82,12 +82,9 @@ class ZDoomBaseTarget(CMakeMainTarget):
         super().configure(state)
 
 
-class GZDoomTarget(ZDoomBaseTarget):
-    def __init__(self, name='gzdoom'):
+class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
+    def __init__(self, name=None):
         super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.checkout_git('https://github.com/coelckers/gzdoom.git')
 
     def post_build(self, state: BuildState):
         # Put MoltenVK library into application bundle
@@ -111,7 +108,15 @@ class GZDoomTarget(ZDoomBaseTarget):
         super().post_build(state)
 
 
-class QZDoomTarget(GZDoomTarget):
+class GZDoomTarget(ZDoomVulkanBaseTarget):
+    def __init__(self, name='gzdoom'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/coelckers/gzdoom.git')
+
+
+class QZDoomTarget(ZDoomVulkanBaseTarget):
     def __init__(self, name='qzdoom'):
         super().__init__(name)
 
@@ -119,7 +124,7 @@ class QZDoomTarget(GZDoomTarget):
         state.checkout_git('https://github.com/madame-rachelle/qzdoom.git')
 
 
-class LZDoomTarget(GZDoomTarget):
+class LZDoomTarget(ZDoomVulkanBaseTarget):
     def __init__(self, name='lzdoom'):
         super().__init__(name)
 
