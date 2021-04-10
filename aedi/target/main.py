@@ -131,6 +131,9 @@ class LZDoomTarget(ZDoomVulkanBaseTarget):
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/drfrag666/gzdoom.git')
 
+    def detect(self, state: BuildState) -> bool:
+        return super().detect(state) and not os.path.exists(state.source + 'libraries/zmusic')
+
 
 class LZDoom3Target(ZDoomBaseTarget):
     def __init__(self, name='lzdoom3'):
@@ -139,6 +142,9 @@ class LZDoom3Target(ZDoomBaseTarget):
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/drfrag666/gzdoom.git', branch='g3.3mgw')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'ico_lzdoom.png') and os.path.exists(state.source + 'libraries/zmusic')
 
     def initialize(self, state: BuildState):
         super().initialize(state)
