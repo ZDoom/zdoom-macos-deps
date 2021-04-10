@@ -37,8 +37,6 @@ class Builder(object):
 
         state = self._state = BuildState()
         state.xcode = arguments.xcode
-        state.checkout_commit = arguments.checkout_commit
-        state.skip_checkout = arguments.skip_checkout
         state.verbose = arguments.verbose
 
         self._platforms = []
@@ -290,12 +288,6 @@ class Builder(object):
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument('--target', choices=self._targets.keys(), help='target to build')
         group.add_argument('--source', metavar='path', help='path to target\'s source code')
-
-        group = parser.add_mutually_exclusive_group()
-        group.add_argument('--checkout-commit', metavar='commit',
-                           help='source code commit or tag to checkout')
-        group.add_argument('--skip-checkout', action='store_true',
-                           help='avoid any operations with source code')
 
         group = parser.add_argument_group()
         group.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')

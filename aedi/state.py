@@ -44,9 +44,6 @@ class BuildState:
         self.output_path = None
         self.install_path = None
 
-        self.checkout_commit = None
-        self.skip_checkout = False
-
         self.platform = None
         self.xcode = False
         self.verbose = False
@@ -70,37 +67,15 @@ class BuildState:
     def cxx_compiler(self) -> str:
         return self.platform.cxx_compiler if self.platform else ''
 
-    def checkout_git(self, url: str, branch: str = 'master'):
+    def checkout_git(self, url: str, branch: str = None):
         if os.path.exists(self.source):
-            if self.skip_checkout:
-                return
+            return
 
-            args = ('git', 'fetch', '--all', '--tags')
-            subprocess.run(args, cwd=self.source, check=True)
-        else:
-            assert not self.skip_checkout
-            args = ('git', 'clone', '--recurse-submodules', url, self.source)
-            subprocess.run(args, cwd=self.root_path, check=True)
+        args = ('git', 'clone', '--recurse-submodules', url, self.source)
+        subprocess.run(args, cwd=self.root_path, check=True)
 
-        if self.checkout_commit:
-            checkout_args = (self.checkout_commit,)
-            need_pull = False
-        else:
-            args = ('git', 'show-ref', '--quiet', 'refs/heads/' + branch)
-            branch_exists = 0 == subprocess.run(args, cwd=self.source).returncode
-
-            if branch_exists:
-                checkout_args = (branch,)
-            else:
-                checkout_args = ('-b', branch, 'origin/' + branch)
-
-            need_pull = True
-
-        args = ('git', 'checkout') + checkout_args
-        subprocess.run(args, cwd=self.source, check=True)
-
-        if need_pull:
-            args = ('git', 'pull')
+        if branch:
+            args = ('git', 'checkout', '-b', branch, 'origin/' + branch)
             subprocess.run(args, cwd=self.source, check=True)
 
     def download_source(self, url: str, checksum: str):
