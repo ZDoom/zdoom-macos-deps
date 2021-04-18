@@ -335,9 +335,16 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
         # Workaround for missing frameworks in dependencies, no clue what's wrong at the moment
         self.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
 
+    def local_version(self) -> str:
+        return '1.1.6'
+
+    def remote_version(self) -> str:
+        return get_latest_github_version('swami/libinstpatch', strip_prefix='v')
+
     def prepare_source(self, state: BuildState):
+        version = self.local_version()
         state.download_source(
-            'https://github.com/swami/libinstpatch/archive/v1.1.6.tar.gz',
+            f'https://github.com/swami/libinstpatch/archive/{version}.tar.gz',
             '8e9861b04ede275d712242664dab6ffa9166c7940fea3b017638681d25e10299')
 
     def detect(self, state: BuildState) -> bool:
@@ -361,9 +368,16 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
         super().__init__(name)
         self.options['WITH_TURBOJPEG'] = 'NO'
 
+    def local_version(self) -> str:
+        return '2.0.6'
+
+    def remote_version(self) -> str:
+        return get_latest_github_version('libjpeg-turbo/libjpeg-turbo')
+
     def prepare_source(self, state: BuildState):
+        version = self.local_version()
         state.download_source(
-            'https://downloads.sourceforge.net/project/libjpeg-turbo/2.0.6/libjpeg-turbo-2.0.6.tar.gz',
+            f'https://downloads.sourceforge.net/project/libjpeg-turbo/{version}/libjpeg-turbo-{version}.tar.gz',
             'd74b92ac33b0e3657123ddcf6728788c90dc84dcb6a52013d758af3c4af481bb')
 
     def detect(self, state: BuildState) -> bool:
@@ -404,9 +418,16 @@ class MesonTarget(BuildTarget):
         super().__init__(name)
         self.multi_platform = False
 
+    def local_version(self) -> str:
+        return '0.56.0'
+
+    def remote_version(self) -> str:
+        return get_latest_github_version('mesonbuild/meson', strip_prefix='v')
+
     def prepare_source(self, state: BuildState):
+        version = self.local_version()
         state.download_source(
-            'https://github.com/mesonbuild/meson/releases/download/0.56.0/meson-0.56.0.tar.gz',
+            f'https://github.com/mesonbuild/meson/releases/download/{version}/meson-{version}.tar.gz',
             '291dd38ff1cd55fcfca8fc985181dd39be0d3e5826e5f0013bf867be40117213')
 
     def detect(self, state: BuildState) -> bool:
