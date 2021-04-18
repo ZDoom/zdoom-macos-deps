@@ -39,6 +39,12 @@ class Target:
         self.multi_platform = False
         self.unsupported_architectures = ()
 
+    def local_version(self) -> [str, None]:
+        return None
+
+    def remote_version(self) -> [str, None]:
+        return None
+
     def prepare_source(self, state: BuildState):
         pass
 

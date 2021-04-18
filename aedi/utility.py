@@ -17,8 +17,10 @@
 #
 
 import collections
+import json
 import os
 import shutil
+import urllib.request
 
 
 class CommandLineOptions(dict):
@@ -77,6 +79,20 @@ def symlink_directory(src_path: str, dst_path: str, cleanup=True):
                 shutil.copy(entry.path, dst_subpath, follow_symlinks=False)
             else:
                 os.symlink(entry.path, dst_subpath)
+
+
+def get_latest_github_version(repo: str, strip_prefix: str = None) -> str:
+    request_url = f'https://api.github.com/repos/{repo}/releases/latest'
+    response = urllib.request.urlopen(request_url)
+
+    data = response.read()
+    release = json.loads(data)
+    version = release['tag_name']
+
+    if strip_prefix and version.startswith(strip_prefix):
+        version = version[len(strip_prefix):]
+
+    return version
 
 
 # Case insensitive dictionary class from

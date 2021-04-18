@@ -21,6 +21,27 @@ from .main import *
 from .special import *
 
 
+class CheckVersionsTarget(Target):
+    def __init__(self, name='check-versions'):
+        super().__init__(name)
+        self.args = ()
+
+    def build(self, state: BuildState):
+        for target in targets():
+            current = target.local_version()
+
+            if not current:
+                continue
+
+            latest = target.remote_version()
+            outdated = current != latest
+
+            if outdated:
+                print(f'{target.name}: out-of-date, {current} vs {latest}')
+            else:
+                print(target.name + ': up-to-date')
+
+
 def targets():
     return (
         GZDoomTarget(),
@@ -90,4 +111,5 @@ def targets():
         CleanAllTarget(),
         CleanDepsTarget(),
         TestDepsTarget(),
+        CheckVersionsTarget(),
     )
