@@ -82,12 +82,12 @@ def symlink_directory(src_path: str, dst_path: str, cleanup=True):
 
 
 def get_latest_github_version(repo: str, strip_prefix: str = None) -> str:
-    request_url = f'https://api.github.com/repos/{repo}/releases/latest'
+    request_url = f'https://api.github.com/repos/{repo}/tags'
     response = urllib.request.urlopen(request_url)
 
     data = response.read()
-    release = json.loads(data)
-    version = release['tag_name']
+    tags = json.loads(data)
+    version = tags[0]['name']
 
     if strip_prefix and version.startswith(strip_prefix):
         version = version[len(strip_prefix):]

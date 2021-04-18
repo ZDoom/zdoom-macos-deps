@@ -34,12 +34,9 @@ class CheckVersionsTarget(Target):
                 continue
 
             latest = target.remote_version()
-            outdated = current != latest
+            status = 'latest' if current == latest else f'update to {latest}'
 
-            if outdated:
-                print(f'{target.name}: out-of-date, {current} vs {latest}')
-            else:
-                print(target.name + ': up-to-date')
+            print(f'{target.name}: {current}, {status}')
 
 
 def targets():

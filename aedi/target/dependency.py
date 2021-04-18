@@ -93,9 +93,16 @@ class DumbTarget(CMakeStaticDependencyTarget):
         opts['BUILD_ALLEGRO4'] = 'NO'
         opts['BUILD_EXAMPLES'] = 'NO'
 
+    def local_version(self) -> str:
+        return '2.0.3'
+
+    def remote_version(self) -> str:
+        return get_latest_github_version('kode54/dumb')
+
     def prepare_source(self, state: BuildState):
+        version = self.local_version()
         state.download_source(
-            'https://github.com/kode54/dumb/archive/2.0.3.tar.gz',
+            f'https://github.com/kode54/dumb/archive/{version}.tar.gz',
             '99bfac926aeb8d476562303312d9f47fd05b43803050cd889b44da34a9b2a4f9')
 
     def detect(self, state: BuildState) -> bool:
@@ -117,9 +124,16 @@ class FfiTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='ffi'):
         super().__init__(name)
 
+    def local_version(self) -> str:
+        return '3.3'
+
+    def remote_version(self) -> str:
+        return get_latest_github_version('libffi/libffi', strip_prefix='v')
+
     def prepare_source(self, state: BuildState):
+        version = self.local_version()
         state.download_source(
-            'https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz',
+            f'https://github.com/libffi/libffi/releases/download/v{version}/libffi-{version}.tar.gz',
             '72fba7922703ddfa7a028d513ac15a85c8d54c8d67f55fa5a4802885dc652056')
 
     def detect(self, state: BuildState) -> bool:
@@ -137,9 +151,16 @@ class FlacTarget(ConfigureMakeStaticDependencyTarget):
         super().__init__(name)
         self.options['--enable-cpplibs'] = 'no'
 
+    def local_version(self) -> str:
+        return '1.3.3'
+
+    def remote_version(self) -> str:
+        return get_latest_github_version('xiph/flac')
+
     def prepare_source(self, state: BuildState):
+        version = self.local_version()
         state.download_source(
-            'https://downloads.xiph.org/releases/flac/flac-1.3.3.tar.xz',
+            f'https://downloads.xiph.org/releases/flac/flac-{version}.tar.xz',
             '213e82bd716c9de6db2f98bcadbc4c24c7e2efe8c75939a1a84e28539c4e1748')
 
     def detect(self, state: BuildState) -> bool:
@@ -156,9 +177,16 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         opts['enable-readline'] = 'NO'
         opts['enable-sdl2'] = 'NO'
 
+    def local_version(self) -> str:
+        return '2.2.0'
+
+    def remote_version(self) -> str:
+        return get_latest_github_version('FluidSynth/fluidsynth', strip_prefix='v')
+
     def prepare_source(self, state: BuildState):
+        version = self.local_version()
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/v2.2.0.tar.gz',
+            f'https://github.com/FluidSynth/fluidsynth/archive/v{version}.tar.gz',
             '928fb16f307507485bd1d9b010dafba8c747bce5de2ba47ab1705944c87013b6')
 
     def detect(self, state: BuildState) -> bool:
@@ -541,7 +569,7 @@ class OggTarget(ConfigureMakeStaticDependencyTarget):
     def local_version(self) -> str:
         return '1.3.4'
 
-    def remote_version(self) -> [str, None]:
+    def remote_version(self) -> str:
         return get_latest_github_version('xiph/ogg', strip_prefix='v')
 
     def prepare_source(self, state: BuildState):
@@ -587,9 +615,16 @@ class OpusTarget(ConfigureMakeStaticDependencyTarget):
         super().__init__(name)
         self.options['--disable-extra-programs'] = None
 
+    def local_version(self) -> str:
+        return '1.3.1'
+
+    def remote_version(self) -> str:
+        return get_latest_github_version('xiph/opus', strip_prefix='v')
+
     def prepare_source(self, state: BuildState):
+        version = self.local_version()
         state.download_source(
-            'https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz',
+            f'https://archive.mozilla.org/pub/opus/opus-{version}.tar.gz',
             '65b58e1e25b2a114157014736a3d9dfeaad8d41be1c8179866f144a2fb44ff9d')
 
     def detect(self, state: BuildState) -> bool:
@@ -853,9 +888,16 @@ class VorbisTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
 
+    def local_version(self) -> str:
+        return '1.3.7'
+
+    def remote_version(self) -> str:
+        return get_latest_github_version('xiph/vorbis', strip_prefix='v')
+
     def prepare_source(self, state: BuildState):
+        version = self.local_version()
         state.download_source(
-            'https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.xz',
+            f'https://downloads.xiph.org/releases/vorbis/libvorbis-{version}.tar.xz',
             'b33cc4934322bcbf6efcbacf49e3ca01aadbea4114ec9589d1b1e9d20f72954b')
 
     def detect(self, state: BuildState) -> bool:
