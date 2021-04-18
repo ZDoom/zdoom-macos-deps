@@ -48,7 +48,7 @@ def targets():
         FfiTarget(),
         FlacTarget(),
         FluidSynthTarget(),
-        FreetypeTarget(),
+        FreeTypeTarget(),
         GlibTarget(),
         GmakeTarget(),
         IconvTarget(),
