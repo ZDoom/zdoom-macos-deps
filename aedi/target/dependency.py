@@ -180,7 +180,7 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         return line
 
 
-class FreetypeTarget(CMakeStaticDependencyTarget):
+class FreeTypeTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='freetype'):
         super().__init__(name)
 
