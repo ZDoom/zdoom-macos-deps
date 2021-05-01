@@ -16,9 +16,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from .dependency import *
+from .library_tier1 import *
+from .library_tier2 import *
 from .main import *
 from .special import *
+from .tools import *
 
 
 def targets():
@@ -42,33 +44,35 @@ def targets():
         NBloodTarget(),
         QuakespasmTarget(),
 
-        # Dependencies
+        # Libraries needed for GZDoom and Raze
         Bzip2Target(),
-        DumbTarget(),
         FfiTarget(),
         FlacTarget(),
         FluidSynthTarget(),
-        FreeTypeTarget(),
         GlibTarget(),
-        GmakeTarget(),
         IconvTarget(),
         InstPatchTarget(),
         IntlTarget(),
         JpegTurboTarget(),
-        MadTarget(),
-        MesonTarget(),
-        MikmodTarget(),
-        ModPlugTarget(),
         MoltenVKTarget(),
         Mpg123Target(),
-        NasmTarget(),
-        NinjaTarget(),
         OggTarget(),
         OpenALTarget(),
         OpusTarget(),
-        OpusFileTarget(),
         PcreTarget(),
-        PkgConfigTarget(),
+        SndFileTarget(),
+        VorbisTarget(),
+        VpxTarget(),
+        ZlibNgTarget(),
+        ZMusicTarget(),
+
+        # Libraries needed for other targets
+        DumbTarget(),
+        FreeTypeTarget(),
+        MadTarget(),
+        MikmodTarget(),
+        ModPlugTarget(),
+        OpusFileTarget(),
         PngTarget(),
         PortMidiTarget(),
         SamplerateTarget(),
@@ -77,14 +81,16 @@ def targets():
         Sdl2MixerTarget(),
         Sdl2NetTarget(),
         Sdl2TtfTarget(),
-        SndFileTarget(),
         SodiumTarget(),
-        VorbisTarget(),
-        VpxTarget(),
         WebpTarget(),
+
+        # Tools
+        GmakeTarget(),
+        MesonTarget(),
+        NasmTarget(),
+        NinjaTarget(),
+        PkgConfigTarget(),
         YasmTarget(),
-        ZlibNgTarget(),
-        ZMusicTarget(),
 
         # Special
         CleanAllTarget(),

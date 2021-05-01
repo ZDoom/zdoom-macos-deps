@@ -413,3 +413,32 @@ class CMakeTarget(BuildTarget):
                 args.append('VERBOSE=1')
 
         subprocess.check_call(args, cwd=state.build_path, env=self.environment)
+
+
+class ConfigureMakeDependencyTarget(ConfigureMakeTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+    def post_build(self, state: BuildState):
+        self.install(state)
+
+
+class ConfigureMakeStaticDependencyTarget(ConfigureMakeDependencyTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+        self.options['--enable-shared'] = 'no'
+
+
+class CMakeStaticDependencyTarget(CMakeTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+        # Set commonly used variables for static libraries
+        opts = self.options
+        opts['BUILD_SHARED_LIBS'] = 'NO'
+        opts['ENABLE_SHARED'] = 'NO'
+        opts['LIBTYPE'] = 'STATIC'
+
+    def post_build(self, state: BuildState):
+        self.install(state)
