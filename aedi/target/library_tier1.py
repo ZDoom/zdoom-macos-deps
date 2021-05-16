@@ -311,8 +311,8 @@ class Mpg123Target(ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.mpg123.de/download/mpg123-1.26.5.tar.bz2',
-            '502a97e0d935be7e37d987338021d8f301bae35c2884f2a83d59c4b52466ef06')
+            'https://www.mpg123.de/download/mpg123-1.27.0.tar.bz2',
+            'c4ad3ab0bd50cb4f93d7f05db82cca15b79a395d5b4be43ae04a88c7b62a2889')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'libmpg123.pc.in')
