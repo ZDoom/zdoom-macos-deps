@@ -3,7 +3,7 @@
 
 int main()
 {
-    vpx_codec_ctx_t1 codec;
+    vpx_codec_ctx_t codec;
 
     if (vpx_codec_dec_init(&codec, &vpx_codec_vp8_dx_algo, nullptr, 0) != VPX_CODEC_OK)
     {
