@@ -72,6 +72,7 @@ class TestDepsTarget(BuildTarget):
                 'clang',
                 '-arch', 'x86_64',
                 '-arch', 'arm64',
+                '-std=c++17',
                 '-o', exe_name,
                 entry.path,
             ]
