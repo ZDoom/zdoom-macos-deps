@@ -5,10 +5,7 @@ int main()
 {
     z_stream stream = {};
 
-    if (deflateInit(&stream, Z_DEFAULT_COMPRESSION) != Z_OK)
-    {
-        return 1;
-    }
+    AEDI_EXPECT(deflateInit(&stream, Z_DEFAULT_COMPRESSION) == Z_OK);
 
     constexpr size_t BUFFER_SIZE = 1024;
     unsigned char reference[BUFFER_SIZE];
@@ -25,22 +22,12 @@ int main()
     stream.next_out = deflated;
     stream.avail_out = BUFFER_SIZE;
 
-    if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
-    {
-        return 1;
-    }
-
-    if (deflateEnd(&stream) != Z_OK)
-    {
-        return 1;
-    }
+    AEDI_EXPECT(deflate(&stream, Z_FINISH) == Z_STREAM_END);
+    AEDI_EXPECT(deflateEnd(&stream) == Z_OK);
 
     stream = {};
 
-    if (inflateInit(&stream) != Z_OK)
-    {
-        return 1;
-    }
+    AEDI_EXPECT(inflateInit(&stream) == Z_OK);
 
     unsigned char inflated[BUFFER_SIZE] = {};
 
@@ -49,20 +36,10 @@ int main()
     stream.next_out = inflated;
     stream.avail_out = BUFFER_SIZE;
 
-    if (inflate(&stream, Z_FINISH) != Z_STREAM_END)
-    {
-        return 1;
-    }
+    AEDI_EXPECT(inflate(&stream, Z_FINISH) == Z_STREAM_END);
+    AEDI_EXPECT(inflateEnd(&stream) == Z_OK);
 
-    if (inflateEnd(&stream) != Z_OK)
-    {
-        return 1;
-    }
-
-    if (memcmp(reference, inflated, BUFFER_SIZE) != 0)
-    {
-        return 1;
-    }
+    AEDI_EXPECT(memcmp(reference, inflated, BUFFER_SIZE) == 0);
 
     return 0;
 }
