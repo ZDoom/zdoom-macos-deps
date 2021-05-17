@@ -75,6 +75,7 @@ class TestDepsTarget(BuildTarget):
                 '-arch', 'x86_64',
                 '-arch', 'arm64',
                 '-std=c++17',
+                '-include', os.path.join(test_path, 'aedi.h'),
                 '-o', exe_name,
                 entry.path,
             ]
