@@ -68,6 +68,8 @@ class TestDepsTarget(BuildTarget):
             pkg_config_output = state.run_pkg_config('--cflags', '--libs', test_name)
             exe_name = state.build_path + test_name
 
+            print('Testing ' + test_name)
+
             args = [
                 'clang',
                 '-arch', 'x86_64',
