@@ -159,6 +159,9 @@ class BuildTarget(Target):
     @staticmethod
     def update_pc_file(path: str, processor: typing.Callable = None):
         prefix = 'prefix='
+        exec_prefix = 'exec_prefix='
+        includedir = 'includedir='
+        libdir = 'libdir='
 
         def pc_proc(line: str) -> str:
             patched_line = line
@@ -166,6 +169,12 @@ class BuildTarget(Target):
             if line.startswith(prefix):
                 # Clear prefix variable
                 patched_line = prefix + os.linesep
+            elif line.startswith(exec_prefix):
+                patched_line = exec_prefix + '${prefix}\n'
+            elif line.startswith(includedir):
+                patched_line = includedir + '${prefix}/include\n'
+            elif line.startswith(libdir):
+                patched_line = libdir + '${exec_prefix}/lib\n'
 
             if processor:
                 patched_line = processor(path, patched_line)
