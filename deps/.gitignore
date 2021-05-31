@@ -47,7 +47,6 @@
 /sdl2/lib/cmake/
 /sndfile/bin/
 /sndfile/include/sndfile.hh
-/sndfile/lib/cmake/
 /webp/include/webp/demux.h
 /webp/**/libwebpdecoder.*
 /webp/**/libwebpdemux.*
