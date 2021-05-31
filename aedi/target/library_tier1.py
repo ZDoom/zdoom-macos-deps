@@ -407,7 +407,7 @@ class SndFileTarget(CMakeStaticDependencyTarget):
         return os.path.exists(state.source + 'sndfile.pc.in')
 
 
-class VorbisTarget(ConfigureMakeStaticDependencyTarget):
+class VorbisTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
 
