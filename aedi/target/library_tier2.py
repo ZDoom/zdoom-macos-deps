@@ -125,7 +125,7 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.xiph.org/releases/opus/opusfile-0.12.tar.gz',
+            'https://ftp.osuosl.org/pub/xiph/releases/opus/opusfile-0.12.tar.gz',
             '118d8601c12dd6a44f52423e68ca9083cc9f2bfe72da7a8c1acb22a80ae3550b')
 
     def detect(self, state: BuildState) -> bool:

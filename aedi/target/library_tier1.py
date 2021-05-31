@@ -76,7 +76,7 @@ class FlacTarget(ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.xiph.org/releases/flac/flac-1.3.3.tar.xz',
+            'https://ftp.osuosl.org/pub/xiph/releases/flac/flac-1.3.3.tar.xz',
             '213e82bd716c9de6db2f98bcadbc4c24c7e2efe8c75939a1a84e28539c4e1748')
 
     def detect(self, state: BuildState) -> bool:
@@ -324,7 +324,7 @@ class OggTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz',
+            'https://ftp.osuosl.org/pub/xiph/releases/ogg/libogg-1.3.4.tar.gz',
             'fe5670640bd49e828d64d2879c31cb4dde9758681bb664f9bdbf159a01b0c76e')
 
     def detect(self, state: BuildState) -> bool:
@@ -366,7 +366,7 @@ class OpusTarget(ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz',
+            'https://ftp.osuosl.org/pub/xiph/releases/opus/opus-1.3.1.tar.gz',
             '65b58e1e25b2a114157014736a3d9dfeaad8d41be1c8179866f144a2fb44ff9d')
 
     def detect(self, state: BuildState) -> bool:
@@ -413,7 +413,7 @@ class VorbisTarget(ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.xz',
+            'https://ftp.osuosl.org/pub/xiph/releases/vorbis/libvorbis-1.3.7.tar.xz',
             'b33cc4934322bcbf6efcbacf49e3ca01aadbea4114ec9589d1b1e9d20f72954b')
 
     def detect(self, state: BuildState) -> bool:
