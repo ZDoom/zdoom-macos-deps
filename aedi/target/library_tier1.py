@@ -318,7 +318,7 @@ class Mpg123Target(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(state.source + 'libmpg123.pc.in')
 
 
-class OggTarget(ConfigureMakeStaticDependencyTarget):
+class OggTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='ogg'):
         super().__init__(name)
 
