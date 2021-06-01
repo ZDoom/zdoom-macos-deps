@@ -305,14 +305,18 @@ class MoltenVKTarget(MakeTarget):
         shutil.copy(src_path + 'dylib/macOS/libMoltenVK.dylib', lib_path)
 
 
-class Mpg123Target(ConfigureMakeStaticDependencyTarget):
+class Mpg123Target(CMakeStaticDependencyTarget):
     def __init__(self, name='mpg123'):
         super().__init__(name)
+
+        self.src_root = 'ports/cmake'
+        self.options['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://www.mpg123.de/download/mpg123-1.27.2.tar.bz2',
-            '52f6ceb962c05db0c043bb27acf5a721381f5f356ac4610e5221f50293891b04')
+            '52f6ceb962c05db0c043bb27acf5a721381f5f356ac4610e5221f50293891b04',
+            patches='mpg123-xcompile-fpu')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'libmpg123.pc.in')

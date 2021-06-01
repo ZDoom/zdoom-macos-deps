@@ -1,0 +1,11 @@
+--- a/ports/cmake/src/CMakeLists.txt
++++ b/ports/cmake/src/CMakeLists.txt
+@@ -175,7 +175,7 @@
+     set(NO_ERETURN ON)
+ endif()
+ 
+-cmake_host_system_information(RESULT HAVE_FPU QUERY HAS_FPU)
++set(HAVE_FPU ON)
+ 
+ if(NOT HAVE_FPU)
+     set(NO_SYNTH32 ON)
