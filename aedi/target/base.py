@@ -118,8 +118,7 @@ class BuildTarget(Target):
         args = [tool, 'install']
         args += options and options.to_list() or []
 
-        work_path = state.build_path + self.src_root
-        subprocess.check_call(args, cwd=work_path, env=self.environment)
+        subprocess.check_call(args, cwd=state.build_path, env=self.environment)
 
         self.update_pc_files(state)
 
