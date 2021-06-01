@@ -69,7 +69,8 @@ class MadTarget(ConfigureMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://downloads.sourceforge.net/project/mad/libmad/0.15.1b/libmad-0.15.1b.tar.gz',
-            'bbfac3ed6bfbc2823d3775ebb931087371e142bb0e9bb1bee51a76a6e0078690')
+            'bbfac3ed6bfbc2823d3775ebb931087371e142bb0e9bb1bee51a76a6e0078690',
+            patches='mad-support-arm64')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'mad.h')
@@ -156,7 +157,8 @@ class PortMidiTarget(CMakeTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://downloads.sourceforge.net/project/portmedia/portmidi/217/portmidi-src-217.zip',
-            '08e9a892bd80bdb1115213fb72dc29a7bf2ff108b378180586aa65f3cfd42e0f')
+            '08e9a892bd80bdb1115213fb72dc29a7bf2ff108b378180586aa65f3cfd42e0f',
+            patches='portmidi-modernize-cmake')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'pm_common/portmidi.h')
@@ -182,7 +184,8 @@ class SamplerateTarget(CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/libsndfile/libsamplerate/releases/download/0.2.1/libsamplerate-0.2.1.tar.bz2',
-            'f6323b5e234753579d70a0af27796dde4ebeddf58aae4be598e39b3cee00c90a')
+            'f6323b5e234753579d70a0af27796dde4ebeddf58aae4be598e39b3cee00c90a',
+            patches='samplerate-support-arm64')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'samplerate.pc.in')
@@ -259,7 +262,8 @@ class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.4.tar.gz',
-            'b4cf5a382c061cd75081cf246c2aa2f9df8db04bdda8dcdc6b6cca55bede2419')
+            'b4cf5a382c061cd75081cf246c2aa2f9df8db04bdda8dcdc6b6cca55bede2419',
+            patches='sdl2_mixer-fix-fluidsynth')
 
     def configure(self, state: BuildState):
         # Set LDFLAGS explicitly to help with FluidSynth and FLAC detection

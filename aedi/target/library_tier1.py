@@ -325,7 +325,8 @@ class OggTarget(CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://ftp.osuosl.org/pub/xiph/releases/ogg/libogg-1.3.4.tar.gz',
-            'fe5670640bd49e828d64d2879c31cb4dde9758681bb664f9bdbf159a01b0c76e')
+            'fe5670640bd49e828d64d2879c31cb4dde9758681bb664f9bdbf159a01b0c76e',
+            patches='ogg-fix-compile')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'ogg.pc.in')

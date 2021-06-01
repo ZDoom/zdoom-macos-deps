@@ -36,7 +36,6 @@ class BuildState:
 
         self.source = None
         self.external_source = True
-        self.patch_path = None
 
         self.build_path = None
         self.native_build_path = None
@@ -78,7 +77,7 @@ class BuildState:
             args = ('git', 'checkout', '-b', branch, 'origin/' + branch)
             subprocess.run(args, cwd=self.source, check=True)
 
-    def download_source(self, url: str, checksum: str):
+    def download_source(self, url: str, checksum: str, patches: [tuple, list, str] = None):
         if self.external_source:
             return
 
@@ -88,7 +87,16 @@ class BuildState:
         self._verify_checksum(checksum, data, filepath)
 
         first_path_component, extract_path = self._unpack_source_package(filepath)
-        self._apply_source_patch(extract_path)
+
+        if not patches:
+            pass
+        elif isinstance(patches, str):
+            self._apply_source_patch(extract_path, patches)
+        elif isinstance(patches, (tuple, list)):
+            for patch in patches:
+                self._apply_source_patch(extract_path, patch)
+        else:
+            assert False
 
         # Adjust source and build paths according to extracted source code
         self.source = extract_path
@@ -154,15 +162,14 @@ class BuildState:
 
         return first_path_component, extract_path
 
-    def _apply_source_patch(self, extract_path: str):
-        if not self.patch_path:
-            return
+    def _apply_source_patch(self, extract_path: str, patch: str):
+        patch_path = f'{self.root_path}patch/{patch}.diff'
 
-        assert os.path.exists(self.patch_path)
+        assert os.path.exists(patch_path)
 
         # Check if patch is already applied
         test_arg = '--dry-run'
-        args = ['patch', test_arg, '--strip=1', '--input=' + self.patch_path]
+        args = ['patch', test_arg, '--strip=1', '--input=' + patch_path]
 
         if subprocess.call(args, cwd=extract_path) == 0:
             # Patch wasn't applied yet, do it now

@@ -59,10 +59,6 @@ class Builder(object):
 
         del self._targets
 
-        patch_path = f'{state.root_path}patch/{self._target.name}.patch'
-        if os.path.exists(patch_path):
-            state.patch_path = patch_path
-
         if arguments.build_path:
             state.build_path = os.path.abspath(arguments.build_path)
         else:
