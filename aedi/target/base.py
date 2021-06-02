@@ -450,3 +450,10 @@ class CMakeStaticDependencyTarget(CMakeTarget):
 
     def post_build(self, state: BuildState):
         self.install(state)
+
+    def keep_module_target(self, state: BuildState, target: str):
+        def _keep_targets(line: str):
+            return None if line.startswith('list(APPEND _IMPORT_CHECK') and target not in line else line
+
+        module_path = f'{state.install_path}/lib/cmake/{self.name}/targets-release.cmake'
+        self.update_text_file(module_path, _keep_targets)
