@@ -100,11 +100,7 @@ class FlacTarget(CMakeStaticDependencyTarget):
         shutil.copytree(state.install_path + 'share/FLAC/cmake', state.install_path + 'lib/cmake/FLAC')
         shutil.copytree(state.install_path + 'share/pkgconfig', state.install_path + 'lib/pkgconfig')
 
-        def remove_cmake_exe_targets(line: str):
-            return None if re.match(r'list\(APPEND.+FLAC::(flacapp|metaflac).*\)', line) else line
-
-        targets_release = state.install_path + '/lib/cmake/FLAC/targets-release.cmake'
-        self.update_text_file(targets_release, remove_cmake_exe_targets)
+        self.keep_module_target(state, 'FLAC::FLAC')
 
 
 class FluidSynthTarget(CMakeStaticDependencyTarget):
