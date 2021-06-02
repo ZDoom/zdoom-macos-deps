@@ -388,18 +388,34 @@ class OpenALTarget(CMakeStaticDependencyTarget):
             return line
 
 
-class OpusTarget(ConfigureMakeStaticDependencyTarget):
+class OpusTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='opus'):
         super().__init__(name)
-        self.options['--disable-extra-programs'] = None
+        self.options['PC_BUILD'] = 'floating-point'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://ftp.osuosl.org/pub/xiph/releases/opus/opus-1.3.1.tar.gz',
-            '65b58e1e25b2a114157014736a3d9dfeaad8d41be1c8179866f144a2fb44ff9d')
+            '65b58e1e25b2a114157014736a3d9dfeaad8d41be1c8179866f144a2fb44ff9d',
+            patches='opus-fix-cmake')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'opus.pc.in')
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        version = 'Version:'
+        cflags = 'Cflags:'
+        libs = 'Libs:'
+
+        if line.startswith(version):
+            return version + ' 1.3.1\n'
+        elif line.startswith(cflags):
+            return cflags + ' -I${includedir}/opus\n'
+        elif line.startswith(libs):
+            return libs + ' -L${libdir} -lopus\n'
+
+        return line
 
 
 class PcreTarget(ConfigureMakeStaticDependencyTarget):
