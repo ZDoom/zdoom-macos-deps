@@ -16,6 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import re
+
 from .base import *
 from ..state import BuildState
 
@@ -69,18 +71,40 @@ class FfiTarget(ConfigureMakeStaticDependencyTarget):
             self.make_platform_header(state, header)
 
 
-class FlacTarget(ConfigureMakeStaticDependencyTarget):
+class FlacTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='flac'):
         super().__init__(name)
-        self.options['--enable-cpplibs'] = 'no'
+
+        opts = self.options
+        opts['BUILD_CXXLIBS'] = 'NO'
+        opts['BUILD_EXAMPLES'] = 'NO'
+        opts['OGG_PACKAGE'] = 'ogg'
+        opts['VERSION'] = '1.3.3'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://ftp.osuosl.org/pub/xiph/releases/flac/flac-1.3.3.tar.xz',
-            '213e82bd716c9de6db2f98bcadbc4c24c7e2efe8c75939a1a84e28539c4e1748')
+            '213e82bd716c9de6db2f98bcadbc4c24c7e2efe8c75939a1a84e28539c4e1748',
+            patches='flac-fix-cmake')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'FLAC/flac.pc.in')
+
+    def configure(self, state: BuildState):
+        self.options['CMAKE_EXE_LINKER_FLAGS'] = '-framework CoreFoundation -L' + state.lib_path
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        shutil.copytree(state.install_path + 'share/FLAC/cmake', state.install_path + 'lib/cmake/FLAC')
+        shutil.copytree(state.install_path + 'share/pkgconfig', state.install_path + 'lib/pkgconfig')
+
+        def remove_cmake_exe_targets(line: str):
+            return None if re.match(r'list\(APPEND.+FLAC::(flacapp|metaflac).*\)', line) else line
+
+        targets_release = state.install_path + '/lib/cmake/FLAC/targets-release.cmake'
+        self.update_text_file(targets_release, remove_cmake_exe_targets)
 
 
 class FluidSynthTarget(CMakeStaticDependencyTarget):

@@ -4,6 +4,7 @@
 /bzip2/bin/
 /bzip2/man/
 /flac/bin/
+/flac/include/FLAC++/
 /fluidsynth/bin/
 /freetype/lib/cmake/
 /glib/bin/gdbus*
