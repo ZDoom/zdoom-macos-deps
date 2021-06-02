@@ -341,6 +341,10 @@ class Mpg123Target(CMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'libmpg123.pc.in')
 
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+        self.keep_module_target(state, 'MPG123::libmpg123')
+
 
 class OggTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='ogg'):
