@@ -218,13 +218,20 @@ class Sdl2Target(CMakeStaticDependencyTarget):
     def post_build(self, state: BuildState):
         super().post_build(state)
 
-        def update_libs(line: str):
+        def update_libs_sdl2_config(line: str):
             if line.startswith('      echo -L${exec_prefix}/lib'):
                 return '      echo' + Sdl2Target.LINKER_FLAGS
 
             return line
 
-        self.update_prefix_shell_script(state.install_path + '/bin/sdl2-config', update_libs)
+        def update_libs_targets_cmake(line: str):
+            if line.startswith('  INTERFACE_LINK_LIBRARIES '):
+                return '  INTERFACE_LINK_LIBRARIES ' + Sdl2Target.LINKER_FLAGS
+
+            return line
+
+        self.update_prefix_shell_script(state.install_path + '/bin/sdl2-config', update_libs_sdl2_config)
+        self.update_text_file(state.install_path + '/lib/cmake/SDL2/SDL2Targets.cmake', update_libs_targets_cmake)
         self.make_platform_header(state, 'SDL2/SDL_config.h')
 
     @staticmethod
