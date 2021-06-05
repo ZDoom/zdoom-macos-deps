@@ -227,29 +227,35 @@ class Sdl2Target(CMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'sdl2.pc.in')
 
-    LINKER_FLAGS = ' -L${libdir} -lSDL2'\
-        ' -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa'\
-        ' -framework CoreAudio -framework CoreFoundation -framework CoreVideo'\
-        ' -framework ForceFeedback -framework Foundation -framework IOKit\n'
+    FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa' \
+        ' -framework CoreAudio -framework CoreFoundation -framework CoreVideo' \
+        ' -framework ForceFeedback -framework Foundation -framework IOKit'
+    LINKER_FLAGS = ' -L${libdir} -lSDL2 ' + FRAMEWORKS + os.linesep
 
     def post_build(self, state: BuildState):
         super().post_build(state)
 
-        def update_libs_sdl2_config(line: str):
+        self.make_platform_header(state, 'SDL2/SDL_config.h')
+
+        def update_sdl2_config(line: str):
             if line.startswith('      echo -L${exec_prefix}/lib'):
                 return '      echo' + Sdl2Target.LINKER_FLAGS
 
             return line
 
-        def update_libs_targets_cmake(line: str):
+        self.update_prefix_shell_script(state.install_path + '/bin/sdl2-config', update_sdl2_config)
+
+        def update_targets_cmake(line: str):
             if line.startswith('  INTERFACE_LINK_LIBRARIES '):
-                return '  INTERFACE_LINK_LIBRARIES ' + Sdl2Target.LINKER_FLAGS
+                return f'  INTERFACE_LINK_LIBRARIES "{Sdl2Target.FRAMEWORKS}"\n'
+            else:
+                line = line.replace('SDL2::SDL2-static', 'SDL2::SDL2')
 
             return line
 
-        self.update_prefix_shell_script(state.install_path + '/bin/sdl2-config', update_libs_sdl2_config)
-        self.update_text_file(state.install_path + '/lib/cmake/SDL2/SDL2Targets.cmake', update_libs_targets_cmake)
-        self.make_platform_header(state, 'SDL2/SDL_config.h')
+        for suffix in ('', '-release'):
+            file_path = f'{state.install_path}/lib/cmake/SDL2/SDL2Targets{suffix}.cmake'
+            self.update_text_file(file_path, update_targets_cmake)
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
