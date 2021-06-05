@@ -61,6 +61,23 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
         return os.path.exists(state.source + 'include/freetype/freetype.h')
 
 
+class FmtTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='fmt'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['FMT_DOC'] = 'NO'
+        opts['FMT_TEST'] = 'NO'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/fmtlib/fmt/archive/refs/tags/7.1.3.tar.gz',
+            '5cae7072042b3043e12d53d50ef404bbb76949dad1de368d7f993a15c8c05ecc')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'include/fmt/format.h')
+
+
 class MadTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mad'):
         super().__init__(name)
