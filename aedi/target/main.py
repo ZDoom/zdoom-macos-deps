@@ -297,6 +297,12 @@ class DevilutionXTarget(CMakeMainTarget):
 
         super().configure(state)
 
+        # Remove version file that is included erroneously because of case-insensitive file system
+        version_file = state.build_path + '_deps/libzt-src/ext/ZeroTierOne/ext/miniupnpc/VERSION'
+
+        if os.path.exists(version_file):
+            os.unlink(version_file)
+
 
 class EDuke32Target(MakeMainTarget):
     def __init__(self, name='eduke32'):
