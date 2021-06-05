@@ -1,12 +1,12 @@
 /*/share
 /**/*.la
 
+# Libraries, tier 1
 /bzip2/bin/
 /bzip2/man/
 /flac/bin/
 /flac/include/FLAC++/
 /fluidsynth/bin/
-/freetype/lib/cmake/
 /glib/bin/gdbus*
 /glib/bin/glib-gettextize
 /glib/bin/gio*
@@ -31,13 +31,17 @@
 /mpg123/bin/
 /mpg123/**/*out123.*
 /mpg123/**/*syn123.*
-/nasm/bin/ndisasm
 /openal/lib/cmake/
 /opusfile/lib/libopusurl.a
 /opusfile/lib/pkgconfig/opusurl.pc
 /pcre/bin/
 /pcre/lib/pkgconfig/libpcreposix.pc
 /pcre/lib/libpcreposix.a
+/sndfile/bin/
+/sndfile/include/sndfile.hh
+
+# Libraries, tier 2
+/freetype/lib/cmake/
 /png/bin/png-fix-itxt
 /png/bin/pngfix
 /samplerate/bin/
@@ -45,11 +49,12 @@
 /sdl2/include/SDL2/SDL_config_*.h
 /sdl2/include/SDL2/SDL_copying.h
 /sdl2/include/SDL2/SDL_test*.h
-/sndfile/bin/
-/sndfile/include/sndfile.hh
 /webp/include/webp/demux.h
 /webp/**/libwebpdecoder.*
 /webp/**/libwebpdemux.*
+
+# Tools
+/nasm/bin/ndisasm
 /yasm/bin/vsyasm
 /yasm/bin/ytasm
 /yasm/include/
