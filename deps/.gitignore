@@ -26,7 +26,6 @@
 /iconv/include/*charset.h
 /iconv/lib/libcharset.a
 /jpeg-turbo/bin/
-/jpeg-turbo/lib/cmake/
 /jpeg-turbo/lib/pkgconfig/libturbojpeg.pc
 /mpg123/bin/
 /mpg123/**/*out123.*
