@@ -325,17 +325,23 @@ class Sdl2NetTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(state.source + 'SDL2_net.pc.in')
 
 
-class Sdl2TtfTarget(ConfigureMakeStaticDependencyTarget):
+class Sdl2TtfTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_ttf'):
         super().__init__(name)
+        self.options['VERSION'] = '2.0.15'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.15.tar.gz',
-            'a9eceb1ad88c1f1545cd7bd28e7cbc0b2c14191d40238f531a15b01b1b22cd33')
+            'a9eceb1ad88c1f1545cd7bd28e7cbc0b2c14191d40238f531a15b01b1b22cd33',
+            patches='sdl2_ttf-fix-cmake')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'SDL2_ttf.pc.in')
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+        shutil.move(state.install_path + 'SDL2_ttf.framework/Resources', state.install_path + 'lib/cmake/SDL2_ttf')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
