@@ -31,7 +31,6 @@
 /mpg123/bin/
 /mpg123/**/*out123.*
 /mpg123/**/*syn123.*
-/openal/lib/cmake/
 /opusfile/lib/libopusurl.a
 /opusfile/lib/pkgconfig/opusurl.pc
 /pcre/bin/
