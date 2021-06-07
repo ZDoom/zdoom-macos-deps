@@ -150,9 +150,13 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(state.source + 'opusfile.pc.in')
 
 
-class PngTarget(ConfigureMakeStaticDependencyTarget):
+class PngTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='png'):
         super().__init__(name)
+
+        opts = self.options
+        opts['PNG_ARM_NEON'] = 'on'
+        opts['PNG_SHARED'] = 'OFF'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
