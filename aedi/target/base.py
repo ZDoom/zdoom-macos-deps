@@ -139,7 +139,7 @@ class BuildTarget(Target):
             f.writelines(patched_content)
 
     @staticmethod
-    def update_prefix_shell_script(path: str, processor: typing.Callable = None):
+    def update_config_script(path: str, processor: typing.Callable = None):
         prefix = 'prefix='
 
         def update_prefix(line: str) -> str:

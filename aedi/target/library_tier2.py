@@ -111,7 +111,7 @@ class MikmodTarget(ConfigureMakeStaticDependencyTarget):
 
     def post_build(self, state: BuildState):
         super().post_build(state)
-        self.update_prefix_shell_script(state.install_path + '/bin/libmikmod-config')
+        self.update_config_script(state.install_path + '/bin/libmikmod-config')
 
 
 class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
@@ -164,7 +164,7 @@ class PngTarget(ConfigureMakeStaticDependencyTarget):
 
     def post_build(self, state: BuildState):
         super().post_build(state)
-        self.update_prefix_shell_script(state.install_path + '/bin/libpng16-config')
+        self.update_config_script(state.install_path + '/bin/libpng16-config')
 
 
 class PortMidiTarget(CMakeTarget):
@@ -243,7 +243,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
             return line
 
-        self.update_prefix_shell_script(state.install_path + '/bin/sdl2-config', update_sdl2_config)
+        self.update_config_script(state.install_path + '/bin/sdl2-config', update_sdl2_config)
 
         def update_targets_cmake(line: str):
             if line.startswith('  INTERFACE_LINK_LIBRARIES '):
