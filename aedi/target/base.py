@@ -139,48 +139,41 @@ class BuildTarget(Target):
             f.writelines(patched_content)
 
     @staticmethod
-    def update_config_script(path: str, processor: typing.Callable = None):
-        prefix = 'prefix='
-
-        def update_prefix(line: str) -> str:
-            if line.startswith(prefix):
-                patched_line = prefix + r'"$(cd "${0%/*}/.."; pwd)"' + os.linesep
-            else:
-                patched_line = line
-
-            if processor:
-                patched_line = processor(patched_line)
-
-            return patched_line
-
-        BuildTarget.update_text_file(path, update_prefix)
-
-    @staticmethod
-    def update_pc_file(path: str, processor: typing.Callable = None):
+    def _update_variables_file(path: str, prefix_value: str, processor: typing.Callable = None, quotes: bool = True):
         prefix = 'prefix='
         exec_prefix = 'exec_prefix='
         includedir = 'includedir='
         libdir = 'libdir='
 
-        def pc_proc(line: str) -> str:
+        def quote(value: str) -> str:
+            return f'"{value}"' if quotes else value
+
+        def patch_proc(line: str) -> str:
             patched_line = line
 
             if line.startswith(prefix):
-                # Clear prefix variable
-                patched_line = prefix + os.linesep
+                patched_line = prefix + quote(prefix_value) + os.linesep
             elif line.startswith(exec_prefix):
-                patched_line = exec_prefix + '${prefix}\n'
+                patched_line = exec_prefix + quote('${prefix}') + os.linesep
             elif line.startswith(includedir):
-                patched_line = includedir + '${prefix}/include\n'
+                patched_line = includedir + quote('${prefix}/include') + os.linesep
             elif line.startswith(libdir):
-                patched_line = libdir + '${exec_prefix}/lib\n'
+                patched_line = libdir + quote('${exec_prefix}/lib') + os.linesep
 
             if processor:
                 patched_line = processor(path, patched_line)
 
             return patched_line
 
-        BuildTarget.update_text_file(path, pc_proc)
+        BuildTarget.update_text_file(path, patch_proc)
+
+    @staticmethod
+    def update_config_script(path: str, processor: typing.Callable = None):
+        BuildTarget._update_variables_file(path, r'$(cd "${0%/*}/.."; pwd)', processor)
+
+    @staticmethod
+    def update_pc_file(path: str, processor: typing.Callable = None):
+        BuildTarget._update_variables_file(path, '', processor, quotes=False)
 
     def update_pc_files(self, state: BuildState):
         for root, _, files in os.walk(state.install_path, followlinks=True):
