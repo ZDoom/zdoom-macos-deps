@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: libmpg123
 Description: An optimised MPEG Audio decoder
 Requires: 
-Version: 1.27.2
+Version: 1.28.0
 Libs: -L${libdir} -lmpg123 
-Libs.private:  
+Libs.private: 
 Cflags: -I${includedir} 

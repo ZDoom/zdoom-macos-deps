@@ -1,5 +1,5 @@
 /*
-	libmpg123: MPEG Audio Decoder library (version 1.27.2)
+	libmpg123: MPEG Audio Decoder library (version 1.28.0)
 
 	copyright 1995-2015 by the mpg123 project
 	free software under the terms of the LGPL 2.1
@@ -76,9 +76,16 @@ typedef ptrdiff_t ssize_t;
 
 #endif
 
-#ifndef MPG123_NO_CONFIGURE /* Enable use of this file without configure. */
 #include <stdlib.h>
 #include <sys/types.h>
+
+/* You can always enforce largefile hackery by setting MPG123_LARGESUFFIX. */
+/* Otherwise, this header disables it if the build system decided so. */
+#if !defined(MPG123_LARGESUFFIX) && 0
+#ifndef MPG123_NO_LARGENAME
+#define MPG123_NO_LARGENAME
+#endif
+#endif
 
 /* Simplified large file handling.
 	I used to have a check here that prevents building for a library with conflicting large file setup
@@ -135,8 +142,6 @@ typedef ptrdiff_t ssize_t;
 #define mpg123_framepos MPG123_LARGENAME(mpg123_framepos)
 
 #endif /* largefile hackery */
-
-#endif /* MPG123_NO_CONFIGURE */
 
 #ifdef __cplusplus
 extern "C" {
@@ -732,7 +737,7 @@ MPG123_EXPORT int mpg123_getformat2( mpg123_handle *mh
  *  will also be decoded without you really noticing. Just the speed could be
  *  wrong if you do not care about sample rate at all.
  *  \param mh handle
- *  \param path filesystem path
+ *  \param path filesystem path (see mpg123_open())
  *  \param channels allowed channel count, either 1 (MPG123_MONO) or
  *    2 (MPG123_STEREO), or bitwise or of them, but then you're halfway back to
  *    calling mpg123_format() again;-)
@@ -745,8 +750,16 @@ MPG123_EXPORT int mpg123_open_fixed(mpg123_handle *mh, const char *path
 /** Open and prepare to decode the specified file by filesystem path.
  *  This does not open HTTP urls; libmpg123 contains no networking code.
  *  If you want to decode internet streams, use mpg123_open_fd() or mpg123_open_feed().
+ *
+ *  The path parameter usually is just a string that is handed to the underlying
+ *  OS routine for opening, treated as a blob of binary data. On platforms
+ *  where encoding needs to be involved, something like _wopen() is called
+ *  underneath and the path argument to libmpg123 is assumed to be encoded in UTF-8.
+ *  So, if you have to ask yourself which encoding is needed, the answer is
+ *  UTF-8, which also fits any sane modern install of Unix-like systems.
+ *
  *  \param mh handle
- *  \param path filesystem path
+ *  \param path filesystem
  *  \return MPG123_OK on success
  */
 MPG123_EXPORT int mpg123_open(mpg123_handle *mh, const char *path);
