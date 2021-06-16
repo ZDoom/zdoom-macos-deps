@@ -29,6 +29,15 @@ Run `build.py` without arguments for complete list of options.
 * Xcode 12.2 or newer, launch it once to finish installation
 * CMake 3.18 or newer, `CMake.app` in `/Applications` or system-wide `cmake` console executable
 
+## Directories
+
+* `build` directory stores all intermediary files created during targets compilation, customizable with `--build-path` command line option
+* `deps` directory stores all dependencies (headers, libraries, executable and additional files) in the corresponding subdirectories
+* `output` directory stores built main targets, customizable with `--output-path` command line option
+* `prefix` directory stores symbolic links to all dependencies combined as one build root
+* `sdk` directory can contain macOS SDKs that will be picked if match with macOS deployment versions
+* `source` directory stores targets source code, customizable with `--source-path` command line option
+
 ## Common information
 
 Libraries were built using 10.9 SDK (Intel x64_64) and 11.0 SDK (ARM64).  
