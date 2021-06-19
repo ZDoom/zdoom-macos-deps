@@ -1,0 +1,12 @@
+prefix=
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libtiff
+Description:  Tag Image File Format (TIFF) library.
+Version: 4.3.0
+Libs: -L${libdir} -ltiff
+Libs.private: 
+Cflags: -I${includedir}
+Requires.private: libjpeg liblzma libwebp libzstd zlib
