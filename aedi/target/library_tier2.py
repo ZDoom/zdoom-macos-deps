@@ -436,8 +436,8 @@ class WebpTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.1.0.tar.gz',
-            '98a052268cc4d5ece27f76572a7f50293f439c17a98e67c4ea0c7ed6f50ef043')
+            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.2.0.tar.gz',
+            '2fc8bbde9f97f2ab403c0224fb9ca62b2e6852cbc519e91ceaa7c153ffd88a0c')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'src/libwebp.pc.in')
