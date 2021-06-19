@@ -78,6 +78,27 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
         return os.path.exists(state.source + 'include/freetype/freetype.h')
 
 
+class LzmaTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='lzma'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://tukaani.org/xz/xz-5.2.5.tar.gz',
+            'f6f4910fd033078738bd82bfba4f49219d03b17eb0794eb91efbae419f4aba10',
+            patches='lzma-add-cmake')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'src/liblzma/liblzma.pc.in')
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        self.write_pc_file(state, 'liblzma.pc', name='liblzma',
+                           description='General purpose data compression library',
+                           version='5.2.5', libs='-llzma')
+
+
 class MadTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mad'):
         super().__init__(name)
