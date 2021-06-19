@@ -40,6 +40,7 @@
 
 # Libraries, tier 2
 /freetype/lib/cmake/
+/lzma/bin/
 /png/bin/png-fix-itxt
 /png/bin/pngfix
 /samplerate/bin/
