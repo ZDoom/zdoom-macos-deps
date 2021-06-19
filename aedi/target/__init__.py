@@ -84,6 +84,7 @@ def targets():
         Sdl2NetTarget(),
         Sdl2TtfTarget(),
         SodiumTarget(),
+        TiffTarget(),
         WebpTarget(),
         ZstdTarget(),
 

@@ -386,6 +386,39 @@ class SodiumTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(state.source + 'libsodium.pc.in')
 
 
+class TiffTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='tiff'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['cxx'] = 'NO'
+        opts['lzma'] = 'YES'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://download.osgeo.org/libtiff/tiff-4.3.0.tar.gz',
+            '0e46e5acb087ce7d1ac53cf4f56a09b221537fc86dfc5daaad1c2e89e1b37ac8',
+            patches='tiff-remove-useless')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'libtiff-4.pc.in')
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        version = 'Version:'
+        cflags = 'Cflags:'
+        libs = 'Libs:'
+
+        if line.startswith(version):
+            return version + ' 4.3.0\n'
+        elif line.startswith(cflags):
+            return cflags + ' -I${includedir}\nRequires.private: libjpeg liblzma libwebp libzstd zlib\n'
+        elif line.startswith(libs):
+            return libs + ' -L${libdir} -ltiff\n'
+
+        return line
+
+
 class WebpTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='webp'):
         super().__init__(name)
