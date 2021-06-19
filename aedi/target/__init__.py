@@ -85,6 +85,7 @@ def targets():
         Sdl2TtfTarget(),
         SodiumTarget(),
         WebpTarget(),
+        ZstdTarget(),
 
         # Tools
         GmakeTarget(),

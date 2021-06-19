@@ -408,3 +408,21 @@ class WebpTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'src/libwebp.pc.in')
+
+
+class ZstdTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='zstd'):
+        super().__init__(name)
+        self.src_root = 'build/cmake'
+
+        opts = self.options
+        opts['ZSTD_BUILD_PROGRAMS'] = 'NO'
+        opts['ZSTD_BUILD_SHARED'] = 'NO'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz',
+            '5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'lib/libzstd.pc.in')
