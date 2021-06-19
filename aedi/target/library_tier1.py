@@ -85,7 +85,7 @@ class FlacTarget(CMakeStaticDependencyTarget):
         state.download_source(
             'https://ftp.osuosl.org/pub/xiph/releases/flac/flac-1.3.3.tar.xz',
             '213e82bd716c9de6db2f98bcadbc4c24c7e2efe8c75939a1a84e28539c4e1748',
-            patches='flac-fix-cmake')
+            patches='flac-add-cmake')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'FLAC/flac.pc.in')
