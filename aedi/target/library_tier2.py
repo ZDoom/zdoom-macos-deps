@@ -38,14 +38,7 @@ class DumbTarget(CMakeStaticDependencyTarget):
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
-        if line.startswith('libdir='):
-            return 'libdir=${exec_prefix}/lib\n'
-        elif line.startswith('includedir='):
-            return 'includedir=${prefix}/include\n'
-        elif line.startswith('Libs:'):
-            return 'Libs: -L${libdir} -ldumb\n'
-
-        return line
+        return 'Libs: -L${libdir} -ldumb\n' if line.startswith('Libs:') else line
 
 
 class FmtTarget(CMakeStaticDependencyTarget):
