@@ -445,8 +445,28 @@ class CMakeStaticDependencyTarget(CMakeTarget):
         self.install(state)
 
     def keep_module_target(self, state: BuildState, target: str):
-        def _keep_targets(line: str):
-            return None if line.startswith('list(APPEND _IMPORT_CHECK') and target not in line else line
+        import_patterns = (
+            r'list\s*\(APPEND\s+_IMPORT_CHECK_TARGETS\s+(?P<target>\w+::\w+)[\s)]',
+            r'list\s*\(APPEND\s+_IMPORT_CHECK_FILES_FOR_(?P<target>\w+::\w+)\s',
+        )
+        import_regexes = [re.compile(regex, re.IGNORECASE) for regex in import_patterns]
 
-        module_path = f'{state.install_path}/lib/cmake/{self.name}/targets-release.cmake'
-        self.update_text_file(module_path, _keep_targets)
+        def _keep_target(line: str):
+            for regex in import_regexes:
+                match = regex.match(line)
+
+                if not match:
+                    continue
+                else:
+                    if match.group('target') != target:
+                        return None
+
+            return line
+
+        module = 'targets-release.cmake'
+
+        for probe_module in (module, self.name + module):
+            module_path = f'{state.install_path}/lib/cmake/{self.name}/{probe_module}'
+
+            if os.path.exists(module_path):
+                self.update_text_file(module_path, _keep_target)
