@@ -442,6 +442,12 @@ class WebpTarget(CMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'src/libwebp.pc.in')
 
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        shutil.copytree(state.install_path + 'share/WebP/cmake', state.install_path + 'lib/cmake/WebP')
+        self.keep_module_target(state, 'WebP::webp')
+
 
 class ZstdTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='zstd'):
