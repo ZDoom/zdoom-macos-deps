@@ -32,6 +32,7 @@ class BuildState:
         self.bin_path = self.prefix_path + 'bin' + os.sep
         self.include_path = self.prefix_path + 'include' + os.sep
         self.lib_path = self.prefix_path + 'lib' + os.sep
+        self.patch_path = self.root_path + 'patch' + os.sep
         self.source_path = self.root_path + 'source' + os.sep
 
         self.source = None
@@ -163,7 +164,7 @@ class BuildState:
         return first_path_component, extract_path
 
     def _apply_source_patch(self, extract_path: str, patch: str):
-        patch_path = f'{self.root_path}patch/{patch}.diff'
+        patch_path = self.patch_path + patch + '.diff'
 
         assert os.path.exists(patch_path)
 
