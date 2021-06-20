@@ -70,6 +70,13 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'include/freetype/freetype.h')
 
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        bin_path = state.install_path + 'bin'
+        os.makedirs(bin_path)
+        shutil.copy(state.patch_path + 'freetype-config', bin_path)
+
 
 class LzmaTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='lzma'):
