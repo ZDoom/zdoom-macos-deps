@@ -78,6 +78,24 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
         shutil.copy(state.patch_path + 'freetype-config', bin_path)
 
 
+class FtglTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='ftgl'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['--with-glut-inc'] = '/dev/null'
+        opts['--with-glut-lib'] = '/dev/null'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://downloads.sourceforge.net/project/ftgl/FTGL%20Source/2.1.3~rc5/ftgl-2.1.3-rc5.tar.gz',
+            '5458d62122454869572d39f8aa85745fc05d5518001bcefa63bd6cbb8d26565b',
+            patches='ftgl-support-arm64')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'ftgl.pc.in')
+
+
 class GlewTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='glew'):
         super().__init__(name)

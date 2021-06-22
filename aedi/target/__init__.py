@@ -70,6 +70,7 @@ def targets():
         DumbTarget(),
         FmtTarget(),
         FreeTypeTarget(),
+        FtglTarget(),
         GlewTarget(),
         LzmaTarget(),
         MadTarget(),
