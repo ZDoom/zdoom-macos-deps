@@ -137,6 +137,23 @@ class GlewTarget(CMakeStaticDependencyTarget):
         return line
 
 
+class LuaTarget(MakeTarget):
+    def __init__(self, name='lua'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://www.lua.org/ftp/lua-5.4.3.tar.gz',
+            'f8612276169e3bfcbcfb8f226195bfc6e466fe13042f1076cbde92b7ec96bbfb')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'src/lua.h')
+
+    def post_build(self, state: BuildState):
+        self.options['INSTALL_TOP'] = state.install_path
+        self.install(state, self.options)
+
+
 class LzmaTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='lzma'):
         super().__init__(name)
