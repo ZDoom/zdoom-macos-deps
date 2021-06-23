@@ -480,6 +480,31 @@ class SodiumTarget(ConfigureMakeStaticDependencyTarget):
         return os.path.exists(state.source + 'libsodium.pc.in')
 
 
+class SfmlTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='sfml'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://www.sfml-dev.org/files/SFML-2.5.1-sources.zip',
+            'bf1e0643acb92369b24572b703473af60bac82caf5af61e77c063b779471bb7f',
+            patches='sfml-support-arm64')
+
+    def configure(self, state: BuildState):
+        opts = self.options
+        opts['CMAKE_OSX_ARCHITECTURES'] = state.architecture()
+        opts['SFML_USE_SYSTEM_DEPS'] = 'YES'
+        opts['SFML_MISC_INSTALL_PREFIX'] = state.install_path + 'share/SFML'
+        # Use OpenAL Soft instead of Apple's framework
+        opts['OPENAL_INCLUDE_DIR'] = state.include_path + 'AL'
+        opts['OPENAL_LIBRARY'] = state.lib_path + 'libopenal.a'
+
+        super(SfmlTarget, self).configure(state)
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'libtiff-4.pc.in')
+
+
 class TiffTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='tiff'):
         super().__init__(name)

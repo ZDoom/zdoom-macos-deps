@@ -87,6 +87,7 @@ def targets():
         Sdl2MixerTarget(),
         Sdl2NetTarget(),
         Sdl2TtfTarget(),
+        SfmlTarget(),
         SodiumTarget(),
         TiffTarget(),
         WebpTarget(),
