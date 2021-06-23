@@ -76,6 +76,46 @@ class FmtTarget(CMakeStaticDependencyTarget):
         return os.path.exists(state.source + 'include/fmt/format.h')
 
 
+class FreeImageTarget(MakeTarget):
+    def __init__(self, name='freeimage'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://downloads.sourceforge.net/project/freeimage/Source%20Distribution/3.18.0/FreeImage3180.zip',
+            'f41379682f9ada94ea7b34fe86bf9ee00935a3147be41b6569c9605a53e438fd',
+            patches='freeimage-fix-arm64')
+
+    HEADER_FILE = 'Source/FreeImage.h'
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + self.HEADER_FILE)
+
+    def configure(self, state: BuildState):
+        super().configure(state)
+
+        # These flags are copied from Makefile.gnu
+        common_flags = ' -O3 -fPIC -fexceptions -fvisibility=hidden'
+
+        env = self.environment
+        env['CFLAGS'] += common_flags + ' -std=gnu89 -Wno-implicit-function-declaration'
+        env['CXXFLAGS'] += common_flags + ' -Wno-ctor-dtor-privacy'
+
+        for option in ('-f', 'Makefile.gnu', 'libfreeimage.a'):
+            self.options[option] = None
+
+    def post_build(self, state: BuildState):
+        include_path = state.install_path + 'include'
+        os.makedirs(include_path, exist_ok=True)
+        shutil.copy(state.build_path + self.HEADER_FILE, include_path)
+
+        lib_path = state.install_path + 'lib'
+        os.makedirs(lib_path, exist_ok=True)
+        shutil.copy(state.build_path + 'libfreeimage.a', lib_path)
+
+        self.write_pc_file(state, version='3.18.0', libs='-lfreeimage -lc++')
+
+
 class FreeTypeTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='freetype'):
         super().__init__(name)
