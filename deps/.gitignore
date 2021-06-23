@@ -40,6 +40,8 @@
 
 # Libraries, tier 2
 /freetype/lib/cmake/
+/lua/bin/
+/lua/man/
 /lzma/bin/
 /png/bin/png-fix-itxt
 /png/bin/pngfix
