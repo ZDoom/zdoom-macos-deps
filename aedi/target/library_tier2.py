@@ -41,6 +41,24 @@ class DumbTarget(CMakeStaticDependencyTarget):
         return 'Libs: -L${libdir} -ldumb\n' if line.startswith('Libs:') else line
 
 
+class ExpatTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='expat'):
+        super().__init__(name)
+
+        opts = self.options
+        opts['EXPAT_BUILD_EXAMPLES'] = 'NO'
+        opts['EXPAT_BUILD_TESTS'] = 'NO'
+        opts['EXPAT_BUILD_TOOLS'] = 'NO'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.xz',
+            'cf032d0dba9b928636548e32b327a2d66b1aab63c4f4a13dd132c2d1d2f2fb6a')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'expat.pc.in')
+
+
 class FmtTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='fmt'):
         super().__init__(name)

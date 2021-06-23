@@ -68,6 +68,7 @@ def targets():
 
         # Libraries needed for other targets
         DumbTarget(),
+        ExpatTarget(),
         FmtTarget(),
         FreeTypeTarget(),
         FtglTarget(),
