@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from distutils.version import StrictVersion
 import hashlib
 import os
 import shutil
@@ -55,8 +56,8 @@ class BuildState:
     def host(self) -> str:
         return self.platform.host if self.platform else ''
 
-    def os_version(self) -> str:
-        return self.platform.os_version if self.platform else ''
+    def os_version(self) -> StrictVersion:
+        return self.platform.os_version if self.platform else None
 
     def sdk_path(self) -> str:
         return self.platform.sdk_path if self.platform else ''

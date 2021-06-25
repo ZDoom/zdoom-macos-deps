@@ -106,7 +106,7 @@ class BuildTarget(Target):
     def _set_os_version(self, state: BuildState, varname: str):
         os_version = state.os_version()
         if os_version:
-            self._update_env(varname, '-mmacosx-version-min=' + os_version)
+            self._update_env(varname, '-mmacosx-version-min=' + str(os_version))
 
     def install(self, state: BuildState, options: CommandLineOptions = None, tool: str = 'gmake'):
         if state.xcode:
@@ -393,7 +393,7 @@ class CMakeTarget(BuildTarget):
 
         os_version = state.os_version()
         if os_version:
-            args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + os_version)
+            args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + str(os_version))
 
         sdk_path = state.sdk_path()
         if sdk_path:

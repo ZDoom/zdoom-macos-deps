@@ -17,6 +17,7 @@
 #
 
 import collections
+from distutils.version import StrictVersion
 import os
 import shutil
 
@@ -44,10 +45,11 @@ class CommandLineOptions(dict):
 
 
 class TargetPlatform:
-    def __init__(self, architecture: str, host: str, os_version: str, sdk_path: str, prefix_path: str):
+    def __init__(self, architecture: str, host: str, os_version: [str, StrictVersion],
+                 sdk_path: str, prefix_path: str):
         self.architecture = architecture
         self.host = host
-        self.os_version = os_version
+        self.os_version = os_version if isinstance(os_version, StrictVersion) else StrictVersion(os_version)
         self.sdk_path = sdk_path
         self.c_compiler = f'{prefix_path}bin/{host}-gcc'
         self.cxx_compiler = f'{prefix_path}bin/{host}-g++'
