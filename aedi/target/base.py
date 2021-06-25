@@ -17,6 +17,7 @@
 #
 
 import copy
+from distutils.version import StrictVersion
 import os
 from platform import machine
 import re
@@ -24,7 +25,7 @@ import shutil
 import subprocess
 import typing
 
-from ..utility import CommandLineOptions, symlink_directory
+from ..utility import CommandLineOptions, symlink_directory, OS_VERSION_X86_64, OS_VERSION_ARM64
 from ..state import BuildState
 
 
@@ -67,7 +68,15 @@ class BuildTarget(Target):
         self.options = CommandLineOptions()
         self.multi_platform = True
 
+        self.os_version = dict()
+        self.os_version['x86_64'] = OS_VERSION_X86_64
+        self.os_version['arm64'] = OS_VERSION_ARM64
+
     def configure(self, state: BuildState):
+        os_version = state.os_version()
+        if os_version and os_version < self.os_version[state.architecture()]:
+            raise RuntimeError('Minimum OS version requirement is not met')
+
         os.makedirs(state.build_path, exist_ok=True)
 
         env = self.environment
