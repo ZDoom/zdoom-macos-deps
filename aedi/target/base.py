@@ -80,9 +80,8 @@ class BuildTarget(Target):
         os.makedirs(state.build_path, exist_ok=True)
 
         env = self.environment
-        env['PATH'] = env['PATH'] \
-            + os.pathsep + '/Applications/CMake.app/Contents/bin' \
-            + os.pathsep + state.bin_path
+        env['PATH'] = state.bin_path + os.pathsep + env['PATH'] \
+            + os.pathsep + '/Applications/CMake.app/Contents/bin'
 
         if state.xcode:
             return
