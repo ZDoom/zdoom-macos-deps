@@ -22,6 +22,11 @@ import os
 import shutil
 
 
+# Minimum OS versions
+OS_VERSION_X86_64 = StrictVersion('10.9')
+OS_VERSION_ARM64 = StrictVersion('11.0')
+
+
 class CommandLineOptions(dict):
     # Rules to combine argument's name and value
     MAKE_RULES = 0

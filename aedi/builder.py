@@ -26,7 +26,7 @@ import typing
 
 from .state import BuildState
 from .target import Target, targets
-from .utility import CaseInsensitiveDict, TargetPlatform, symlink_directory
+from .utility import CaseInsensitiveDict, TargetPlatform, symlink_directory, OS_VERSION_X86_64, OS_VERSION_ARM64
 
 
 class Builder(object):
@@ -89,13 +89,13 @@ class Builder(object):
             return sdk_probe_path if os.path.exists(sdk_probe_path) else None
 
         if not arguments.disable_x64:
-            os_version = arguments.os_version_x64 if arguments.os_version_x64 else '10.9'
+            os_version = arguments.os_version_x64 if arguments.os_version_x64 else OS_VERSION_X86_64
             sdk_path = adjust_sdk_path(arguments.sdk_path_x64)
             platform = TargetPlatform('x86_64', 'x86_64-apple-darwin', os_version, sdk_path, state.prefix_path)
             self._platforms.append(platform)
 
         if not arguments.disable_arm:
-            os_version = arguments.os_version_arm if arguments.os_version_arm else '11.0'
+            os_version = arguments.os_version_arm if arguments.os_version_arm else OS_VERSION_ARM64
             sdk_path = adjust_sdk_path(arguments.sdk_path_arm)
             platform = TargetPlatform('arm64', 'aarch64-apple-darwin', os_version, sdk_path, state.prefix_path)
             self._platforms.append(platform)
