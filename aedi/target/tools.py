@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import shlex
 import zipapp
 
 from .base import *
@@ -132,3 +133,35 @@ class YasmTarget(ConfigureMakeDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'libyasm.h')
+
+
+class ZipTarget(MakeTarget):
+    def __init__(self, name='zip'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://downloads.sourceforge.net/project/infozip/Zip%203.x%20%28latest%29/3.0/zip30.tar.gz',
+            'f0e8bb1f9b7eb0b01285495a2699df3a4b766784c1765a8f1aeedf63c0806369',
+            patches='zip-fix-misc')
+
+    def build(self, state: BuildState):
+        args = [
+            state.c_compiler(),
+            '-O3', '-I.', '-DUNIX',
+            '-DBZIP2_SUPPORT', '-DLARGE_FILE_SUPPORT', '-DUNICODE_SUPPORT',
+            '-DHAVE_DIRENT_H', '-DHAVE_TERMIOS_H',
+            'crc32.c', 'crypt.c', 'deflate.c', 'fileio.c', 'globals.c', 'trees.c',
+            'ttyio.c', 'unix/unix.c', 'util.c', 'zip.c', 'zipfile.c', 'zipup.c',
+            '-lbz2', '-o', 'zip'
+        ]
+
+        for var in ('CFLAGS', 'LDFLAGS'):
+            args += shlex.split(self.environment[var])
+
+        subprocess.run(args, check=True, cwd=state.build_path)
+
+    def post_build(self, state: BuildState):
+        bin_path = state.install_path + 'bin'
+        os.makedirs(bin_path, exist_ok=True)
+        shutil.copy(state.build_path + 'zip', bin_path)

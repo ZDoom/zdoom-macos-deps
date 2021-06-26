@@ -101,6 +101,7 @@ def targets():
         NinjaTarget(),
         PkgConfigTarget(),
         YasmTarget(),
+        ZipTarget(),
 
         # Special
         CleanAllTarget(),
