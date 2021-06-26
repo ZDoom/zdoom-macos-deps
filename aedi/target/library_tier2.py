@@ -608,6 +608,32 @@ class WebpTarget(CMakeStaticDependencyTarget):
         self.keep_module_target(state, 'WebP::webp')
 
 
+class WxWidgetsTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='wxwidgets'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/wxWidgets/wxWidgets/releases/download/v3.0.5.1/wxWidgets-3.0.5.1.tar.bz2',
+            '440f6e73cf5afb2cbf9af10cec8da6cdd3d3998d527598a53db87099524ac807',
+            patches='wxwidgets-fix-configure')
+
+    def configure(self, state: BuildState):
+        opts = self.options
+        opts['--disable-shared'] = None
+        opts['--with-macosx-sdk'] = state.sdk_path()
+        opts['--with-macosx-version-min'] = state.os_version()
+        opts['--with-libpng'] = 'sys'
+        opts['--with-libtiff'] = 'sys'
+        opts['--without-sdl'] = None
+        opts['--without-subdirs'] = None
+
+        super().configure(state)
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'wx-config.in')
+
+
 class ZstdTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='zstd'):
         super().__init__(name)

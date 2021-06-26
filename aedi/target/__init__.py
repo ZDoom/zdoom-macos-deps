@@ -92,6 +92,7 @@ def targets():
         SodiumTarget(),
         TiffTarget(),
         WebpTarget(),
+        WxWidgetsTarget(),
         ZstdTarget(),
 
         # Tools
