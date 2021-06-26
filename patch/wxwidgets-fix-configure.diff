@@ -1,0 +1,35 @@
+--- a/configure
++++ b/configure
+@@ -3894,15 +3894,6 @@
+ 
+ 
+ 
+-if test "$cross_compiling" != "no"; then
+-    HOST_PREFIX="${host_alias}-"
+-    HOST_SUFFIX="-$host_alias"
+-else
+-    HOST_PREFIX=
+-    HOST_SUFFIX=
+-fi
+-
+-
+ wx_major_version_number=3
+ wx_minor_version_number=0
+ wx_release_number=5
+@@ -22421,6 +22412,7 @@
+ 
+                     #include <png.h>
+                     #include <stdio.h>
++                    #include <stdlib.h>
+ 
+                     int main()
+                     {
+@@ -22667,7 +22659,7 @@
+ 
+ 
+ TIFF_LINK=
+-TIFF_PREREQ_LINKS=-lm
++TIFF_PREREQ_LINKS="-llzma -lwebp -lzstd"
+ if test "$wxUSE_LIBTIFF" != "no" ; then
+     $as_echo "#define wxUSE_LIBTIFF 1" >>confdefs.h
+ 
