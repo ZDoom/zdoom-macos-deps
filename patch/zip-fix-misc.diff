@@ -1,0 +1,42 @@
+--- a/zip.c
++++ b/zip.c
+@@ -1028,7 +1028,7 @@
+ 
+   for (i = 0; i < sizeof(text)/sizeof(char *); i++)
+   {
+-    printf(text[i]);
++    printf("%s", text[i]);
+     putchar('\n');
+   }
+ #ifdef DOS
+@@ -1225,7 +1225,7 @@
+             CR_MAJORVER, CR_MINORVER, CR_BETA_VER, CR_VERSION_DATE);
+   for (i = 0; i < sizeof(cryptnote)/sizeof(char *); i++)
+   {
+-    printf(cryptnote[i]);
++    printf("%s", cryptnote[i]);
+     putchar('\n');
+   }
+   ++i;  /* crypt support means there IS at least one compilation option */
+--- a/unix/unix.c
++++ b/unix/unix.c
+@@ -1020,7 +1020,7 @@
+ 
+ 
+ /* Define the compile date string */
+-#ifdef __DATE__
++#if 0
+ #  define COMPILE_DATE " on " __DATE__
+ #else
+ #  define COMPILE_DATE ""
+--- a/util.c
++++ b/util.c
+@@ -493,6 +493,8 @@
+ /* Compare the sh pattern p with the string s and return true if they match,
+    false if they don't or if there is a syntax error in the pattern. */
+ {
++  while (s[0] == '.' && s[1] == '/') 
++    s += 2;                /* strip redundant leading "./" sections */
+   return recmatch(p, s, cs) == 1;
+ }
+ 
