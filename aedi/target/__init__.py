@@ -107,5 +107,6 @@ def targets():
         # Special
         CleanAllTarget(),
         CleanDepsTarget(),
+        DownloadCMakeTarget(),
         TestDepsTarget(),
     )

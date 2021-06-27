@@ -55,6 +55,7 @@
 /webp/**/libwebpdemux.*
 
 # Tools
+/cmake/
 /nasm/bin/ndisasm
 /yasm/bin/vsyasm
 /yasm/bin/ytasm
