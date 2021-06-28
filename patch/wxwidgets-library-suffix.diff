@@ -1,0 +1,12 @@
+--- a/build/cmake/functions.cmake
++++ b/build/cmake/functions.cmake
+@@ -211,9 +211,6 @@
+         endif()
+     else()
+         set(cross_target "")
+-        if (CMAKE_CROSSCOMPILING)
+-            set(cross_target "-${CMAKE_SYSTEM_NAME}")
+-        endif ()
+ 
+         set_target_properties(${target_name}
+             PROPERTIES
