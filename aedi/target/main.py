@@ -140,19 +140,16 @@ class LZDoom3Target(ZDoomBaseTarget):
         super().__init__(name)
         self.unsupported_architectures = ('arm64',)
 
+        opts = self.options
+        opts['DYN_FLUIDSYNTH'] = 'NO'
+        opts['DYN_MPG123'] = 'NO'
+        opts['DYN_SNDFILE'] = 'NO'
+
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/drfrag666/gzdoom.git', branch='g3.3mgw')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'ico_lzdoom.png') and os.path.exists(state.source + 'libraries/zmusic')
-
-    def initialize(self, state: BuildState):
-        super().initialize(state)
-
-        opts = self.options
-        opts['DYN_FLUIDSYNTH'] = 'NO'
-        opts['DYN_MPG123'] = 'NO'
-        opts['DYN_SNDFILE'] = 'NO'
 
 
 class RazeTarget(ZDoomVulkanBaseTarget):

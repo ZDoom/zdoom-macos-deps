@@ -43,9 +43,6 @@ class Target:
     def prepare_source(self, state: BuildState):
         pass
 
-    def initialize(self, state: BuildState):
-        pass
-
     def detect(self, state: BuildState) -> bool:
         return False
 
@@ -295,10 +292,6 @@ class ConfigureMakeTarget(BuildTarget):
     def __init__(self, name=None):
         super().__init__(name)
         self.make = MakeTarget(name)
-
-    def initialize(self, state: BuildState):
-        super().initialize(state)
-        self.make.initialize(state)
 
     def configure(self, state: BuildState):
         super().configure(state)

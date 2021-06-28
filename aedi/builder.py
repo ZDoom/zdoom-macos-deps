@@ -76,8 +76,6 @@ class Builder(object):
         state.jobs = arguments.jobs and arguments.jobs or \
             subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
 
-        self._target.initialize(state)
-
     def _populate_platforms(self, arguments):
         state = self._state
 
