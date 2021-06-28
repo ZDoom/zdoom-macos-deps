@@ -69,10 +69,20 @@ class BuildTarget(Target):
         self.os_version['x86_64'] = OS_VERSION_X86_64
         self.os_version['arm64'] = OS_VERSION_ARM64
 
+        self.sdk_version = dict()
+        self.sdk_version['x86_64'] = OS_VERSION_X86_64
+        self.sdk_version['arm64'] = OS_VERSION_ARM64
+
     def configure(self, state: BuildState):
         os_version = state.os_version()
         if os_version and os_version < self.os_version[state.architecture()]:
             raise RuntimeError('Minimum OS version requirement is not met')
+
+        sdk_path = state.sdk_path()
+        if sdk_path:
+            match = re.search(r'/MacOSX(\d+.\d+).sdk', sdk_path, re.IGNORECASE)
+            if match and StrictVersion(match[1]) < self.sdk_version[state.architecture()]:
+                raise RuntimeError('Minimum SDK version requirement is not met')
 
         os.makedirs(state.build_path, exist_ok=True)
 
