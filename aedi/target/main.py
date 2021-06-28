@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from distutils.version import StrictVersion
 import os
 from platform import machine
 import shutil
@@ -167,6 +168,33 @@ class AccTarget(CMakeMainTarget):
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/rheit/acc.git')
+
+
+class SladeTarget(CMakeMainTarget):
+    def __init__(self, name='slade'):
+        super().__init__(name)
+
+        # This should match the actual version of WxWidgets
+        self.os_version['x86_64'] = StrictVersion('10.10')
+        self.sdk_version['x86_64'] = StrictVersion('10.11')
+
+    def prepare_source(self, state: BuildState):
+        # TODO: support both stable and master branches
+        state.checkout_git('https://github.com/sirjuddington/SLADE.git', branch='stable')
+
+    def detect(self, state: BuildState) -> bool:
+        return os.path.exists(state.source + 'SLADE-osx.icns')
+
+    def configure(self, state: BuildState):
+        opts = self.options
+        opts['CMAKE_C_FLAGS'] = opts['CMAKE_CXX_FLAGS'] = '-DNOCURL -I' + state.include_path
+        opts['CMAKE_EXE_LINKER_FLAGS'] = \
+            state.run_pkg_config('--libs', 'fluidsynth', 'libtiff-4', 'openal', 'vorbisfile')
+        opts['wxWidgets_USE_STATIC'] = 'YES'
+        opts['WX_GTK3'] = 'NO'
+        opts['SFML_STATIC'] = 'YES'
+
+        super().configure(state)
 
 
 class PrBoomPlusTarget(CMakeMainTarget):
