@@ -53,6 +53,8 @@
 /webp/include/webp/demux.h
 /webp/**/libwebpdecoder.*
 /webp/**/libwebpdemux.*
+/wxwidgets/bin/wxrc-3.1
+/wxwidgets/lib/wx/config/
 
 # Tools
 /cmake/
