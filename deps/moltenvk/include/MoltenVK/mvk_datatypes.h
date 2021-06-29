@@ -286,13 +286,10 @@ VkExtent3D mvkMipmapBaseSizeFromLevelSize3D(VkExtent3D levelSize, uint32_t level
 
 #pragma mark Samplers
 
-/**
- * Returns the Metal MTLSamplerAddressMode corresponding to the specified Vulkan VkSamplerAddressMode,
- * or returns MTLSamplerAddressModeMirrorClampToEdge if no corresponding MTLSamplerAddressMode exists.
- */
+/** Returns the Metal MTLSamplerAddressMode corresponding to the specified Vulkan VkSamplerAddressMode. */
 MTLSamplerAddressMode mvkMTLSamplerAddressModeFromVkSamplerAddressMode(VkSamplerAddressMode vkMode);
 
-#if MVK_MACOS_OR_IOS 
+#if MVK_MACOS_OR_IOS
 /**
  * Returns the Metal MTLSamplerBorderColor corresponding to the specified Vulkan VkBorderColor,
  * or returns MTLSamplerBorderColorTransparentBlack if no corresponding MTLSamplerBorderColor exists.
@@ -323,7 +320,8 @@ typedef enum {
 	kMVKShaderStageTessEval,
 	kMVKShaderStageFragment,
 	kMVKShaderStageCompute,
-	kMVKShaderStageMax
+	kMVKShaderStageCount,
+	kMVKShaderStageMax = kMVKShaderStageCount	// Pubic API legacy value
 } MVKShaderStage;
 
 /** Returns the Metal MTLColorWriteMask corresponding to the specified Vulkan VkColorComponentFlags. */
