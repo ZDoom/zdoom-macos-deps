@@ -32,7 +32,8 @@
 /mpg123/**/*syn123.*
 /opusfile/lib/libopusurl.a
 /opusfile/lib/pkgconfig/opusurl.pc
-/pcre/bin/
+/pcre/bin/pcregrep
+/pcre/bin/pcretest
 /pcre/lib/pkgconfig/libpcreposix.pc
 /pcre/lib/libpcreposix.a
 /sndfile/bin/
