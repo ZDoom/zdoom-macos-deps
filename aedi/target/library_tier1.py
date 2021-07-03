@@ -422,8 +422,8 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.bz2',
-            '19108658b23b3ec5058edc9f66ac545ea19f9537234be1ec62b714c84399366d')
+            'https://ftp.pcre.org/pub/pcre/pcre-8.45.tar.bz2',
+            '4dae6fdcd2bb0bb6c37b5f97c33c2be954da743985369cddac3546e3218bffb8')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'pcre.h.in')
