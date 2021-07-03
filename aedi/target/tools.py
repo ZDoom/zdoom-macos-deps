@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import pathlib
 import shlex
 import zipapp
 
@@ -46,26 +47,22 @@ class MesonTarget(BuildTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/mesonbuild/meson/releases/download/0.56.0/meson-0.56.0.tar.gz',
-            '291dd38ff1cd55fcfca8fc985181dd39be0d3e5826e5f0013bf867be40117213')
+            'https://github.com/mesonbuild/meson/releases/download/0.58.1/meson-0.58.1.tar.gz',
+            '3144a3da662fcf79f1e5602fa929f2821cba4eba28c2c923fe0a7d3e3db04d5d')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'meson.py')
 
     def post_build(self, state: BuildState):
-        script = '__main__.py'
-        shutil.copy(state.source + script, state.build_path)
+        dest_path = os.path.join(state.install_path, 'bin')
+        os.makedirs(dest_path)
 
-        module = 'mesonbuild'
-        module_path = state.build_path + module
-        if os.path.exists(module_path):
-            shutil.rmtree(module_path)
-        shutil.copytree(state.source + module, module_path)
+        def directory_filter(path: pathlib.Path) -> bool:
+            return path.parts[0].startswith('mesonbuild')
 
-        dest_path = state.install_path + 'bin' + os.sep
-        os.makedirs(dest_path, exist_ok=True)
-
-        zipapp.create_archive(state.build_path, dest_path + self.name, '/usr/bin/env python3', compressed=True)
+        zipapp.create_archive(source=state.source, target=os.path.join(dest_path, self.name),
+                              interpreter='/usr/bin/env python3', main='mesonbuild.mesonmain:main',
+                              filter=directory_filter, compressed=True)
 
 
 class NasmTarget(ConfigureMakeDependencyTarget):
