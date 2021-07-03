@@ -428,6 +428,10 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'pcre.h.in')
 
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+        self.update_config_script(state.install_path + '/bin/pcre-config')
+
 
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
