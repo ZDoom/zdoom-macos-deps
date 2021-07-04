@@ -177,6 +177,4 @@ class ZipTarget(MakeTarget):
         subprocess.run(args, check=True, cwd=state.build_path)
 
     def post_build(self, state: BuildState):
-        bin_path = state.install_path + 'bin'
-        os.makedirs(bin_path, exist_ok=True)
-        shutil.copy(state.build_path + 'zip', bin_path)
+        self.copy_to_bin(state)
