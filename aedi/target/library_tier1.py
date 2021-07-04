@@ -211,6 +211,7 @@ endian = 'little'
 
     def post_build(self, state: BuildState):
         self.install(state, tool='ninja')
+        self.make_platform_header(state, '../lib/glib-2.0/include/glibconfig.h')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
