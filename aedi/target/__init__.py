@@ -101,6 +101,7 @@ def targets():
         MesonTarget(),
         NasmTarget(),
         NinjaTarget(),
+        P7ZipTarget(),
         PkgConfigTarget(),
         YasmTarget(),
         ZipTarget(),
