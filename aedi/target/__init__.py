@@ -103,6 +103,7 @@ def targets():
         NinjaTarget(),
         P7ZipTarget(),
         PkgConfigTarget(),
+        UnrarTarget(),
         YasmTarget(),
         ZipTarget(),
 
