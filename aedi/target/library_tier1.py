@@ -162,8 +162,8 @@ class GlibTarget(BuildTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://download.gnome.org/sources/glib/2.66/glib-2.66.4.tar.xz',
-            '97df8670e32f9fd4f7392b0980e661dd625012015d58350da1e58e343f4af984')
+            'https://download.gnome.org/sources/glib/2.68/glib-2.68.3.tar.xz',
+            'e7e1a3c20c026109c45c9ec4a31d8dcebc22e86c69486993e565817d64be3138')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'glib.doap')
@@ -172,7 +172,7 @@ class GlibTarget(BuildTarget):
         super().configure(state)
 
         environment = self.environment
-        environment['LDFLAGS'] += ' -framework CoreFoundation'
+        environment['LDFLAGS'] += ' -framework CoreFoundation -framework Foundation'
 
         cpu = state.architecture()
         cpu_family = 'arm' if 'arm64' == cpu else cpu
@@ -211,6 +211,10 @@ endian = 'little'
 
     def post_build(self, state: BuildState):
         self.install(state, tool='ninja')
+
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        return 'exec_prefix=${prefix}\n' + line if line.startswith('libdir=') else line
 
 
 class IconvTarget(ConfigureMakeStaticDependencyTarget):
