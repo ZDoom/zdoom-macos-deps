@@ -115,8 +115,8 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.2.1.tar.gz',
-            '1c56660f23f6c406b36646cc619fc2d2a5265d1d3290e79bcef4505bcd985fdd')
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.2.2.tar.gz',
+            '695aedbfd53160fef7a9a1f66cd6d5cc8a5da0fd472eee458d82b848b6065f9a')
 
     def detect(self, state: BuildState) -> bool:
         return os.path.exists(state.source + 'fluidsynth.pc.in')
@@ -125,17 +125,6 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         # TODO: Figure out why private dependencies aren't pulled
         self.options['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'glib-2.0')
         super().configure(state)
-
-    @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
-        if line.startswith('Version:'):
-            # Add instpatch as private dependency which pulls all necessary libraries
-            return line + 'Requires.private: libinstpatch-1.0' + os.linesep
-        elif line.startswith('Libs:'):
-            # Add missing system frameworks to link with
-            return line + 'Libs.private: -framework AudioUnit -framework CoreAudio -framework CoreMIDI' + os.linesep
-
-        return line
 
 
 class GettextTarget(ConfigureMakeStaticDependencyTarget):
