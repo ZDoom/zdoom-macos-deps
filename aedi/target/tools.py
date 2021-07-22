@@ -34,7 +34,7 @@ class GmakeTarget(ConfigureMakeDependencyTarget):
             'de1a441c4edf952521db30bfca80baae86a0ff1acd0a00402999344f04c45e82')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'doc/make.1')
+        return state.has_source_file('doc/make.1')
 
     def post_build(self, state: BuildState):
         self.copy_to_bin(state, 'make', self.name)
@@ -51,16 +51,16 @@ class MesonTarget(BuildTarget):
             '3144a3da662fcf79f1e5602fa929f2821cba4eba28c2c923fe0a7d3e3db04d5d')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'meson.py')
+        return state.has_source_file('meson.py')
 
     def post_build(self, state: BuildState):
-        dest_path = os.path.join(state.install_path, 'bin')
+        dest_path = state.install_path / 'bin'
         os.makedirs(dest_path)
 
         def directory_filter(path: pathlib.Path) -> bool:
             return path.parts[0].startswith('mesonbuild')
 
-        zipapp.create_archive(source=state.source, target=os.path.join(dest_path, self.name),
+        zipapp.create_archive(source=state.source, target=dest_path / self.name,
                               interpreter='/usr/bin/env python3', main='mesonbuild.mesonmain:main',
                               filter=directory_filter, compressed=True)
 
@@ -75,7 +75,7 @@ class NasmTarget(ConfigureMakeDependencyTarget):
             '3caf6729c1073bf96629b57cee31eeb54f4f8129b01902c73428836550b30a3f')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'nasm.txt')
+        return state.has_source_file('nasm.txt')
 
 
 class NinjaTarget(MakeTarget):
@@ -88,7 +88,7 @@ class NinjaTarget(MakeTarget):
             'ce35865411f0490368a8fc383f29071de6690cbadc27704734978221f25e2bed')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'src/ninja.cc')
+        return state.has_source_file('src/ninja.cc')
 
     def build(self, state: BuildState):
         cmdlines = (
@@ -114,8 +114,8 @@ class P7ZipTarget(CMakeTarget):
             'ea029a2e21d2d6ad0a156f6679bd66836204aa78148a4c5e498fe682e77127ef')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'CPP/7zip/CMAKE/CMakeLists.txt') \
-            and os.path.exists(state.source + 'C/fast-lzma2/fast-lzma2.h')
+        return state.has_source_file('CPP/7zip/CMAKE/CMakeLists.txt') \
+            and state.has_source_file('C/fast-lzma2/fast-lzma2.h')
 
     def post_build(self, state: BuildState):
         self.copy_to_bin(state, '7za')
@@ -131,7 +131,7 @@ class PkgConfigTarget(ConfigureMakeDependencyTarget):
             '6fc69c01688c9458a57eb9a1664c9aba372ccda420a02bf4429fe610e7e7d591')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'pkg-config.1')
+        return state.has_source_file('pkg-config.1')
 
     def post_build(self, state: BuildState):
         self.copy_to_bin(state, new_filename=self.name + '.exe')
@@ -147,7 +147,7 @@ class YasmTarget(ConfigureMakeDependencyTarget):
             '3dce6601b495f5b3d45b59f7d2492a340ee7e84b5beca17e48f862502bd5603f')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libyasm.h')
+        return state.has_source_file('libyasm.h')
 
 
 class UnrarTarget(MakeTarget):

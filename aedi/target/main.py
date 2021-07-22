@@ -43,17 +43,17 @@ class CMakeMainTarget(CMakeTarget):
         if state.xcode:
             return
 
-        if os.path.exists(state.install_path):
+        if state.install_path.exists():
             shutil.rmtree(state.install_path)
 
         os.makedirs(state.install_path)
 
         for output in self.outputs:
-            src = state.build_path + output
+            src = state.build_path / output
             dst_sep_pos = output.rfind(os.sep)
-            dst = state.install_path + os.sep + (output if dst_sep_pos == -1 else output[dst_sep_pos + 1:])
+            dst = state.install_path / (output if dst_sep_pos == -1 else output[dst_sep_pos + 1:])
 
-            copy_func = shutil.copytree if os.path.isdir(src) else shutil.copy
+            copy_func = shutil.copytree if src.is_dir() else shutil.copy
             copy_func(src, dst)
 
     def _force_cross_compilation(self, state: BuildState):
@@ -62,7 +62,7 @@ class CMakeMainTarget(CMakeTarget):
 
         opts = self.options
         opts['FORCE_CROSSCOMPILE'] = 'YES'
-        opts['IMPORT_EXECUTABLES'] = state.native_build_path + 'ImportExecutables.cmake'
+        opts['IMPORT_EXECUTABLES'] = state.native_build_path / 'ImportExecutables.cmake'
 
 
 class ZDoomBaseTarget(CMakeMainTarget):
@@ -75,8 +75,8 @@ class ZDoomBaseTarget(CMakeMainTarget):
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
         # Explicit OpenAL configuration to avoid selection of Apple's framework
-        opts['OPENAL_INCLUDE_DIR'] = state.include_path + 'AL'
-        opts['OPENAL_LIBRARY'] = state.lib_path + 'libopenal.a'
+        opts['OPENAL_INCLUDE_DIR'] = state.include_path / 'AL'
+        opts['OPENAL_LIBRARY'] = state.lib_path / 'libopenal.a'
 
         self._force_cross_compilation(state)
 
@@ -90,19 +90,19 @@ class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
     def post_build(self, state: BuildState):
         # Put MoltenVK library into application bundle
         molten_lib = 'libMoltenVK.dylib'
-        src_path = state.lib_path + molten_lib
+        src_path = state.lib_path / molten_lib
         dst_path = state.build_path
 
         if state.xcode:
             # TODO: Support other configurations
-            dst_path += 'Debug' + os.sep
+            dst_path /= 'Debug'
 
-        dst_path += self.name + '.app/Contents/MacOS' + os.sep
+        dst_path /= self.name + '.app/Contents/MacOS'
         os.makedirs(dst_path, exist_ok=True)
 
-        dst_path += molten_lib
+        dst_path /= molten_lib
 
-        if not os.path.exists(dst_path):
+        if not dst_path.exists():
             copy_func = state.xcode and os.symlink or shutil.copy
             copy_func(src_path, dst_path)
 
@@ -133,7 +133,7 @@ class LZDoomTarget(ZDoomVulkanBaseTarget):
         state.checkout_git('https://github.com/drfrag666/gzdoom.git')
 
     def detect(self, state: BuildState) -> bool:
-        return super().detect(state) and not os.path.exists(state.source + 'libraries/zmusic')
+        return super().detect(state) and not state.has_source_file('libraries/zmusic')
 
 
 class LZDoom3Target(ZDoomBaseTarget):
@@ -150,7 +150,7 @@ class LZDoom3Target(ZDoomBaseTarget):
         state.checkout_git('https://github.com/drfrag666/gzdoom.git', branch='g3.3mgw')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'ico_lzdoom.png') and os.path.exists(state.source + 'libraries/zmusic')
+        return state.has_source_file('ico_lzdoom.png') and state.has_source_file('libraries/zmusic')
 
 
 class RazeTarget(ZDoomVulkanBaseTarget):
@@ -183,7 +183,7 @@ class SladeTarget(CMakeMainTarget):
         state.checkout_git('https://github.com/sirjuddington/SLADE.git', branch='stable')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'SLADE-osx.icns')
+        return state.has_source_file('SLADE-osx.icns')
 
     def configure(self, state: BuildState):
         opts = self.options
@@ -323,10 +323,8 @@ class DevilutionXTarget(CMakeMainTarget):
         super().configure(state)
 
         # Remove version file that is included erroneously because of case-insensitive file system
-        version_file = state.build_path + '_deps/libzt-src/ext/ZeroTierOne/ext/miniupnpc/VERSION'
-
-        if os.path.exists(version_file):
-            os.unlink(version_file)
+        version_file = state.build_path / '_deps/libzt-src/ext/ZeroTierOne/ext/miniupnpc/VERSION'
+        version_file.unlink(missing_ok=True)
 
 
 class EDuke32Target(MakeMainTarget):
@@ -338,8 +336,8 @@ class EDuke32Target(MakeMainTarget):
 
     def detect(self, state: BuildState) -> bool:
         def has_bundle(name: str) -> bool:
-            probe_path = f'{state.source}/platform/Apple/bundles/{name}.app'
-            return os.path.exists(probe_path)
+            probe_path = state.source / 'platform/Apple/bundles/{name}.app'
+            return probe_path.exists()
 
         return has_bundle('EDuke32') and not has_bundle('NBlood')
 
@@ -362,7 +360,7 @@ class NBloodTarget(EDuke32Target):
         state.checkout_git('https://github.com/nukeykt/NBlood.git')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + os.sep + 'nblood.pk3')
+        return state.has_source_file('nblood.pk3')
 
 
 class QuakespasmTarget(MakeMainTarget):
@@ -385,4 +383,4 @@ class QuakespasmTarget(MakeMainTarget):
         state.checkout_git('https://git.code.sf.net/p/quakespasm/quakespasm')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + os.sep + 'Quakespasm.txt')
+        return state.has_source_file('Quakespasm.txt')

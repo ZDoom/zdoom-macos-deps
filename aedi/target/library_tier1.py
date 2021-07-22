@@ -16,8 +16,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import re
-
 from .base import *
 from ..state import BuildState
 
@@ -32,7 +30,7 @@ class Bzip2Target(MakeTarget):
             'ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'bzlib.h')
+        return state.has_source_file('bzlib.h')
 
     def configure(self, state: BuildState):
         super().configure(state)
@@ -62,7 +60,7 @@ class FfiTarget(ConfigureMakeStaticDependencyTarget):
             '540fb721619a6aba3bdeef7d940d8e9e0e6d2c193595bc243241b77ff9e93620')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libffi.pc.in')
+        return state.has_source_file('libffi.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -88,17 +86,17 @@ class FlacTarget(CMakeStaticDependencyTarget):
             patches='flac-add-cmake')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'FLAC/flac.pc.in')
+        return state.has_source_file('FLAC/flac.pc.in')
 
     def configure(self, state: BuildState):
-        self.options['CMAKE_EXE_LINKER_FLAGS'] = '-framework CoreFoundation -L' + state.lib_path
+        self.options['CMAKE_EXE_LINKER_FLAGS'] = f'-framework CoreFoundation -L{state.lib_path}'
         super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
 
-        shutil.copytree(state.install_path + 'share/FLAC/cmake', state.install_path + 'lib/cmake/FLAC')
-        shutil.copytree(state.install_path + 'share/pkgconfig', state.install_path + 'lib/pkgconfig')
+        shutil.copytree(state.install_path / 'share/FLAC/cmake', state.install_path / 'lib/cmake/FLAC')
+        shutil.copytree(state.install_path / 'share/pkgconfig', state.install_path / 'lib/pkgconfig')
 
         self.keep_module_target(state, 'FLAC::FLAC')
 
@@ -119,7 +117,7 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
             '695aedbfd53160fef7a9a1f66cd6d5cc8a5da0fd472eee458d82b848b6065f9a')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'fluidsynth.pc.in')
+        return state.has_source_file('fluidsynth.pc.in')
 
     def configure(self, state: BuildState):
         # TODO: Figure out why private dependencies aren't pulled
@@ -142,7 +140,7 @@ class GettextTarget(ConfigureMakeStaticDependencyTarget):
             'd20fcbb537e02dcf1383197ba05bd0734ef7bf5db06bdb241eb69b7d16b73192')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'gettext-runtime')
+        return state.has_source_file('gettext-runtime')
 
 
 class GlibTarget(BuildTarget):
@@ -155,7 +153,7 @@ class GlibTarget(BuildTarget):
             'e7e1a3c20c026109c45c9ec4a31d8dcebc22e86c69486993e565817d64be3138')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'glib.doap')
+        return state.has_source_file('glib.doap')
 
     def configure(self, state: BuildState):
         super().configure(state)
@@ -166,7 +164,7 @@ class GlibTarget(BuildTarget):
         cpu = state.architecture()
         cpu_family = 'arm' if 'arm64' == cpu else cpu
 
-        cross_file = state.build_path + state.architecture() + '.txt'
+        cross_file = state.build_path / (state.architecture() + '.txt')
         with open(cross_file, 'w') as f:
             f.write(f'''
 [binaries]
@@ -185,11 +183,11 @@ endian = 'little'
 ''')
 
         args = (
-            state.bin_path + 'meson',
-            '--prefix=' + state.install_path,
+            state.bin_path / 'meson',
+            f'--prefix={state.install_path}',
             '--buildtype=release',
             '--default-library=static',
-            '--cross-file=' + cross_file,
+            f'--cross-file={cross_file}',
             state.source
         )
         subprocess.check_call(args, cwd=state.build_path, env=environment)
@@ -218,7 +216,7 @@ class IconvTarget(ConfigureMakeStaticDependencyTarget):
             'e6a1b1b589654277ee790cce3734f07876ac4ccfaecbee8afa0b649cf529cc04')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'include/iconv.h.in')
+        return state.has_source_file('include/iconv.h.in')
 
 
 class InstPatchTarget(CMakeStaticDependencyTarget):
@@ -235,7 +233,7 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
             '8e9861b04ede275d712242664dab6ffa9166c7940fea3b017638681d25e10299')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libinstpatch-1.0.pc.in')
+        return state.has_source_file('libinstpatch-1.0.pc.in')
 
 
 class IntlTarget(GettextTarget):
@@ -261,7 +259,7 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
             'bef89803e506f27715c5627b1e3219c95b80fc31465d4452de2a909d382e4444')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'turbojpeg.h')
+        return state.has_source_file('turbojpeg.h')
 
 
 class MoltenVKTarget(MakeTarget):
@@ -277,7 +275,7 @@ class MoltenVKTarget(MakeTarget):
             'f9bba6d3bf3648e7685c247cb6d126d62508af614bc549cedd5859a7da64967e')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'MoltenVKPackaging.xcodeproj')
+        return state.has_source_file('MoltenVKPackaging.xcodeproj')
 
     def configure(self, state: BuildState):
         # Unset platform to avoid using specified macOS deployment target and SDK
@@ -296,16 +294,16 @@ class MoltenVKTarget(MakeTarget):
         if state.xcode:
             return
 
-        if os.path.exists(state.install_path):
+        if state.install_path.exists():
             shutil.rmtree(state.install_path)
 
-        lib_path = state.install_path + os.sep + 'lib' + os.sep
+        lib_path = state.install_path / 'lib'
         os.makedirs(lib_path)
 
-        src_path = state.build_path + 'Package/Latest/MoltenVK/'
-        shutil.copytree(src_path + 'include', state.install_path + os.sep + 'include')
-        shutil.copy(state.build_path + 'LICENSE', state.install_path + os.sep + 'apache2.txt')
-        shutil.copy(src_path + 'dylib/macOS/libMoltenVK.dylib', lib_path)
+        src_path = state.build_path / 'Package/Latest/MoltenVK'
+        shutil.copytree(src_path / 'include', state.install_path / 'include')
+        shutil.copy(state.build_path + 'LICENSE', state.install_path / 'apache2.txt')
+        shutil.copy(src_path / 'dylib/macOS/libMoltenVK.dylib', lib_path)
 
 
 class Mpg123Target(CMakeStaticDependencyTarget):
@@ -322,7 +320,7 @@ class Mpg123Target(CMakeStaticDependencyTarget):
             patches='mpg123-fix-cmake')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libmpg123.pc.in')
+        return state.has_source_file('libmpg123.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -339,7 +337,7 @@ class OggTarget(CMakeStaticDependencyTarget):
             'c4d91be36fc8e54deae7575241e03f4211eb102afb3fc0775fbbc1b740016705')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'ogg.pc.in')
+        return state.has_source_file('ogg.pc.in')
 
 
 class OpenALTarget(CMakeStaticDependencyTarget):
@@ -356,7 +354,7 @@ class OpenALTarget(CMakeStaticDependencyTarget):
             'c8ad767e9a3230df66756a21cc8ebf218a9d47288f2514014832204e666af5d8')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'openal.pc.in')
+        return state.has_source_file('openal.pc.in')
 
     FRAMEWORKS = '-framework ApplicationServices -framework AudioToolbox -framework AudioUnit -framework CoreAudio'
 
@@ -367,7 +365,7 @@ class OpenALTarget(CMakeStaticDependencyTarget):
             link_libs = '  INTERFACE_LINK_LIBRARIES '
             return f'{link_libs}"{OpenALTarget.FRAMEWORKS}"\n' if line.startswith(link_libs) else line
 
-        config_path = state.install_path + '/lib/cmake/OpenAL/OpenALConfig.cmake'
+        config_path = state.install_path / 'lib/cmake/OpenAL/OpenALConfig.cmake'
         self.update_text_file(config_path, update_cmake_libs)
 
     @staticmethod
@@ -388,7 +386,7 @@ class OpusTarget(CMakeStaticDependencyTarget):
             patches='opus-fix-cmake')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'opus.pc.in')
+        return state.has_source_file('opus.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -420,11 +418,11 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
             '4dae6fdcd2bb0bb6c37b5f97c33c2be954da743985369cddac3546e3218bffb8')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'pcre.h.in')
+        return state.has_source_file('pcre.h.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
-        self.update_config_script(state.install_path + '/bin/pcre-config')
+        self.update_config_script(state.install_path / 'bin/pcre-config')
 
 
 class SndFileTarget(CMakeStaticDependencyTarget):
@@ -441,7 +439,7 @@ class SndFileTarget(CMakeStaticDependencyTarget):
             'a8cfb1c09ea6e90eff4ca87322d4168cdbe5035cb48717b40bf77e751cc02163')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'sndfile.pc.in')
+        return state.has_source_file('sndfile.pc.in')
 
 
 class VorbisTarget(CMakeStaticDependencyTarget):
@@ -454,7 +452,7 @@ class VorbisTarget(CMakeStaticDependencyTarget):
             'b33cc4934322bcbf6efcbacf49e3ca01aadbea4114ec9589d1b1e9d20f72954b')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'vorbis.pc.in')
+        return state.has_source_file('vorbis.pc.in')
 
 
 class VpxTarget(ConfigureMakeDependencyTarget):
@@ -480,7 +478,7 @@ class VpxTarget(ConfigureMakeDependencyTarget):
         super().configure(state)
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'vpxstats.h')
+        return state.has_source_file('vpxstats.h')
 
 
 class ZlibNgTarget(CMakeStaticDependencyTarget):
@@ -498,7 +496,7 @@ class ZlibNgTarget(CMakeStaticDependencyTarget):
             'eca3fe72aea7036c31d00ca120493923c4d5b99fe02e6d3322f7c88dbdcd0085')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'zlib-ng.h')
+        return state.has_source_file('zlib-ng.h')
 
 
 class ZMusicTarget(CMakeStaticDependencyTarget):
@@ -516,4 +514,4 @@ class ZMusicTarget(CMakeStaticDependencyTarget):
             '73082f661b7b0bb33348d1d186c132deec9132a1613480348a00172b49c9fd68')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'include/zmusic.h')
+        return state.has_source_file('include/zmusic.h')

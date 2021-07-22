@@ -34,7 +34,7 @@ class DumbTarget(CMakeStaticDependencyTarget):
             '99bfac926aeb8d476562303312d9f47fd05b43803050cd889b44da34a9b2a4f9')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'include/dumb.h')
+        return state.has_source_file('include/dumb.h')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -56,7 +56,7 @@ class ExpatTarget(CMakeStaticDependencyTarget):
             'cf032d0dba9b928636548e32b327a2d66b1aab63c4f4a13dd132c2d1d2f2fb6a')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'expat.pc.in')
+        return state.has_source_file('expat.pc.in')
 
 
 class FmtTarget(CMakeStaticDependencyTarget):
@@ -73,7 +73,7 @@ class FmtTarget(CMakeStaticDependencyTarget):
             '5cae7072042b3043e12d53d50ef404bbb76949dad1de368d7f993a15c8c05ecc')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'include/fmt/format.h')
+        return state.has_source_file('include/fmt/format.h')
 
 
 class FreeImageTarget(MakeTarget):
@@ -89,7 +89,7 @@ class FreeImageTarget(MakeTarget):
     HEADER_FILE = 'Source/FreeImage.h'
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + self.HEADER_FILE)
+        return state.has_source_file(self.HEADER_FILE)
 
     def configure(self, state: BuildState):
         super().configure(state)
@@ -105,13 +105,13 @@ class FreeImageTarget(MakeTarget):
             self.options[option] = None
 
     def post_build(self, state: BuildState):
-        include_path = state.install_path + 'include'
+        include_path = state.install_path / 'include'
         os.makedirs(include_path, exist_ok=True)
-        shutil.copy(state.build_path + self.HEADER_FILE, include_path)
+        shutil.copy(state.build_path / self.HEADER_FILE, include_path)
 
-        lib_path = state.install_path + 'lib'
+        lib_path = state.install_path / 'lib'
         os.makedirs(lib_path, exist_ok=True)
-        shutil.copy(state.build_path + 'libfreeimage.a', lib_path)
+        shutil.copy(state.build_path / 'libfreeimage.a', lib_path)
 
         self.write_pc_file(state, version='3.18.0', libs='-lfreeimage -lc++')
 
@@ -126,14 +126,14 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
             '86a854d8905b19698bbc8f23b860bc104246ce4854dcea8e3b0fb21284f75784')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'include/freetype/freetype.h')
+        return state.has_source_file('include/freetype/freetype.h')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
 
-        bin_path = state.install_path + 'bin'
+        bin_path = state.install_path / 'bin'
         os.makedirs(bin_path)
-        shutil.copy(state.patch_path + 'freetype-config', bin_path)
+        shutil.copy(state.patch_path / 'freetype-config', bin_path)
 
 
 class FtglTarget(ConfigureMakeStaticDependencyTarget):
@@ -151,7 +151,7 @@ class FtglTarget(ConfigureMakeStaticDependencyTarget):
             patches='ftgl-support-arm64')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'ftgl.pc.in')
+        return state.has_source_file('ftgl.pc.in')
 
 
 class GlewTarget(CMakeStaticDependencyTarget):
@@ -167,7 +167,7 @@ class GlewTarget(CMakeStaticDependencyTarget):
             'd4fc82893cfb00109578d0a1a2337fb8ca335b3ceccf97b97e5cc7f08e4353e1')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'glew.pc.in')
+        return state.has_source_file('glew.pc.in')
 
     LINKER_FLAGS = '-framework OpenGL'
 
@@ -182,7 +182,7 @@ class GlewTarget(CMakeStaticDependencyTarget):
 
             return line
 
-        cmake_module = state.install_path + 'lib/cmake/glew/glew-targets.cmake'
+        cmake_module = state.install_path / 'lib/cmake/glew/glew-targets.cmake'
         self.update_text_file(cmake_module, update_linker_flags)
 
     @staticmethod
@@ -205,7 +205,7 @@ class LuaTarget(MakeTarget):
             'f8612276169e3bfcbcfb8f226195bfc6e466fe13042f1076cbde92b7ec96bbfb')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'src/lua.h')
+        return state.has_source_file('src/lua.h')
 
     def post_build(self, state: BuildState):
         self.options['INSTALL_TOP'] = state.install_path
@@ -223,7 +223,7 @@ class LzmaTarget(CMakeStaticDependencyTarget):
             patches='lzma-add-cmake')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'src/liblzma/liblzma.pc.in')
+        return state.has_source_file('src/liblzma/liblzma.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -245,7 +245,7 @@ class MadTarget(ConfigureMakeStaticDependencyTarget):
             patches='mad-support-arm64')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'mad.h')
+        return state.has_source_file('mad.h')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -262,11 +262,11 @@ class MikmodTarget(ConfigureMakeStaticDependencyTarget):
             'ad9d64dfc8f83684876419ea7cd4ff4a41d8bcd8c23ef37ecb3a200a16b46d19')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libmikmod.pc.in')
+        return state.has_source_file('libmikmod.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
-        self.update_config_script(state.install_path + '/bin/libmikmod-config')
+        self.update_config_script(state.install_path / 'bin/libmikmod-config')
 
 
 class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
@@ -279,7 +279,7 @@ class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
             '457ca5a6c179656d66c01505c0d95fafaead4329b9dbaa0f997d00a3508ad9de')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libmodplug.pc.in')
+        return state.has_source_file('libmodplug.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -302,7 +302,7 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
             '118d8601c12dd6a44f52423e68ca9083cc9f2bfe72da7a8c1acb22a80ae3550b')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'opusfile.pc.in')
+        return state.has_source_file('opusfile.pc.in')
 
 
 class PngTarget(CMakeStaticDependencyTarget):
@@ -319,11 +319,11 @@ class PngTarget(CMakeStaticDependencyTarget):
             '505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libpng.pc.in')
+        return state.has_source_file('libpng.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
-        self.update_config_script(state.install_path + '/bin/libpng16-config')
+        self.update_config_script(state.install_path / 'bin/libpng16-config')
 
 
 class PortMidiTarget(CMakeTarget):
@@ -337,20 +337,20 @@ class PortMidiTarget(CMakeTarget):
             patches='portmidi-modernize-cmake')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'pm_common/portmidi.h')
+        return state.has_source_file('pm_common/portmidi.h')
 
     def post_build(self, state: BuildState):
-        if os.path.exists(state.install_path):
+        if state.install_path.exists():
             shutil.rmtree(state.install_path)
 
-        include_path = state.install_path + os.sep + 'include'
+        include_path = state.install_path / 'include'
         os.makedirs(include_path)
-        shutil.copy(state.source + 'pm_common/portmidi.h', include_path)
-        shutil.copy(state.source + 'porttime/porttime.h', include_path)
+        shutil.copy(state.source / 'pm_common/portmidi.h', include_path)
+        shutil.copy(state.source / 'porttime/porttime.h', include_path)
 
-        lib_path = state.install_path + os.sep + 'lib' + os.sep
+        lib_path = state.install_path / 'lib'
         os.makedirs(lib_path)
-        shutil.copy(state.build_path + 'libportmidi_s.a', lib_path + 'libportmidi.a')
+        shutil.copy(state.build_path / 'libportmidi_s.a', lib_path / 'libportmidi.a')
 
 
 class SamplerateTarget(CMakeStaticDependencyTarget):
@@ -364,7 +364,7 @@ class SamplerateTarget(CMakeStaticDependencyTarget):
             patches='samplerate-support-arm64')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'samplerate.pc.in')
+        return state.has_source_file('samplerate.pc.in')
 
 
 class Sdl2Target(CMakeStaticDependencyTarget):
@@ -384,7 +384,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
             'd8215b571a581be1332d2106f8036fcb03d12a70bae01e20f424976d275432bc')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'sdl2.pc.in')
+        return state.has_source_file('sdl2.pc.in')
 
     FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa' \
         ' -framework CoreAudio -framework CoreFoundation -framework CoreVideo' \
@@ -402,7 +402,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
             return line
 
-        self.update_config_script(state.install_path + '/bin/sdl2-config', update_sdl2_config)
+        self.update_config_script(state.install_path / 'bin/sdl2-config', update_sdl2_config)
 
         def update_targets_cmake(line: str):
             if line.startswith('  INTERFACE_LINK_LIBRARIES '):
@@ -413,7 +413,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
             return line
 
         for suffix in ('', '-release'):
-            file_path = f'{state.install_path}/lib/cmake/SDL2/SDL2Targets{suffix}.cmake'
+            file_path = state.install_path / f'lib/cmake/SDL2/SDL2Targets{suffix}.cmake'
             self.update_text_file(file_path, update_targets_cmake)
 
     @staticmethod
@@ -436,7 +436,7 @@ class Sdl2ImageTarget(ConfigureMakeStaticDependencyTarget):
             'bdd5f6e026682f7d7e1be0b6051b209da2f402a2dd8bd1c4bd9c25ad263108d0')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'SDL2_image.pc.in')
+        return state.has_source_file('SDL2_image.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -461,7 +461,7 @@ class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'SDL2_mixer.pc.in')
+        return state.has_source_file('SDL2_mixer.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -481,7 +481,7 @@ class Sdl2NetTarget(ConfigureMakeStaticDependencyTarget):
             '15ce8a7e5a23dafe8177c8df6e6c79b6749a03fff1e8196742d3571657609d21')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'SDL2_net.pc.in')
+        return state.has_source_file('SDL2_net.pc.in')
 
 
 class Sdl2TtfTarget(CMakeStaticDependencyTarget):
@@ -496,11 +496,11 @@ class Sdl2TtfTarget(CMakeStaticDependencyTarget):
             patches='sdl2_ttf-fix-cmake')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'SDL2_ttf.pc.in')
+        return state.has_source_file('SDL2_ttf.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
-        shutil.move(state.install_path + 'SDL2_ttf.framework/Resources', state.install_path + 'lib/cmake/SDL2_ttf')
+        shutil.move(state.install_path / 'SDL2_ttf.framework/Resources', state.install_path / 'lib/cmake/SDL2_ttf')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -517,7 +517,7 @@ class SodiumTarget(ConfigureMakeStaticDependencyTarget):
             '6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libsodium.pc.in')
+        return state.has_source_file('libsodium.pc.in')
 
 
 class SfmlTarget(CMakeStaticDependencyTarget):
@@ -534,15 +534,15 @@ class SfmlTarget(CMakeStaticDependencyTarget):
         opts = self.options
         opts['CMAKE_OSX_ARCHITECTURES'] = state.architecture()
         opts['SFML_USE_SYSTEM_DEPS'] = 'YES'
-        opts['SFML_MISC_INSTALL_PREFIX'] = state.install_path + 'share/SFML'
+        opts['SFML_MISC_INSTALL_PREFIX'] = state.install_path / 'share/SFML'
         # Use OpenAL Soft instead of Apple's framework
-        opts['OPENAL_INCLUDE_DIR'] = state.include_path + 'AL'
-        opts['OPENAL_LIBRARY'] = state.lib_path + 'libopenal.a'
+        opts['OPENAL_INCLUDE_DIR'] = state.include_path / 'AL'
+        opts['OPENAL_LIBRARY'] = state.lib_path / 'libopenal.a'
 
         super(SfmlTarget, self).configure(state)
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libtiff-4.pc.in')
+        return state.has_source_file('libtiff-4.pc.in')
 
 
 class TiffTarget(CMakeStaticDependencyTarget):
@@ -560,7 +560,7 @@ class TiffTarget(CMakeStaticDependencyTarget):
             patches='tiff-remove-useless')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'libtiff-4.pc.in')
+        return state.has_source_file('libtiff-4.pc.in')
 
     @staticmethod
     def _process_pkg_config(pcfile: str, line: str) -> str:
@@ -599,12 +599,12 @@ class WebpTarget(CMakeStaticDependencyTarget):
             '2fc8bbde9f97f2ab403c0224fb9ca62b2e6852cbc519e91ceaa7c153ffd88a0c')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'src/libwebp.pc.in')
+        return state.has_source_file('src/libwebp.pc.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
 
-        shutil.copytree(state.install_path + 'share/WebP/cmake', state.install_path + 'lib/cmake/WebP')
+        shutil.copytree(state.install_path / 'share/WebP/cmake', state.install_path / 'lib/cmake/WebP')
         self.keep_module_target(state, 'WebP::webp')
 
 
@@ -630,7 +630,7 @@ class WxWidgetsTarget(CMakeStaticDependencyTarget):
             patches='wxwidgets-library-suffix')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'wx-config.in')
+        return state.has_source_file('wx-config.in')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -640,7 +640,7 @@ class WxWidgetsTarget(CMakeStaticDependencyTarget):
             prefix = '#define wxINSTALL_PREFIX '
             return f'{prefix}"/usr/local"\n' if line.startswith(prefix) else line
 
-        setup_h_path = state.install_path + 'lib/wx/include/osx_cocoa-unicode-static-3.1/wx/setup.h'
+        setup_h_path = state.install_path / 'lib/wx/include/osx_cocoa-unicode-static-3.1/wx/setup.h'
         self.update_text_file(setup_h_path, patch_setup_h)
 
         # Fix a few wx-config entries
@@ -670,7 +670,7 @@ class WxWidgetsTarget(CMakeStaticDependencyTarget):
 
             return line
 
-        wx_config_path = state.install_path + 'bin/wx-config'
+        wx_config_path = state.install_path / 'bin/wx-config'
         self.update_text_file(wx_config_path, patch_wx_config)
 
 
@@ -689,4 +689,4 @@ class ZstdTarget(CMakeStaticDependencyTarget):
             '5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94')
 
     def detect(self, state: BuildState) -> bool:
-        return os.path.exists(state.source + 'lib/libzstd.pc.in')
+        return state.has_source_file('lib/libzstd.pc.in')
