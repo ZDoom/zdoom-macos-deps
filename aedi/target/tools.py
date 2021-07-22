@@ -176,6 +176,9 @@ class ZipTarget(MakeTarget):
             'f0e8bb1f9b7eb0b01285495a2699df3a4b766784c1765a8f1aeedf63c0806369',
             patches='zip-fix-misc')
 
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('zip.h')
+
     def build(self, state: BuildState):
         args = [
             state.c_compiler(),
