@@ -20,8 +20,10 @@
 
 import sys
 
-if sys.hexversion < 0x3070000:
-    print('Build module requires Python 3.7 or newer')
+_min_version = (3, 8, 0, 'final', 0)
+
+if sys.version_info < _min_version:
+    print(f'This module requires Python {_min_version[0]}.{_min_version[1]}.{_min_version[2]} or newer')
     exit(1)
 
 sys.dont_write_bytecode = True
