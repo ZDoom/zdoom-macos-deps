@@ -162,6 +162,9 @@ class UnrarTarget(MakeTarget):
     def post_build(self, state: BuildState):
         self.copy_to_bin(state)
 
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('rar.hpp')
+
 
 class ZipTarget(MakeTarget):
     def __init__(self, name='zip'):
