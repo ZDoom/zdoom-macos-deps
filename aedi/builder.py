@@ -26,7 +26,7 @@ import subprocess
 import typing
 
 from .state import BuildState
-from .target import Target, targets, DOWNLOAD_CMAKE_TARGET_NAME
+from .target import Target, targets
 from .utility import CaseInsensitiveDict, TargetPlatform, symlink_directory, OS_VERSION_X86_64, OS_VERSION_ARM64
 
 
@@ -122,9 +122,6 @@ class Builder(object):
 
         if not state.xcode and state.install_path.exists():
             shutil.rmtree(state.install_path)
-
-        if target.name != DOWNLOAD_CMAKE_TARGET_NAME:
-            Builder(['--target=' + DOWNLOAD_CMAKE_TARGET_NAME]).run()
 
         self._create_prefix_directory()
 

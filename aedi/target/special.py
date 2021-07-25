@@ -51,11 +51,8 @@ class CleanDepsTarget(CleanAllTarget):
         self.args += (state.deps_path,)
 
 
-DOWNLOAD_CMAKE_TARGET_NAME = 'download-cmake'
-
-
 class DownloadCMakeTarget(Target):
-    def __init__(self, name=DOWNLOAD_CMAKE_TARGET_NAME):
+    def __init__(self, name='download-cmake'):
         super().__init__(name)
 
     def build(self, state: BuildState):
