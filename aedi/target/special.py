@@ -56,12 +56,10 @@ class DownloadCMakeTarget(Target):
         super().__init__(name)
 
     def build(self, state: BuildState):
-        cmake_version = '3.20.5'
-        cmake_basename = f'cmake-{cmake_version}-macos-universal'
-
-        state.download_source(
-            f'https://github.com/Kitware/CMake/releases/download/v{cmake_version}/{cmake_basename}.tar.gz',
-            '000828af55268853ba21b91f8ce3bfb9365aa72aee960fc7f0c01a71f3a2217a')
+        cmake_version = '3.21.0'
+        cmake_basename = f'cmake-{cmake_version}-macos10.10-universal'
+        cmake_url = f'https://github.com/Kitware/CMake/releases/download/v{cmake_version}/{cmake_basename}.tar.gz'
+        state.download_source(cmake_url, 'de0ae285d3fdf88373397b53de007e29cc67bec7cb945badff3eeecf80c25016')
 
         target_path = state.deps_path / 'cmake'
         if target_path.exists():
