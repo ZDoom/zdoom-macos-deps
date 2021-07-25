@@ -58,7 +58,14 @@
 /wxwidgets/lib/wx/config/
 
 # Tools
-/cmake/
+/cmake/bin/*
+!/cmake/bin/cmake
+!/cmake/share/
+/cmake/share/bash-completion
+/cmake/share/cmake-*/Help
+/cmake/share/cmake-*/Licenses
+/cmake/share/emacs
+/cmake/share/vim
 /nasm/bin/ndisasm
 /yasm/bin/vsyasm
 /yasm/bin/ytasm
