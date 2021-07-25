@@ -469,11 +469,8 @@ class CMakeStaticDependencyTarget(CMakeTarget):
             for regex in import_regexes:
                 match = regex.match(line)
 
-                if not match:
-                    continue
-                else:
-                    if match.group('target') != target:
-                        return None
+                if match and match.group('target') != target:
+                    return None
 
             return line
 
