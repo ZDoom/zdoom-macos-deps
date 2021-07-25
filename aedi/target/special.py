@@ -56,19 +56,6 @@ class DownloadCMakeTarget(Target):
         super().__init__(name)
 
     def build(self, state: BuildState):
-        probe_paths = (
-            Path(),
-            state.bin_path,
-            Path('/Applications/CMake.app/Contents/bin/'),
-        )
-
-        for path in probe_paths:
-            try:
-                subprocess.run([path / 'cmake', '--version'], check=True)
-                return
-            except (FileNotFoundError, IOError, subprocess.CalledProcessError):
-                continue
-
         cmake_version = '3.20.5'
         cmake_basename = f'cmake-{cmake_version}-macos-universal'
 
