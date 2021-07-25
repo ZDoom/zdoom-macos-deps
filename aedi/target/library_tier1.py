@@ -315,8 +315,8 @@ class Mpg123Target(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.mpg123.de/download/mpg123-1.28.0.tar.bz2',
-            'e49466853685026da5d113dc7ff026b1b2ad0b57d78df693a446add9db88a7d5',
+            'https://downloads.sourceforge.net/project/mpg123/mpg123/1.28.2/mpg123-1.28.2.tar.bz2',
+            '7eefd4b68fdac7e138d04c37efe12155a8ebf25a5bccf0fb7e775af22d21db00',
             patches='mpg123-fix-cmake')
 
     def detect(self, state: BuildState) -> bool:
