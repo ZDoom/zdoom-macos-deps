@@ -91,7 +91,6 @@ class BuildTarget(Target):
         env['PATH'] = os.pathsep.join([
             str(state.bin_path),
             env['PATH'],
-            '/Applications/CMake.app/Contents/bin'
         ])
 
         if state.xcode:
