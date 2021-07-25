@@ -26,8 +26,7 @@ Run `build.py` without arguments for complete list of options.
 
 ## Prerequisites
 
-* Xcode 12.2 or newer, launch it once to finish installation
-* CMake 3.18 or newer, `CMake.app` in `/Applications` or system-wide `cmake` console executable
+Xcode 12.2 or newer is required in order to build universal binaries. Launch Xcode once to finish its installation. In theory, it is possible to use older versions of Xcode to build Intel target only by adding `--disable-arm` command line option.
 
 ## Directories
 
