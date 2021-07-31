@@ -24,6 +24,44 @@ from .base import *
 from ..state import BuildState
 
 
+class CMakeBuildTarget(CMakeTarget):
+    def __init__(self, name='cmake'):
+        super().__init__(name)
+
+        # The following variables are needed for cross-compilation
+        opts = self.options
+        opts['HAVE_POLL_FINE_EXITCODE'] = '0'
+        opts['HAVE_POLL_FINE_EXITCODE__TRYRUN_OUTPUT'] = '0'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/Kitware/CMake/releases/download/v3.21.1/cmake-3.21.1.tar.gz',
+            'fac3915171d4dff25913975d712f76e69aef44bf738ba7b976793a458b4cfed4')
+
+    def configure(self, state: BuildState):
+        # Bootstrap native CMake binary
+        boostrap_path = state.native_build_path / '__bootstrap__'
+        boostrap_cmk_path = boostrap_path / 'Bootstrap.cmk'
+        boostrap_cmake = boostrap_cmk_path / 'cmake'
+
+        if state.architecture() == machine():
+            if not boostrap_cmake.exists():
+                os.makedirs(boostrap_path, exist_ok=True)
+
+                args = (state.source / 'configure', '--parallel=' + state.jobs)
+                subprocess.run(args, cwd=boostrap_path)
+
+                assert boostrap_cmake.exists()
+
+        env = self.environment
+        env['PATH'] = os.pathsep.join([str(boostrap_cmk_path), env['PATH']])
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        self.install(state)
+
+
 class GmakeTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='gmake'):
         super().__init__(name)

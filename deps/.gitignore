@@ -60,6 +60,7 @@
 # Tools
 /cmake/bin/*
 !/cmake/bin/cmake
+/cmake/doc/
 !/cmake/share/
 /cmake/share/bash-completion
 /cmake/share/cmake-*/Help
