@@ -197,7 +197,7 @@ class BuildTarget(Target):
         for root, _, files in os.walk(state.install_path, followlinks=True):
             for filename in files:
                 if filename.endswith('.pc'):
-                    file_path = root + os.sep + filename
+                    file_path = Path(root) / filename
                     BuildTarget.update_pc_file(file_path, self._process_pkg_config)
 
     @staticmethod

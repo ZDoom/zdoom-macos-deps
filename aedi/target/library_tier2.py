@@ -45,7 +45,7 @@ class BrotliTarget(CMakeStaticDependencyTarget):
             os.rename(archive, no_suffix_name)
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         return line.replace('-R${libdir} ', '') if line.startswith('Libs:') else line
 
 
@@ -66,7 +66,7 @@ class DumbTarget(CMakeStaticDependencyTarget):
         return state.has_source_file('include/dumb.h')
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         return 'Libs: -L${libdir} -ldumb\n' if line.startswith('Libs:') else line
 
 
@@ -212,7 +212,7 @@ class GlewTarget(CMakeStaticDependencyTarget):
         self.update_text_file(cmake_module, update_linker_flags)
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         libs = 'Libs:'
 
         if line.startswith(libs):
@@ -339,7 +339,7 @@ class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
         return state.has_source_file('libmodplug.pc.in')
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         libs_private = 'Libs.private:'
 
         if line.startswith(libs_private):
@@ -474,7 +474,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
             self.update_text_file(file_path, update_targets_cmake)
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         libs = 'Libs:'
 
         if line.startswith(libs):
@@ -496,7 +496,7 @@ class Sdl2ImageTarget(ConfigureMakeStaticDependencyTarget):
         return state.has_source_file('SDL2_image.pc.in')
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         return line + 'Requires.private: libwebp\n' if line.startswith('Requires:') else line
 
 
@@ -521,7 +521,7 @@ class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
         return state.has_source_file('SDL2_mixer.pc.in')
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         if line.startswith('Requires:'):
             return line + 'Requires.private: fluidsynth libmikmod libmodplug libmpg123 opusfile vorbisfile\n'
 
@@ -560,7 +560,7 @@ class Sdl2TtfTarget(CMakeStaticDependencyTarget):
         shutil.move(state.install_path / 'SDL2_ttf.framework/Resources', state.install_path / 'lib/cmake/SDL2_ttf')
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         return line + 'Requires.private: freetype2\n' if line.startswith('Requires:') else line
 
 
@@ -620,7 +620,7 @@ class TiffTarget(CMakeStaticDependencyTarget):
         return state.has_source_file('libtiff-4.pc.in')
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         version = 'Version:'
         cflags = 'Cflags:'
         libs = 'Libs:'

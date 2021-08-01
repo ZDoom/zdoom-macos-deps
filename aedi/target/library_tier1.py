@@ -201,7 +201,7 @@ endian = 'little'
         self.make_platform_header(state, '../lib/glib-2.0/include/glibconfig.h')
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         return 'exec_prefix=${prefix}\n' + line if line.startswith('libdir=') else line
 
 
@@ -369,7 +369,7 @@ class OpenALTarget(CMakeStaticDependencyTarget):
         self.update_text_file(config_path, update_cmake_libs)
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         libs_private = 'Libs.private:'
         return f'{libs_private} {OpenALTarget.FRAMEWORKS}\n' if line.startswith(libs_private) else line
 
@@ -389,7 +389,7 @@ class OpusTarget(CMakeStaticDependencyTarget):
         return state.has_source_file('opus.pc.in')
 
     @staticmethod
-    def _process_pkg_config(pcfile: str, line: str) -> str:
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
         version = 'Version:'
         cflags = 'Cflags:'
         libs = 'Libs:'
