@@ -12,7 +12,8 @@ jobs:
     - name: Super-Linter
       uses: docker://ghcr.io/github/super-linter:slim-v4
       env:
-          FILTER_REGEX_EXCLUDE: .*/deps/.*
+          FILTER_REGEX_INCLUDE: .*/aedi/.*
+          VALIDATE_PYTHON_BLACK: false
           DISABLE_ERRORS: true
 
     - name: Bandit
