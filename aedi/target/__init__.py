@@ -75,6 +75,7 @@ def targets():
         FreeTypeTarget(),
         FtglTarget(),
         GlewTarget(),
+        HarfBuzzTarget(),
         LuaTarget(),
         LzmaTarget(),
         MadTarget(),

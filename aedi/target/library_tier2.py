@@ -220,6 +220,37 @@ class GlewTarget(CMakeStaticDependencyTarget):
         return line
 
 
+class HarfBuzzTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='harfbuzz'):
+        super().__init__(name)
+        self.options['HB_HAVE_FREETYPE'] = 'ON'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/harfbuzz/harfbuzz/archive/refs/tags/2.8.2.tar.gz',
+            '4164f68103e7b52757a732227cfa2a16cfa9984da513843bb4eb7669adc6f220')
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        def update_config_cmake(line: str):
+            include_var = '  INTERFACE_INCLUDE_DIRECTORIES '
+            link_var = '  INTERFACE_LINK_LIBRARIES '
+
+            if line.startswith(include_var):
+                return include_var + '"${_IMPORT_PREFIX}/include/harfbuzz"\n'
+            elif line.startswith(link_var):
+                return link_var + '"-framework ApplicationServices"\n'
+
+            return line
+
+        config_path = state.install_path / 'lib/cmake/harfbuzz/harfbuzzConfig.cmake'
+        self.update_text_file(config_path, update_config_cmake)
+
+        self.write_pc_file(state, description='HarfBuzz text shaping library', version='2.8.2', libs='-lharfbuzz',
+                           libs_private='-lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText')
+
+
 class LuaTarget(MakeTarget):
     def __init__(self, name='lua'):
         super().__init__(name)
