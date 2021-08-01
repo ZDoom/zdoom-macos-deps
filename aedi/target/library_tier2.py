@@ -44,6 +44,10 @@ class BrotliTarget(CMakeStaticDependencyTarget):
             no_suffix_name = archive.replace(archive_suffix, '.a')
             os.rename(archive, no_suffix_name)
 
+    @staticmethod
+    def _process_pkg_config(pcfile: str, line: str) -> str:
+        return line.replace('-R${libdir} ', '') if line.startswith('Libs:') else line
+
 
 class DumbTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='dumb'):
