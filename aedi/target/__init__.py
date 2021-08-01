@@ -67,6 +67,7 @@ def targets():
         ZMusicTarget(),
 
         # Libraries needed for other targets
+        BrotliTarget(),
         DumbTarget(),
         ExpatTarget(),
         FmtTarget(),
