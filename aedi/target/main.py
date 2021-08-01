@@ -125,19 +125,8 @@ class QZDoomTarget(ZDoomVulkanBaseTarget):
         state.checkout_git('https://github.com/madame-rachelle/qzdoom.git')
 
 
-class LZDoomTarget(ZDoomVulkanBaseTarget):
+class LZDoomTarget(ZDoomBaseTarget):
     def __init__(self, name='lzdoom'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.checkout_git('https://github.com/drfrag666/gzdoom.git')
-
-    def detect(self, state: BuildState) -> bool:
-        return super().detect(state) and not state.has_source_file('libraries/zmusic')
-
-
-class LZDoom3Target(ZDoomBaseTarget):
-    def __init__(self, name='lzdoom3'):
         super().__init__(name)
         self.unsupported_architectures = ('arm64',)
 
@@ -150,7 +139,7 @@ class LZDoom3Target(ZDoomBaseTarget):
         state.checkout_git('https://github.com/drfrag666/gzdoom.git', branch='g3.3mgw')
 
     def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('ico_lzdoom.png') and state.has_source_file('libraries/zmusic')
+        return state.has_source_file('ico_lzdoom.png')
 
 
 class RazeTarget(ZDoomVulkanBaseTarget):

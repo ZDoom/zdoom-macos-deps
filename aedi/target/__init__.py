@@ -28,7 +28,6 @@ def targets():
         GZDoomTarget(),
         QZDoomTarget(),
         LZDoomTarget(),
-        LZDoom3Target(),
         RazeTarget(),
         AccTarget(),
         SladeTarget(),
