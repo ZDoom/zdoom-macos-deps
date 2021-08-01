@@ -147,11 +147,8 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.sourceforge.net/project/freetype/freetype2/2.10.4/freetype-2.10.4.tar.xz',
-            '86a854d8905b19698bbc8f23b860bc104246ce4854dcea8e3b0fb21284f75784')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('include/freetype/freetype.h')
+            'https://downloads.sourceforge.net/project/freetype/freetype2/2.11.0/freetype-2.11.0.tar.xz',
+            '8bee39bd3968c4804b70614a0a3ad597299ad0e824bc8aad5ce8aaf48067bde7')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
