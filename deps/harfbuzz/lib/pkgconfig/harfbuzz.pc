@@ -1,0 +1,13 @@
+prefix=
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: harfbuzz
+Description: HarfBuzz text shaping library
+Version: 2.8.2
+Requires: 
+Requires.private: 
+Libs: -L${libdir} -lharfbuzz
+Libs.private: -lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText
+Cflags: -I${includedir} 
