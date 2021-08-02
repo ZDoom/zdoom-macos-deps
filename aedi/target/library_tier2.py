@@ -432,6 +432,16 @@ class SamplerateTarget(CMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('samplerate.pc.in')
 
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        def update_linker_flags(line: str):
+            link_var = '  INTERFACE_LINK_LIBRARIES '
+            return None if line.startswith(link_var) else line
+
+        cmake_module = state.install_path / 'lib/cmake/SampleRate/SampleRateTargets.cmake'
+        self.update_text_file(cmake_module, update_linker_flags)
+
 
 class Sdl2Target(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2'):
