@@ -427,8 +427,7 @@ class SamplerateTarget(CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/libsndfile/libsamplerate/releases/download/0.2.1/libsamplerate-0.2.1.tar.bz2',
-            'f6323b5e234753579d70a0af27796dde4ebeddf58aae4be598e39b3cee00c90a',
-            patches='samplerate-support-arm64')
+            'f6323b5e234753579d70a0af27796dde4ebeddf58aae4be598e39b3cee00c90a')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('samplerate.pc.in')
