@@ -161,6 +161,16 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
         os.makedirs(bin_path)
         shutil.copy(state.patch_path / 'freetype-config', bin_path)
 
+        def update_linker_flags(line: str):
+            link_flags = '-lbrotlicommon -lbrotlidec -lbz2 -lfreetype -lharfbuzz -lpng16 -lz ' \
+                         '-lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText'
+            link_var = '  INTERFACE_LINK_LIBRARIES '
+
+            return f'{link_var}"{link_flags}"\n' if line.startswith(link_var) else line
+
+        cmake_module = state.install_path / 'lib/cmake/freetype/freetype-config.cmake'
+        self.update_text_file(cmake_module, update_linker_flags)
+
 
 class FtglTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='ftgl'):

@@ -41,7 +41,6 @@
 
 # Libraries, tier 2
 /brotli/bin/
-/freetype/lib/cmake/
 /lua/bin/
 /lua/man/
 /lzma/bin/
