@@ -231,8 +231,8 @@ class ChocolateDoomBaseTarget(CMakeMainTarget):
             f'src/{exe_prefix}-server',
             f'src/{exe_prefix}-setup',
             f'src/{exe_prefix}-strife',
-            f'src/midiread',
-            f'src/mus2mid',
+            'src/midiread',
+            'src/mus2mid',
         )
 
 
@@ -325,7 +325,7 @@ class EDuke32Target(MakeMainTarget):
 
     def detect(self, state: BuildState) -> bool:
         def has_bundle(name: str) -> bool:
-            probe_path = state.source / 'platform/Apple/bundles/{name}.app'
+            probe_path = state.source / f'platform/Apple/bundles/{name}.app'
             return probe_path.exists()
 
         return has_bundle('EDuke32') and not has_bundle('NBlood')
