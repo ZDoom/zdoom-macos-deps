@@ -22,6 +22,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import typing
 import urllib.request
 
 
@@ -80,7 +81,7 @@ class BuildState:
             args = ('git', 'checkout', '-b', branch, 'origin/' + branch)
             subprocess.run(args, cwd=self.source, check=True)
 
-    def download_source(self, url: str, checksum: str, patches: [tuple, list, str] = None):
+    def download_source(self, url: str, checksum: str, patches: typing.Union[tuple, list, str] = None):
         if self.external_source:
             return
 
@@ -105,7 +106,7 @@ class BuildState:
         self.source = extract_path
         self.build_path = self.build_path / first_path_component
 
-    def _read_source_package(self, url: str) -> (bytes, Path):
+    def _read_source_package(self, url: str) -> typing.Tuple[bytes, Path]:
         filename = url.rsplit(os.sep, 1)[1]
         filepath = self.source / filename
 
@@ -140,7 +141,7 @@ class BuildState:
             filepath.unlink()
             raise Exception(f'Checksum of {filepath} does not match, expected: {checksum}, actual: {file_checksum}')
 
-    def _unpack_source_package(self, filepath: Path) -> (str, Path):
+    def _unpack_source_package(self, filepath: Path) -> typing.Tuple[str, Path]:
         filepaths = subprocess.check_output(['tar', '-tf', filepath]).decode("utf-8")
         filepaths = filepaths.split('\n')
         first_path_component = None
@@ -186,5 +187,5 @@ class BuildState:
 
         return result.decode('utf-8').rstrip('\n')
 
-    def has_source_file(self, path: [str, Path]):
+    def has_source_file(self, path: typing.Union[str, Path]):
         return (self.source / path).exists()

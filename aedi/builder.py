@@ -40,7 +40,7 @@ class Builder(object):
         state.xcode = arguments.xcode
         state.verbose = arguments.verbose
 
-        self._platforms = []
+        self._platforms: typing.List[TargetPlatform] = []
         self._populate_platforms(arguments)
 
         state.platform = self._platforms[0]
@@ -193,7 +193,7 @@ class Builder(object):
             # Merge executable and library files
             dst_file = dst_path / src.name
 
-            args = ['lipo']
+            args: typing.List[typing.Union[str, Path]] = ['lipo']
             args += src_sub_paths
             args += ['-create', '-output', dst_file]
             subprocess.check_call(args)

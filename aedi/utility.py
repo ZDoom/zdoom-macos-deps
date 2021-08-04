@@ -21,6 +21,7 @@ from distutils.version import StrictVersion
 import os
 from pathlib import Path
 import shutil
+import typing
 
 
 # Minimum OS versions
@@ -51,7 +52,7 @@ class CommandLineOptions(dict):
 
 
 class TargetPlatform:
-    def __init__(self, architecture: str, host: str, os_version: [str, StrictVersion],
+    def __init__(self, architecture: str, host: str, os_version: typing.Union[str, StrictVersion],
                  sdk_path: Path, prefix_path: Path):
         self.architecture = architecture
         self.host = host
