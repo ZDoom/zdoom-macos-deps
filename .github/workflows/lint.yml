@@ -15,7 +15,6 @@ jobs:
           FILTER_REGEX_INCLUDE: .*(\.py|\.md)$
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_ISORT: false
-          DISABLE_ERRORS: true
 
     - name: Bandit
       run: |
