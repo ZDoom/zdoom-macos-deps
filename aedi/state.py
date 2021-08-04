@@ -142,11 +142,11 @@ class BuildState:
             raise Exception(f'Checksum of {filepath} does not match, expected: {checksum}, actual: {file_checksum}')
 
     def _unpack_source_package(self, filepath: Path) -> typing.Tuple[str, Path]:
-        filepaths = subprocess.check_output(['tar', '-tf', filepath]).decode("utf-8")
-        filepaths = filepaths.split('\n')
+        file_paths_str = subprocess.check_output(['tar', '-tf', filepath]).decode("utf-8")
+        file_paths = file_paths_str.split('\n')
         first_path_component = None
 
-        for path in filepaths:
+        for path in file_paths:
             if os.sep in path:
                 first_path_component = path[:path.find(os.sep)]
                 break

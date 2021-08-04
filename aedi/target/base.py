@@ -419,7 +419,7 @@ class CMakeTarget(BuildTarget):
 
     def build(self, state: BuildState):
         if state.xcode:
-            args = ('cmake', '--open', '.')
+            args = ['cmake', '--open', '.']
         else:
             args = ['gmake', '-j', state.jobs]
 

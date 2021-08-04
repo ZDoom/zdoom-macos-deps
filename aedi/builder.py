@@ -200,7 +200,7 @@ class Builder(object):
 
             # Apply ad-hoc code signing on executable files outside of application bundles
             if is_executable and '.app/Contents/' not in str(src):
-                args = ('codesign', '--sign', '-', dst_file)
+                args = ['codesign', '--sign', '-', dst_file]
                 subprocess.check_call(args)
         else:
             if not Builder._compare_files(src_sub_paths):
@@ -276,9 +276,9 @@ class Builder(object):
 
         parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
 
-        group = parser.add_mutually_exclusive_group(required=True)
-        group.add_argument('--target', choices=self._targets.keys(), help='target to build')
-        group.add_argument('--source', metavar='path', help='path to target\'s source code')
+        excl_group = parser.add_mutually_exclusive_group(required=True)
+        excl_group.add_argument('--target', choices=self._targets.keys(), help='target to build')
+        excl_group.add_argument('--source', metavar='path', help='path to target\'s source code')
 
         group = parser.add_argument_group()
         group.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
@@ -293,8 +293,8 @@ class Builder(object):
         group.add_argument('--verbose', action='store_true', help='enable verbose build output')
         group.add_argument('--jobs', help='number of parallel compilation jobs')
 
-        group = parser.add_mutually_exclusive_group()
-        group.add_argument('--disable-x64', action='store_true', help='disable x86_64 support')
-        group.add_argument('--disable-arm', action='store_true', help='disable ARM64 support')
+        excl_group = parser.add_mutually_exclusive_group()
+        excl_group.add_argument('--disable-x64', action='store_true', help='disable x86_64 support')
+        excl_group.add_argument('--disable-arm', action='store_true', help='disable ARM64 support')
 
         return parser.parse_args(args)

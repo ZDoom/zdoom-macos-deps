@@ -53,8 +53,10 @@ class CMakeMainTarget(CMakeTarget):
             dst_sep_pos = output.rfind(os.sep)
             dst = state.install_path / (output if dst_sep_pos == -1 else output[dst_sep_pos + 1:])
 
-            copy_func = shutil.copytree if src.is_dir() else shutil.copy
-            copy_func(src, dst)
+            if src.is_dir():
+                shutil.copytree(src, dst)
+            else:
+                shutil.copy(src, dst)
 
     def _force_cross_compilation(self, state: BuildState):
         if state.architecture() == machine():
