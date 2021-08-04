@@ -28,7 +28,7 @@ if sys.version_info < _min_version:
 
 sys.dont_write_bytecode = True
 
-from aedi import Builder
+from aedi import Builder  # noqa: E402
 
 if __name__ == '__main__':
     Builder(sys.argv[1:]).run()
