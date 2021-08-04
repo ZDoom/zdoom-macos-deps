@@ -20,4 +20,9 @@ jobs:
     - name: Bandit
       run: |
         pip3 install bandit
+        # [B101:assert_used] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+        # [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+        # [B404:blacklist] Consider possible security implications associated with subprocess module.
+        # [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+        # [B607:start_process_with_partial_path] Starting a process with a partial executable path
         bandit --skip B101,B310,B404,B603,B607 --recursive .
