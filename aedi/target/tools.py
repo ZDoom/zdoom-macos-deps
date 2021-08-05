@@ -28,11 +28,6 @@ class CMakeBuildTarget(CMakeTarget):
     def __init__(self, name='cmake'):
         super().__init__(name)
 
-        # The following variables are needed for cross-compilation
-        opts = self.options
-        opts['HAVE_POLL_FINE_EXITCODE'] = '0'
-        opts['HAVE_POLL_FINE_EXITCODE__TRYRUN_OUTPUT'] = '0'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/Kitware/CMake/releases/download/v3.21.1/cmake-3.21.1.tar.gz',
@@ -52,6 +47,11 @@ class CMakeBuildTarget(CMakeTarget):
                 subprocess.run(args, cwd=boostrap_path)
 
                 assert boostrap_cmake.exists()
+
+        # The following variables are needed for cross-compilation
+        opts = state.options
+        opts['HAVE_POLL_FINE_EXITCODE'] = '0'
+        opts['HAVE_POLL_FINE_EXITCODE__TRYRUN_OUTPUT'] = '0'
 
         env = state.environment
         env['PATH'] = os.pathsep.join([str(boostrap_cmk_path), env['PATH']])

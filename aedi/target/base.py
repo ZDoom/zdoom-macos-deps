@@ -62,7 +62,6 @@ class BuildTarget(Target):
         super().__init__(name)
 
         self.src_root = ''
-        self.options = CommandLineOptions()
         self.multi_platform = True
 
         self.os_version = dict()
@@ -280,7 +279,7 @@ class MakeTarget(BuildTarget):
             f'CC={state.c_compiler()}',
             f'CXX={state.cxx_compiler()}',
         ]
-        args += self.options.to_list()
+        args += state.options.to_list()
 
         work_path = state.build_path / self.src_root
         subprocess.check_call(args, cwd=work_path, env=state.environment)
@@ -302,7 +301,7 @@ class ConfigureMakeTarget(BuildTarget):
             configure_path,
             f'--prefix={state.install_path}',
         ]
-        common_args += self.options.to_list()
+        common_args += state.options.to_list()
 
         disable_dependency_tracking = '--disable-dependency-tracking'
         host = '--host=' + state.host()
@@ -397,7 +396,7 @@ class CMakeTarget(BuildTarget):
         if sdk_path:
             args.append(f'-DCMAKE_OSX_SYSROOT={sdk_path}')
 
-        args += self.options.to_list(CommandLineOptions.CMAKE_RULES)
+        args += state.options.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(state.source / self.src_root)
 
         subprocess.check_call(args, cwd=state.build_path, env=state.environment)
@@ -426,18 +425,18 @@ class ConfigureMakeStaticDependencyTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
-        self.options['--enable-shared'] = 'no'
+    def configure(self, state: BuildState):
+        state.options['--enable-shared'] = 'no'
+        super().configure(state)
 
 
 class CMakeStaticDependencyTarget(CMakeTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
-        # Set commonly used variables for static libraries
-        opts = self.options
-        opts['BUILD_SHARED_LIBS'] = 'NO'
-        opts['ENABLE_SHARED'] = 'NO'
-        opts['LIBTYPE'] = 'STATIC'
+    def configure(self, state: BuildState):
+        state.options['BUILD_SHARED_LIBS'] = 'NO'
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         self.install(state)

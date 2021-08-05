@@ -58,11 +58,12 @@ class CMakeMainTarget(CMakeTarget):
             else:
                 shutil.copy(src, dst)
 
-    def _force_cross_compilation(self, state: BuildState):
+    @staticmethod
+    def _force_cross_compilation(state: BuildState):
         if state.architecture() == machine():
             return
 
-        opts = self.options
+        opts = state.options
         opts['FORCE_CROSSCOMPILE'] = 'YES'
         opts['IMPORT_EXECUTABLES'] = state.native_build_path / 'ImportExecutables.cmake'
 
@@ -72,7 +73,7 @@ class ZDoomBaseTarget(CMakeMainTarget):
         super().__init__(name)
 
     def configure(self, state: BuildState):
-        opts = self.options
+        opts = state.options
         opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'fluidsynth', 'libmpg123')
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
@@ -132,10 +133,13 @@ class LZDoomTarget(ZDoomBaseTarget):
         super().__init__(name)
         self.unsupported_architectures = ('arm64',)
 
-        opts = self.options
+    def configure(self, state: BuildState):
+        opts = state.options
         opts['DYN_FLUIDSYNTH'] = 'NO'
         opts['DYN_MPG123'] = 'NO'
         opts['DYN_SNDFILE'] = 'NO'
+
+        super().configure(state)
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/drfrag666/gzdoom.git', branch='g3.3mgw')
@@ -177,7 +181,7 @@ class SladeTarget(CMakeMainTarget):
         return state.has_source_file('SLADE-osx.icns')
 
     def configure(self, state: BuildState):
-        opts = self.options
+        opts = state.options
         opts['CMAKE_C_FLAGS'] = opts['CMAKE_CXX_FLAGS'] = '-DNOCURL -I' + state.include_path
         opts['CMAKE_EXE_LINKER_FLAGS'] = \
             state.run_pkg_config('--libs', 'fluidsynth', 'libtiff-4', 'openal', 'vorbisfile')
@@ -198,7 +202,7 @@ class PrBoomPlusTarget(CMakeMainTarget):
         state.checkout_git('https://github.com/coelckers/prboom-plus.git')
 
     def configure(self, state: BuildState):
-        opts = self.options
+        opts = state.options
         opts['CMAKE_C_FLAGS'] = '-D_FILE_OFFSET_BITS=64'
         opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_image')
         opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
@@ -221,8 +225,7 @@ class ChocolateDoomBaseTarget(CMakeMainTarget):
         super().__init__(name)
 
     def configure(self, state: BuildState):
-        self.options['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2_mixer')
-
+        state.options['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2_mixer')
         super().configure(state)
 
     def _fill_outputs(self, exe_prefix: str):
@@ -294,7 +297,7 @@ class Doom64EXTarget(CMakeMainTarget):
         state.checkout_git('https://github.com/svkaiser/Doom64EX.git')
 
     def configure(self, state: BuildState):
-        opts = self.options
+        opts = state.options
         opts['ENABLE_SYSTEM_FLUIDSYNTH'] = 'YES'
         opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2', 'fluidsynth')
 
@@ -309,8 +312,7 @@ class DevilutionXTarget(CMakeMainTarget):
         state.checkout_git('https://github.com/diasurgical/devilutionX.git')
 
     def configure(self, state: BuildState):
-        self.options['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_ttf')
-
+        state.options['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_ttf')
         super().configure(state)
 
         # Remove version file that is included erroneously because of case-insensitive file system
@@ -344,24 +346,35 @@ class NBloodTarget(EDuke32Target):
         super().__init__(name)
         self.tool = 'gmake'
 
-        for target in ('duke3d', 'sw', 'blood', 'rr', 'exhumed', 'tools'):
-            self.options[target] = None
-
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/nukeykt/NBlood.git')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('nblood.pk3')
 
+    def configure(self, state: BuildState):
+        super().configure(state)
+
+        for target in ('duke3d', 'sw', 'blood', 'rr', 'exhumed', 'tools'):
+            state.options[target] = None
+
 
 class QuakespasmTarget(MakeMainTarget):
     def __init__(self, name='quakespasm'):
         super().__init__(name)
-
         self.src_root = 'Quake'
 
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://git.code.sf.net/p/quakespasm/quakespasm')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('Quakespasm.txt')
+
+    def configure(self, state: BuildState):
+        super().configure(state)
+
         # TODO: Use macOS specific Makefile which requires manual application bundle creation
-        opts = self.options
+        opts = state.options
         opts['USE_SDL2'] = '1'
         opts['USE_CODEC_FLAC'] = '1'
         opts['USE_CODEC_OPUS'] = '1'
@@ -369,9 +382,3 @@ class QuakespasmTarget(MakeMainTarget):
         opts['USE_CODEC_UMX'] = '1'
         # Add main() alias to workaround executable linking without macOS launcher
         opts['COMMON_LIBS'] = '-framework OpenGL -Wl,-alias -Wl,_SDL_main -Wl,_main'
-
-    def prepare_source(self, state: BuildState):
-        state.checkout_git('https://git.code.sf.net/p/quakespasm/quakespasm')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('Quakespasm.txt')

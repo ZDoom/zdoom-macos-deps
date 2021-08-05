@@ -27,7 +27,8 @@ import typing
 
 from .state import BuildState
 from .target import Target, targets
-from .utility import CaseInsensitiveDict, TargetPlatform, symlink_directory, OS_VERSION_X86_64, OS_VERSION_ARM64
+from .utility import CaseInsensitiveDict, CommandLineOptions, TargetPlatform, symlink_directory,\
+    OS_VERSION_X86_64, OS_VERSION_ARM64
 
 
 class Builder(object):
@@ -133,6 +134,7 @@ class Builder(object):
     def _build(self, target: Target):
         state = self._state
         state.environment = os.environ
+        state.options = CommandLineOptions()
 
         target.configure(state)
         target.build(state)

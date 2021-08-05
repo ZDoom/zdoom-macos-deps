@@ -53,10 +53,6 @@ class DumbTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='dumb'):
         super().__init__(name)
 
-        opts = self.options
-        opts['BUILD_ALLEGRO4'] = 'NO'
-        opts['BUILD_EXAMPLES'] = 'NO'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/kode54/dumb/archive/2.0.3.tar.gz',
@@ -64,6 +60,13 @@ class DumbTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/dumb.h')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['BUILD_ALLEGRO4'] = 'NO'
+        opts['BUILD_EXAMPLES'] = 'NO'
+
+        super().configure(state)
 
     @staticmethod
     def _process_pkg_config(pcfile: Path, line: str) -> str:
@@ -74,11 +77,6 @@ class ExpatTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='expat'):
         super().__init__(name)
 
-        opts = self.options
-        opts['EXPAT_BUILD_EXAMPLES'] = 'NO'
-        opts['EXPAT_BUILD_TESTS'] = 'NO'
-        opts['EXPAT_BUILD_TOOLS'] = 'NO'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.xz',
@@ -87,14 +85,18 @@ class ExpatTarget(CMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('expat.pc.in')
 
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['EXPAT_BUILD_EXAMPLES'] = 'NO'
+        opts['EXPAT_BUILD_TESTS'] = 'NO'
+        opts['EXPAT_BUILD_TOOLS'] = 'NO'
+
+        super().configure(state)
+
 
 class FmtTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='fmt'):
         super().__init__(name)
-
-        opts = self.options
-        opts['FMT_DOC'] = 'NO'
-        opts['FMT_TEST'] = 'NO'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -103,6 +105,13 @@ class FmtTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/fmt/format.h')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['FMT_DOC'] = 'NO'
+        opts['FMT_TEST'] = 'NO'
+
+        super().configure(state)
 
 
 class FreeImageTarget(MakeTarget):
@@ -131,7 +140,7 @@ class FreeImageTarget(MakeTarget):
         env['CXXFLAGS'] += common_flags + ' -Wno-ctor-dtor-privacy'
 
         for option in ('-f', 'Makefile.gnu', 'libfreeimage.a'):
-            self.options[option] = None
+            state.options[option] = None
 
     def post_build(self, state: BuildState):
         include_path = state.install_path / 'include'
@@ -176,10 +185,6 @@ class FtglTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='ftgl'):
         super().__init__(name)
 
-        opts = self.options
-        opts['--with-glut-inc'] = '/dev/null'
-        opts['--with-glut-lib'] = '/dev/null'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://downloads.sourceforge.net/project/ftgl/FTGL%20Source/2.1.3~rc5/ftgl-2.1.3-rc5.tar.gz',
@@ -189,13 +194,18 @@ class FtglTarget(ConfigureMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('ftgl.pc.in')
 
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['--with-glut-inc'] = '/dev/null'
+        opts['--with-glut-lib'] = '/dev/null'
+
+        super().configure(state)
+
 
 class GlewTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='glew'):
         super().__init__(name)
-
         self.src_root = 'build/cmake'
-        self.options['BUILD_UTILS'] = 'NO'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -204,6 +214,10 @@ class GlewTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('glew.pc.in')
+
+    def configure(self, state: BuildState):
+        state.options['BUILD_UTILS'] = 'NO'
+        super().configure(state)
 
     LINKER_FLAGS = '-framework OpenGL'
 
@@ -234,12 +248,15 @@ class GlewTarget(CMakeStaticDependencyTarget):
 class HarfBuzzTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='harfbuzz'):
         super().__init__(name)
-        self.options['HB_HAVE_FREETYPE'] = 'ON'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/harfbuzz/harfbuzz/archive/refs/tags/2.8.2.tar.gz',
             '4164f68103e7b52757a732227cfa2a16cfa9984da513843bb4eb7669adc6f220')
+
+    def configure(self, state: BuildState):
+        state.options['HB_HAVE_FREETYPE'] = 'ON'
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -275,8 +292,8 @@ class LuaTarget(MakeTarget):
         return state.has_source_file('src/lua.h')
 
     def post_build(self, state: BuildState):
-        self.options['INSTALL_TOP'] = state.install_path
-        self.install(state, self.options)
+        state.options['INSTALL_TOP'] = state.install_path
+        self.install(state, state.options)
 
 
 class LzmaTarget(CMakeStaticDependencyTarget):
@@ -303,7 +320,6 @@ class LzmaTarget(CMakeStaticDependencyTarget):
 class MadTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mad'):
         super().__init__(name)
-        self.options['--enable-fpm'] = '64bit'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -313,6 +329,10 @@ class MadTarget(ConfigureMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('mad.h')
+
+    def configure(self, state: BuildState):
+        state.options['--enable-fpm'] = '64bit'
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -361,7 +381,6 @@ class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
 class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='opusfile'):
         super().__init__(name)
-        self.options['--enable-http'] = 'no'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -371,14 +390,14 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('opusfile.pc.in')
 
+    def configure(self, state: BuildState):
+        state.options['--enable-http'] = 'no'
+        super().configure(state)
+
 
 class PngTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='png'):
         super().__init__(name)
-
-        opts = self.options
-        opts['PNG_ARM_NEON'] = 'on'
-        opts['PNG_SHARED'] = 'OFF'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -387,6 +406,13 @@ class PngTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('libpng.pc.in')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['PNG_ARM_NEON'] = 'on'
+        opts['PNG_SHARED'] = 'OFF'
+
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -447,13 +473,6 @@ class Sdl2Target(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2'):
         super().__init__(name)
 
-        # Need to have uniform settings for x86_64 and arm64 because of linking with Metal framework
-        # TODO: Remove this when default target for x64 will become 10.11+
-        opts = self.options
-        opts['VIDEO_VULKAN'] = 'NO'
-        opts['VIDEO_METAL'] = 'NO'
-        opts['RENDER_METAL'] = 'NO'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://libsdl.org/release/SDL2-2.0.14.tar.gz',
@@ -461,6 +480,16 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('sdl2.pc.in')
+
+    def configure(self, state: BuildState):
+        # Need to have uniform settings for x86_64 and arm64 because of linking with Metal framework
+        # TODO: Remove this when default target for x64 will become 10.11+
+        opts = state.options
+        opts['VIDEO_VULKAN'] = 'NO'
+        opts['VIDEO_METAL'] = 'NO'
+        opts['RENDER_METAL'] = 'NO'
+
+        super().configure(state)
 
     FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa' \
         ' -framework CoreAudio -framework CoreFoundation -framework CoreVideo' \
@@ -522,7 +551,6 @@ class Sdl2ImageTarget(ConfigureMakeStaticDependencyTarget):
 class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_mixer'):
         super().__init__(name)
-        self.options['--enable-music-mod-mikmod'] = 'yes'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -531,6 +559,8 @@ class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
             patches='sdl2_mixer-fix-fluidsynth')
 
     def configure(self, state: BuildState):
+        state.options['--enable-music-mod-mikmod'] = 'yes'
+
         # Set LDFLAGS explicitly to help with FluidSynth and FLAC detection
         state.environment['LDFLAGS'] = state.run_pkg_config('--libs', 'fluidsynth')
 
@@ -563,7 +593,6 @@ class Sdl2NetTarget(ConfigureMakeStaticDependencyTarget):
 class Sdl2TtfTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_ttf'):
         super().__init__(name)
-        self.options['VERSION'] = '2.0.15'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -573,6 +602,10 @@ class Sdl2TtfTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('SDL2_ttf.pc.in')
+
+    def configure(self, state: BuildState):
+        state.options['VERSION'] = '2.0.15'
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -607,7 +640,7 @@ class SfmlTarget(CMakeStaticDependencyTarget):
             patches='sfml-support-arm64')
 
     def configure(self, state: BuildState):
-        opts = self.options
+        opts = state.options
         opts['CMAKE_OSX_ARCHITECTURES'] = state.architecture()
         opts['SFML_USE_SYSTEM_DEPS'] = 'YES'
         opts['SFML_MISC_INSTALL_PREFIX'] = state.install_path / 'share/SFML'
@@ -625,10 +658,6 @@ class TiffTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='tiff'):
         super().__init__(name)
 
-        opts = self.options
-        opts['cxx'] = 'NO'
-        opts['lzma'] = 'YES'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://download.osgeo.org/libtiff/tiff-4.3.0.tar.gz',
@@ -637,6 +666,13 @@ class TiffTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('libtiff-4.pc.in')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['cxx'] = 'NO'
+        opts['lzma'] = 'YES'
+
+        super().configure(state)
 
     @staticmethod
     def _process_pkg_config(pcfile: Path, line: str) -> str:
@@ -658,7 +694,16 @@ class WebpTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='webp'):
         super().__init__(name)
 
-        opts = self.options
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.2.0.tar.gz',
+            '2fc8bbde9f97f2ab403c0224fb9ca62b2e6852cbc519e91ceaa7c153ffd88a0c')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('src/libwebp.pc.in')
+
+    def configure(self, state: BuildState):
+        opts = state.options
         opts['WEBP_BUILD_ANIM_UTILS'] = 'NO'
         opts['WEBP_BUILD_CWEBP'] = 'NO'
         opts['WEBP_BUILD_DWEBP'] = 'NO'
@@ -669,13 +714,7 @@ class WebpTarget(CMakeStaticDependencyTarget):
         opts['WEBP_BUILD_WEBPMUX'] = 'NO'
         opts['WEBP_BUILD_EXTRAS'] = 'NO'
 
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.2.0.tar.gz',
-            '2fc8bbde9f97f2ab403c0224fb9ca62b2e6852cbc519e91ceaa7c153ffd88a0c')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('src/libwebp.pc.in')
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -691,14 +730,6 @@ class WxWidgetsTarget(CMakeStaticDependencyTarget):
         self.os_version['x86_64'] = StrictVersion('10.10')
         self.sdk_version['x86_64'] = StrictVersion('10.11')
 
-        opts = self.options
-        opts['wxBUILD_SHARED'] = 'NO'
-        opts['wxUSE_LIBLZMA'] = 'YES'
-        opts['wxUSE_LIBSDL'] = 'NO'
-        opts['wxUSE_LIBJPEG'] = 'sys'
-        opts['wxUSE_LIBPNG'] = 'sys'
-        opts['wxUSE_LIBTIFF'] = 'sys'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.5/wxWidgets-3.1.5.tar.bz2',
@@ -707,6 +738,17 @@ class WxWidgetsTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('wx-config.in')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['wxBUILD_SHARED'] = 'NO'
+        opts['wxUSE_LIBLZMA'] = 'YES'
+        opts['wxUSE_LIBSDL'] = 'NO'
+        opts['wxUSE_LIBJPEG'] = 'sys'
+        opts['wxUSE_LIBPNG'] = 'sys'
+        opts['wxUSE_LIBTIFF'] = 'sys'
+
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -755,10 +797,6 @@ class ZstdTarget(CMakeStaticDependencyTarget):
         super().__init__(name)
         self.src_root = 'build/cmake'
 
-        opts = self.options
-        opts['ZSTD_BUILD_PROGRAMS'] = 'NO'
-        opts['ZSTD_BUILD_SHARED'] = 'NO'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz',
@@ -766,3 +804,10 @@ class ZstdTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('lib/libzstd.pc.in')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['ZSTD_BUILD_PROGRAMS'] = 'NO'
+        opts['ZSTD_BUILD_SHARED'] = 'NO'
+
+        super().configure(state)

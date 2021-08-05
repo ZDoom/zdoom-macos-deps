@@ -25,6 +25,8 @@ import subprocess
 import typing
 import urllib.request
 
+from .utility import CommandLineOptions
+
 
 class BuildState:
     def __init__(self):
@@ -53,6 +55,7 @@ class BuildState:
         self.jobs = 1
 
         self.environment = os.environ.copy()
+        self.options = CommandLineOptions()
 
     def architecture(self) -> str:
         return self.platform.architecture if self.platform else ''

@@ -35,7 +35,7 @@ class Bzip2Target(MakeTarget):
     def configure(self, state: BuildState):
         super().configure(state)
 
-        opts = self.options
+        opts = state.options
         # Add explicit targets in order to skip testing step that is incompatible with cross-compilation
         opts['bzip2'] = None
         opts['bzip2recover'] = None
@@ -44,9 +44,9 @@ class Bzip2Target(MakeTarget):
         opts[cflags] = state.environment[cflags] + ' -D_FILE_OFFSET_BITS=64 -O2'
 
     def post_build(self, state: BuildState):
-        self.options['PREFIX'] = state.install_path
-        self.install(state, self.options)
+        state.options['PREFIX'] = state.install_path
 
+        self.install(state, state.options)
         self.write_pc_file(state, description='bzip2 compression library', version='1.0.8', libs='-lbz2')
 
 
@@ -73,12 +73,6 @@ class FlacTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='flac'):
         super().__init__(name)
 
-        opts = self.options
-        opts['BUILD_CXXLIBS'] = 'NO'
-        opts['BUILD_EXAMPLES'] = 'NO'
-        opts['OGG_PACKAGE'] = 'ogg'
-        opts['VERSION'] = '1.3.3'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://ftp.osuosl.org/pub/xiph/releases/flac/flac-1.3.3.tar.xz',
@@ -89,7 +83,13 @@ class FlacTarget(CMakeStaticDependencyTarget):
         return state.has_source_file('FLAC/flac.pc.in')
 
     def configure(self, state: BuildState):
-        self.options['CMAKE_EXE_LINKER_FLAGS'] = f'-framework CoreFoundation -L{state.lib_path}'
+        opts = state.options
+        opts['CMAKE_EXE_LINKER_FLAGS'] = f'-framework CoreFoundation -L{state.lib_path}'
+        opts['BUILD_CXXLIBS'] = 'NO'
+        opts['BUILD_EXAMPLES'] = 'NO'
+        opts['OGG_PACKAGE'] = 'ogg'
+        opts['VERSION'] = '1.3.3'
+
         super().configure(state)
 
     def post_build(self, state: BuildState):
@@ -105,12 +105,6 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='fluidsynth'):
         super().__init__(name)
 
-        opts = self.options
-        opts['LIB_SUFFIX'] = None
-        opts['enable-framework'] = 'NO'
-        opts['enable-readline'] = 'NO'
-        opts['enable-sdl2'] = 'NO'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.2.2.tar.gz',
@@ -120,19 +114,20 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         return state.has_source_file('fluidsynth.pc.in')
 
     def configure(self, state: BuildState):
+        opts = state.options
         # TODO: Figure out why private dependencies aren't pulled
-        self.options['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'glib-2.0')
+        opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'glib-2.0')
+        opts['LIB_SUFFIX'] = None
+        opts['enable-framework'] = 'NO'
+        opts['enable-readline'] = 'NO'
+        opts['enable-sdl2'] = 'NO'
+
         super().configure(state)
 
 
 class GettextTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='gettext'):
         super().__init__(name)
-
-        opts = self.options
-        opts['--enable-csharp'] = 'no'
-        opts['--enable-java'] = 'no'
-        opts['--enable-libasprintf'] = 'no'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -141,6 +136,14 @@ class GettextTarget(ConfigureMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('gettext-runtime')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['--enable-csharp'] = 'no'
+        opts['--enable-java'] = 'no'
+        opts['--enable-libasprintf'] = 'no'
+
+        super().configure(state)
 
 
 class GlibTarget(BuildTarget):
@@ -208,7 +211,6 @@ endian = 'little'
 class IconvTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='iconv'):
         super().__init__(name)
-        self.options['--enable-extra-encodings'] = 'yes'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -218,11 +220,14 @@ class IconvTarget(ConfigureMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/iconv.h.in')
 
+    def configure(self, state: BuildState):
+        state.options['--enable-extra-encodings'] = 'yes'
+        super().configure(state)
+
 
 class InstPatchTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='instpatch'):
         super().__init__(name)
-        self.options['LIB_SUFFIX'] = None
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -233,6 +238,8 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
         return state.has_source_file('libinstpatch-1.0.pc.in')
 
     def configure(self, state: BuildState):
+        state.options['LIB_SUFFIX'] = None
+
         # Workaround for missing frameworks in dependencies, no clue what's wrong at the moment
         state.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
 
@@ -254,7 +261,6 @@ class IntlTarget(GettextTarget):
 class JpegTurboTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='jpeg-turbo'):
         super().__init__(name)
-        self.options['WITH_TURBOJPEG'] = 'NO'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -264,11 +270,15 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('turbojpeg.h')
 
+    def configure(self, state: BuildState):
+        state.options['WITH_TURBOJPEG'] = 'NO'
+        super().configure(state)
+
 
 class MoltenVKTarget(MakeTarget):
     def __init__(self, name='moltenvk'):
         super().__init__(name)
-        self.options['macos'] = None
+
         # Building for multiple architectures is handled internally
         self.multi_platform = False
 
@@ -281,6 +291,8 @@ class MoltenVKTarget(MakeTarget):
         return state.has_source_file('MoltenVKPackaging.xcodeproj')
 
     def configure(self, state: BuildState):
+        state.options['macos'] = None
+
         # Unset platform to avoid using specified macOS deployment target and SDK
         # MoltenVK defines minimal OS version itself, and usually, it requires the very recent SDK
         state.platform = None
@@ -312,9 +324,7 @@ class MoltenVKTarget(MakeTarget):
 class Mpg123Target(CMakeStaticDependencyTarget):
     def __init__(self, name='mpg123'):
         super().__init__(name)
-
         self.src_root = 'ports/cmake'
-        self.options['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -324,6 +334,10 @@ class Mpg123Target(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('libmpg123.pc.in')
+
+    def configure(self, state: BuildState):
+        state.options['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit'
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -347,10 +361,6 @@ class OpenALTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='openal'):
         super().__init__(name)
 
-        opts = self.options
-        opts['ALSOFT_EXAMPLES'] = 'NO'
-        opts['ALSOFT_UTILS'] = 'NO'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://openal-soft.org/openal-releases/openal-soft-1.21.1.tar.bz2',
@@ -358,6 +368,14 @@ class OpenALTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('openal.pc.in')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['ALSOFT_EXAMPLES'] = 'NO'
+        opts['ALSOFT_UTILS'] = 'NO'
+        opts['LIBTYPE'] = 'STATIC'
+
+        super().configure(state)
 
     FRAMEWORKS = '-framework ApplicationServices -framework AudioToolbox -framework AudioUnit -framework CoreAudio'
 
@@ -380,7 +398,6 @@ class OpenALTarget(CMakeStaticDependencyTarget):
 class OpusTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='opus'):
         super().__init__(name)
-        self.options['PC_BUILD'] = 'floating-point'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -390,6 +407,10 @@ class OpusTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('opus.pc.in')
+
+    def configure(self, state: BuildState):
+        state.options['PC_BUILD'] = 'floating-point'
+        super().configure(state)
 
     @staticmethod
     def _process_pkg_config(pcfile: Path, line: str) -> str:
@@ -411,10 +432,6 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='pcre'):
         super().__init__(name)
 
-        opts = self.options
-        opts['--enable-unicode-properties'] = 'yes'
-        opts['--enable-cpp'] = 'no'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://ftp.pcre.org/pub/pcre/pcre-8.45.tar.bz2',
@@ -422,6 +439,13 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('pcre.h.in')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['--enable-unicode-properties'] = 'yes'
+        opts['--enable-cpp'] = 'no'
+
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -432,10 +456,6 @@ class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
 
-        opts = self.options
-        opts['BUILD_REGTEST'] = 'NO'
-        opts['BUILD_TESTING'] = 'NO'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2',
@@ -443,6 +463,13 @@ class SndFileTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('sndfile.pc.in')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['BUILD_REGTEST'] = 'NO'
+        opts['BUILD_TESTING'] = 'NO'
+
+        super().configure(state)
 
 
 class VorbisTarget(CMakeStaticDependencyTarget):
@@ -462,10 +489,6 @@ class VpxTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='vpx'):
         super().__init__(name)
 
-        opts = self.options
-        opts['--disable-examples'] = None
-        opts['--disable-unit-tests'] = None
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/webmproject/libvpx/archive/v1.10.0.tar.gz',
@@ -476,7 +499,11 @@ class VpxTarget(ConfigureMakeDependencyTarget):
             'x86_64': 'x86_64-darwin13-gcc',
             'arm64': 'arm64-darwin20-gcc',
         }
-        self.options['--target'] = hosts[state.architecture()]
+
+        opts = state.options
+        opts['--disable-examples'] = None
+        opts['--disable-unit-tests'] = None
+        opts['--target'] = hosts[state.architecture()]
 
         super().configure(state)
 
@@ -488,11 +515,6 @@ class ZlibNgTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='zlib-ng'):
         super().__init__(name)
 
-        opts = self.options
-        opts['ZLIB_COMPAT'] = 'YES'
-        opts['ZLIB_ENABLE_TESTS'] = 'NO'
-        opts['ZLIB_FULL_VERSION'] = '1.2.11'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.0.5.tar.gz',
@@ -501,15 +523,18 @@ class ZlibNgTarget(CMakeStaticDependencyTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('zlib-ng.h')
 
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['ZLIB_COMPAT'] = 'YES'
+        opts['ZLIB_ENABLE_TESTS'] = 'NO'
+        opts['ZLIB_FULL_VERSION'] = '1.2.11'
+
+        super().configure(state)
+
 
 class ZMusicTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='zmusic'):
         super().__init__(name)
-
-        opts = self.options
-        opts['DYN_FLUIDSYNTH'] = 'OFF'
-        opts['DYN_MPG123'] = 'OFF'
-        opts['DYN_SNDFILE'] = 'OFF'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -518,3 +543,11 @@ class ZMusicTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/zmusic.h')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['DYN_FLUIDSYNTH'] = 'OFF'
+        opts['DYN_MPG123'] = 'OFF'
+        opts['DYN_SNDFILE'] = 'OFF'
+
+        super().configure(state)
