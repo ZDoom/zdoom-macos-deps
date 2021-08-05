@@ -39,7 +39,8 @@ class CommandLineOptions(dict):
 
         for arg_name, arg_value in self.items():
             if rules == CommandLineOptions.MAKE_RULES:
-                option = arg_name + ('=' + arg_value if arg_value else '')
+                arg_value = f'={arg_value}' if arg_value else ''
+                option = arg_name + arg_value
             elif rules == CommandLineOptions.CMAKE_RULES:
                 arg_value = arg_value if arg_value else ''
                 option = f'-D{arg_name}={arg_value}'
