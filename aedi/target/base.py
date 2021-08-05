@@ -94,8 +94,8 @@ class BuildTarget(Target):
         if state.xcode:
             return
 
-        env['CC'] = state.c_compiler()
-        env['CXX'] = state.cxx_compiler()
+        env['CC'] = str(state.c_compiler())
+        env['CXX'] = str(state.cxx_compiler())
 
         for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
             var_name = f'{prefix}FLAGS'

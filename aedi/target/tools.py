@@ -219,7 +219,7 @@ class ZipTarget(MakeTarget):
 
     def build(self, state: BuildState):
         args = [
-            state.c_compiler(),
+            str(state.c_compiler()),
             '-O3', '-I.', '-DUNIX',
             '-DBZIP2_SUPPORT', '-DLARGE_FILE_SUPPORT', '-DUNICODE_SUPPORT',
             '-DHAVE_DIRENT_H', '-DHAVE_TERMIOS_H',

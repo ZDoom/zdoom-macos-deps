@@ -58,8 +58,8 @@ class TargetPlatform:
         self.host = host
         self.os_version = os_version if isinstance(os_version, StrictVersion) else StrictVersion(os_version)
         self.sdk_path = sdk_path
-        self.c_compiler = prefix_path / 'bin' / f'{host}-gcc'
-        self.cxx_compiler = prefix_path / 'bin' / f'{host}-g++'
+        self.c_compiler = prefix_path / f'bin/{host}-gcc'
+        self.cxx_compiler = prefix_path / f'bin/{host}-g++'
 
 
 def symlink_directory(src_path: Path, dst_path: Path, cleanup=True):

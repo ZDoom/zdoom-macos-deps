@@ -66,14 +66,14 @@ class BuildState:
     def os_version(self) -> StrictVersion:
         return self.platform.os_version if self.platform else None
 
-    def sdk_path(self) -> str:
-        return self.platform.sdk_path if self.platform else ''
+    def sdk_path(self) -> Path:
+        return self.platform.sdk_path if self.platform else Path()
 
-    def c_compiler(self) -> str:
-        return self.platform.c_compiler if self.platform else ''
+    def c_compiler(self) -> Path:
+        return self.platform.c_compiler if self.platform else Path()
 
-    def cxx_compiler(self) -> str:
-        return self.platform.cxx_compiler if self.platform else ''
+    def cxx_compiler(self) -> Path:
+        return self.platform.cxx_compiler if self.platform else Path()
 
     def checkout_git(self, url: str, branch: str = None):
         if self.source.exists():
