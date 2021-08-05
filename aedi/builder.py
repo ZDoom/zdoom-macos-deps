@@ -17,7 +17,6 @@
 #
 
 import argparse
-import copy
 import os
 from pathlib import Path
 from platform import machine
@@ -140,8 +139,8 @@ class Builder(object):
         target.build(state)
         target.post_build(state)
 
-    def _build_multiple_platforms(self, base_target: Target):
-        assert base_target.multi_platform
+    def _build_multiple_platforms(self, target: Target):
+        assert target.multi_platform
 
         state = self._state
         base_build_path = state.build_path
@@ -149,7 +148,7 @@ class Builder(object):
         install_paths = []
 
         for platform in self._platforms:
-            if platform.architecture in base_target.unsupported_architectures:
+            if platform.architecture in target.unsupported_architectures:
                 continue
 
             state.platform = platform
@@ -158,7 +157,6 @@ class Builder(object):
             if platform.architecture == machine():
                 state.native_build_path = state.build_path
 
-            target = copy.deepcopy(base_target)
             state.install_path = base_build_path / ('install_' + platform.architecture)
 
             self._build(target)
