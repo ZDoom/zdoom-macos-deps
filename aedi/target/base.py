@@ -17,17 +17,22 @@
 #
 
 import copy
-from distutils.version import StrictVersion
 import os
-from pathlib import Path
-from platform import machine
 import re
 import shutil
 import subprocess
 import typing
+from distutils.version import StrictVersion
+from pathlib import Path
+from platform import machine
 
-from ..utility import CommandLineOptions, symlink_directory, OS_VERSION_X86_64, OS_VERSION_ARM64
 from ..state import BuildState
+from ..utility import (
+    OS_VERSION_ARM64,
+    OS_VERSION_X86_64,
+    CommandLineOptions,
+    symlink_directory,
+)
 
 
 class Target:

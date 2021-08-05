@@ -18,16 +18,22 @@
 
 import argparse
 import os
-from pathlib import Path
-from platform import machine
 import shutil
 import subprocess
 import typing
+from pathlib import Path
+from platform import machine
 
 from .state import BuildState
 from .target import Target, targets
-from .utility import CaseInsensitiveDict, CommandLineOptions, TargetPlatform, symlink_directory,\
-    OS_VERSION_X86_64, OS_VERSION_ARM64
+from .utility import (
+    OS_VERSION_ARM64,
+    OS_VERSION_X86_64,
+    CaseInsensitiveDict,
+    CommandLineOptions,
+    TargetPlatform,
+    symlink_directory,
+)
 
 
 class Builder(object):

@@ -16,14 +16,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from distutils.version import StrictVersion
 import hashlib
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import typing
 import urllib.request
+from distutils.version import StrictVersion
+from pathlib import Path
 
 from .utility import CommandLineOptions
 

@@ -17,7 +17,6 @@
 #
 
 from .base import *
-from ..state import BuildState
 
 
 class Bzip2Target(MakeTarget):

@@ -16,13 +16,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from distutils.version import StrictVersion
 import os
-from platform import machine
 import shutil
+from distutils.version import StrictVersion
+from platform import machine
 
-from .base import CMakeTarget, MakeTarget
 from ..state import BuildState
+from .base import CMakeTarget, MakeTarget
 
 
 class MakeMainTarget(MakeTarget):

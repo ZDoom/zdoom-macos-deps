@@ -19,7 +19,6 @@
 import glob
 
 from .base import *
-from ..state import BuildState
 
 
 class BrotliTarget(CMakeStaticDependencyTarget):

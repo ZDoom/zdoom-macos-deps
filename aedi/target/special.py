@@ -20,8 +20,8 @@ import shlex
 import shutil
 import subprocess
 
-from .base import Target, BuildTarget
 from ..state import BuildState
+from .base import BuildTarget, Target
 
 
 class CleanTarget(Target):

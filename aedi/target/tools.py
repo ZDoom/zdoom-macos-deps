@@ -21,7 +21,6 @@ import shlex
 import zipapp
 
 from .base import *
-from ..state import BuildState
 
 
 class CMakeBuildTarget(CMakeTarget):
