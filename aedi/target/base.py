@@ -62,7 +62,6 @@ class BuildTarget(Target):
         super().__init__(name)
 
         self.src_root = ''
-        self.environment = os.environ.copy()
         self.options = CommandLineOptions()
         self.multi_platform = True
 
@@ -87,7 +86,7 @@ class BuildTarget(Target):
 
         os.makedirs(state.build_path, exist_ok=True)
 
-        env = self.environment
+        env = state.environment
         env['PATH'] = os.pathsep.join([
             str(state.bin_path),
             env['PATH'],
@@ -100,31 +99,17 @@ class BuildTarget(Target):
         env['CXX'] = state.cxx_compiler()
 
         for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
-            varname = f'{prefix}FLAGS'
+            var_name = f'{prefix}FLAGS'
 
-            self._update_env(varname, f'-I{state.include_path}')
-            self._set_sdk(state, varname)
-            self._set_os_version(state, varname)
+            state.update_environment(var_name, f'-I{state.include_path}')
+            state.set_sdk(var_name)
+            state.set_os_version(var_name)
 
         ldflags = 'LDFLAGS'
 
-        self._update_env(ldflags, f'-L{state.lib_path}')
-        self._set_sdk(state, ldflags)
-        self._set_os_version(state, ldflags)
-
-    def _update_env(self, name: str, value: str):
-        env = self.environment
-        env[name] = env[name] + ' ' + value if name in env else value
-
-    def _set_sdk(self, state: BuildState, varname: str):
-        sdk_path = state.sdk_path()
-        if sdk_path:
-            self._update_env(varname, f'-isysroot {sdk_path}')
-
-    def _set_os_version(self, state: BuildState, varname: str):
-        os_version = state.os_version()
-        if os_version:
-            self._update_env(varname, '-mmacosx-version-min=' + str(os_version))
+        state.update_environment(ldflags, f'-L{state.lib_path}')
+        state.set_sdk(ldflags)
+        state.set_os_version(ldflags)
 
     def install(self, state: BuildState, options: CommandLineOptions = None, tool: str = 'gmake'):
         if state.xcode:
@@ -136,7 +121,7 @@ class BuildTarget(Target):
         args = [tool, 'install']
         args += options and options.to_list() or []
 
-        subprocess.check_call(args, cwd=state.build_path, env=self.environment)
+        subprocess.check_call(args, cwd=state.build_path, env=state.environment)
 
         self.update_pc_files(state)
 
@@ -298,7 +283,7 @@ class MakeTarget(BuildTarget):
         args += self.options.to_list()
 
         work_path = state.build_path / self.src_root
-        subprocess.check_call(args, cwd=work_path, env=self.environment)
+        subprocess.check_call(args, cwd=work_path, env=state.environment)
 
 
 class ConfigureMakeTarget(BuildTarget):
@@ -328,17 +313,17 @@ class ConfigureMakeTarget(BuildTarget):
 
         try:
             # Try with host and disabled dependency tracking first
-            subprocess.check_call(args, cwd=work_path, env=self.environment)
+            subprocess.check_call(args, cwd=work_path, env=state.environment)
         except subprocess.CalledProcessError:
             # If it fails, try with disabled dependency tracking only
             args = copy.copy(common_args)
             args.append(disable_dependency_tracking)
 
             try:
-                subprocess.check_call(args, cwd=work_path, env=self.environment)
+                subprocess.check_call(args, cwd=work_path, env=state.environment)
             except subprocess.CalledProcessError:
                 # Use only common command line arguments
-                subprocess.check_call(common_args, cwd=work_path, env=self.environment)
+                subprocess.check_call(common_args, cwd=work_path, env=state.environment)
 
     def build(self, state: BuildState):
         assert not state.xcode
@@ -415,7 +400,7 @@ class CMakeTarget(BuildTarget):
         args += self.options.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(state.source / self.src_root)
 
-        subprocess.check_call(args, cwd=state.build_path, env=self.environment)
+        subprocess.check_call(args, cwd=state.build_path, env=state.environment)
 
     def build(self, state: BuildState):
         if state.xcode:
@@ -426,7 +411,7 @@ class CMakeTarget(BuildTarget):
             if state.verbose:
                 args.append('VERBOSE=1')
 
-        subprocess.check_call(args, cwd=state.build_path, env=self.environment)
+        subprocess.check_call(args, cwd=state.build_path, env=state.environment)
 
 
 class ConfigureMakeDependencyTarget(ConfigureMakeTarget):

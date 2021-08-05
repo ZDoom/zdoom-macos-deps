@@ -126,7 +126,7 @@ class FreeImageTarget(MakeTarget):
         # These flags are copied from Makefile.gnu
         common_flags = ' -O3 -fPIC -fexceptions -fvisibility=hidden'
 
-        env = self.environment
+        env = state.environment
         env['CFLAGS'] += common_flags + ' -std=gnu89 -Wno-implicit-function-declaration'
         env['CXXFLAGS'] += common_flags + ' -Wno-ctor-dtor-privacy'
 
@@ -532,7 +532,7 @@ class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
 
     def configure(self, state: BuildState):
         # Set LDFLAGS explicitly to help with FluidSynth and FLAC detection
-        self.environment['LDFLAGS'] = state.run_pkg_config('--libs', 'fluidsynth')
+        state.environment['LDFLAGS'] = state.run_pkg_config('--libs', 'fluidsynth')
 
         super().configure(state)
 
@@ -615,7 +615,7 @@ class SfmlTarget(CMakeStaticDependencyTarget):
         opts['OPENAL_INCLUDE_DIR'] = state.include_path / 'AL'
         opts['OPENAL_LIBRARY'] = state.lib_path / 'libopenal.a'
 
-        super(SfmlTarget, self).configure(state)
+        super().configure(state)
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('libtiff-4.pc.in')

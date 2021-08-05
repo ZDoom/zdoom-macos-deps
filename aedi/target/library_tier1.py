@@ -41,7 +41,7 @@ class Bzip2Target(MakeTarget):
         opts['bzip2recover'] = None
         # Copy compiler flags from environment to command line argument, they would be overridden by Makefile otherwise
         cflags = 'CFLAGS'
-        opts[cflags] = self.environment[cflags] + ' -D_FILE_OFFSET_BITS=64 -O2'
+        opts[cflags] = state.environment[cflags] + ' -D_FILE_OFFSET_BITS=64 -O2'
 
     def post_build(self, state: BuildState):
         self.options['PREFIX'] = state.install_path
@@ -158,7 +158,7 @@ class GlibTarget(BuildTarget):
     def configure(self, state: BuildState):
         super().configure(state)
 
-        environment = self.environment
+        environment = state.environment
         environment['LDFLAGS'] += ' -framework CoreFoundation -framework Foundation'
 
         cpu = state.architecture()
@@ -194,7 +194,7 @@ endian = 'little'
 
     def build(self, state: BuildState):
         args = ('ninja',)
-        subprocess.check_call(args, cwd=state.build_path, env=self.environment)
+        subprocess.check_call(args, cwd=state.build_path, env=state.environment)
 
     def post_build(self, state: BuildState):
         self.install(state, tool='ninja')
@@ -224,9 +224,6 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
         super().__init__(name)
         self.options['LIB_SUFFIX'] = None
 
-        # Workaround for missing frameworks in dependencies, no clue what's wrong at the moment
-        self.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/swami/libinstpatch/archive/v1.1.6.tar.gz',
@@ -234,6 +231,12 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('libinstpatch-1.0.pc.in')
+
+    def configure(self, state: BuildState):
+        # Workaround for missing frameworks in dependencies, no clue what's wrong at the moment
+        state.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
+
+        super().configure(state)
 
 
 class IntlTarget(GettextTarget):

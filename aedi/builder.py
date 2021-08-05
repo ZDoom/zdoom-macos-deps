@@ -132,6 +132,7 @@ class Builder(object):
 
     def _build(self, target: Target):
         state = self._state
+        state.environment = os.environ
 
         target.configure(state)
         target.build(state)

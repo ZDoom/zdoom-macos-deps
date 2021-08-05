@@ -53,7 +53,7 @@ class CMakeBuildTarget(CMakeTarget):
 
                 assert boostrap_cmake.exists()
 
-        env = self.environment
+        env = state.environment
         env['PATH'] = os.pathsep.join([str(boostrap_cmk_path), env['PATH']])
 
         super().configure(state)
@@ -135,7 +135,7 @@ class NinjaTarget(MakeTarget):
         )
 
         for args in cmdlines:
-            subprocess.run(args, check=True, cwd=state.build_path, env=self.environment)
+            subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def post_build(self, state: BuildState):
         self.copy_to_bin(state)
@@ -229,7 +229,7 @@ class ZipTarget(MakeTarget):
         ]
 
         for var in ('CFLAGS', 'LDFLAGS'):
-            args += shlex.split(self.environment[var])
+            args += shlex.split(state.environment[var])
 
         subprocess.run(args, check=True, cwd=state.build_path)
 

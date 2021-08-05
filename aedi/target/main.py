@@ -336,7 +336,7 @@ class EDuke32Target(MakeMainTarget):
         super().configure(state)
 
         # Fix missing definition when building with SDK older than 10.12
-        self._update_env('CXXFLAGS', '-DCLOCK_MONOTONIC=0')
+        state.update_environment('CXXFLAGS', '-DCLOCK_MONOTONIC=0')
 
 
 class NBloodTarget(EDuke32Target):
