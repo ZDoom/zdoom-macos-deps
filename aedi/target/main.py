@@ -182,7 +182,7 @@ class SladeTarget(CMakeMainTarget):
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['CMAKE_C_FLAGS'] = opts['CMAKE_CXX_FLAGS'] = '-DNOCURL -I' + state.include_path
+        opts['CMAKE_C_FLAGS'] = opts['CMAKE_CXX_FLAGS'] = f'-DNOCURL -I{state.include_path}'
         opts['CMAKE_EXE_LINKER_FLAGS'] = \
             state.run_pkg_config('--libs', 'fluidsynth', 'libtiff-4', 'openal', 'vorbisfile')
         opts['wxWidgets_USE_STATIC'] = 'YES'
