@@ -82,9 +82,9 @@ class Builder(object):
     def _populate_platforms(self, arguments):
         state = self._state
 
-        def adjust_sdk_path(path: Path) -> Path:
+        def adjust_sdk_path(path: str) -> Path:
             if path:
-                return path.absolute()
+                return Path(path).absolute()
 
             sdk_probe_path = state.root_path / 'sdk' / f'MacOSX{os_version}.sdk'
             return sdk_probe_path if sdk_probe_path.exists() else None
