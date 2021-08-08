@@ -165,6 +165,15 @@ class AccTarget(CMakeMainTarget):
         state.checkout_git('https://github.com/rheit/acc.git')
 
 
+class WadExtTarget(CMakeMainTarget):
+    def __init__(self, name='wadext'):
+        super().__init__(name)
+        self.outputs = (name,)
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/coelckers/wadext.git')
+
+
 class SladeTarget(CMakeMainTarget):
     def __init__(self, name='slade'):
         super().__init__(name)
