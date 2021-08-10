@@ -263,8 +263,8 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.sourceforge.net/project/libjpeg-turbo/2.1.0/libjpeg-turbo-2.1.0.tar.gz',
-            'bef89803e506f27715c5627b1e3219c95b80fc31465d4452de2a909d382e4444')
+            'https://downloads.sourceforge.net/project/libjpeg-turbo/2.1.1/libjpeg-turbo-2.1.1.tar.gz',
+            'b76aaedefb71ba882cbad4e9275b30c2ae493e3195be0a099425b5c6b99bd510')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('turbojpeg.h')
