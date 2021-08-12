@@ -335,23 +335,31 @@ class ConfigureMakeTarget(BuildTarget):
 
 
 class CMakeTarget(BuildTarget):
+    cached_project_name = None
+
     def __init__(self, name=None):
         super().__init__(name)
 
     def detect(self, state: BuildState) -> bool:
-        cmakelists_path = state.source / self.src_root / 'CMakeLists.txt'
-
-        if not cmakelists_path.exists():
-            return False
-
-        for line in open(cmakelists_path).readlines():
-            project_name = CMakeTarget._extract_project_name(line)
-            if project_name:
-                project_name = project_name.lower()
-                project_name = project_name.replace(' ', '-')
-                break
+        if CMakeTarget.cached_project_name:
+            project_name = CMakeTarget.cached_project_name
         else:
-            return False
+            cmakelists_path = state.source / self.src_root / 'CMakeLists.txt'
+
+            if not cmakelists_path.exists():
+                self.cached_project_name = '@non-existing-project@'
+                return False
+
+            for line in open(cmakelists_path).readlines():
+                project_name = CMakeTarget._extract_project_name(line)
+                if project_name:
+                    project_name = project_name.lower()
+                    project_name = project_name.replace(' ', '-')
+                    break
+            else:
+                return False
+
+            CMakeTarget.cached_project_name = project_name
 
         return project_name == self.name
 
