@@ -359,6 +359,9 @@ class CMakeTarget(BuildTarget):
             else:
                 return False
 
+            if project_name.startswith('lib'):
+                project_name = project_name[3:]
+
             CMakeTarget.cached_project_name = project_name
 
         return project_name == self.name
