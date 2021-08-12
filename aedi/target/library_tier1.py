@@ -78,9 +78,6 @@ class FlacTarget(CMakeStaticDependencyTarget):
             '213e82bd716c9de6db2f98bcadbc4c24c7e2efe8c75939a1a84e28539c4e1748',
             patches='flac-add-cmake')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('FLAC/flac.pc.in')
-
     def configure(self, state: BuildState):
         opts = state.options
         opts['CMAKE_EXE_LINKER_FLAGS'] = f'-framework CoreFoundation -L{state.lib_path}'
@@ -108,9 +105,6 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         state.download_source(
             'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.2.2.tar.gz',
             '695aedbfd53160fef7a9a1f66cd6d5cc8a5da0fd472eee458d82b848b6065f9a')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('fluidsynth.pc.in')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -233,9 +227,6 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
             'https://github.com/swami/libinstpatch/archive/v1.1.6.tar.gz',
             '8e9861b04ede275d712242664dab6ffa9166c7940fea3b017638681d25e10299')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('libinstpatch-1.0.pc.in')
-
     def configure(self, state: BuildState):
         state.options['LIB_SUFFIX'] = None
 
@@ -265,9 +256,6 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
         state.download_source(
             'https://downloads.sourceforge.net/project/libjpeg-turbo/2.1.1/libjpeg-turbo-2.1.1.tar.gz',
             'b76aaedefb71ba882cbad4e9275b30c2ae493e3195be0a099425b5c6b99bd510')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('turbojpeg.h')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -334,9 +322,6 @@ class Mpg123Target(CMakeStaticDependencyTarget):
             '7eefd4b68fdac7e138d04c37efe12155a8ebf25a5bccf0fb7e775af22d21db00',
             patches='mpg123-fix-cmake')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('libmpg123.pc.in')
-
     def configure(self, state: BuildState):
         state.options['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit'
         super().configure(state)
@@ -355,9 +340,6 @@ class OggTarget(CMakeStaticDependencyTarget):
             'https://github.com/xiph/ogg/releases/download/v1.3.5/libogg-1.3.5.tar.xz',
             'c4d91be36fc8e54deae7575241e03f4211eb102afb3fc0775fbbc1b740016705')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('ogg.pc.in')
-
 
 class OpenALTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='openal'):
@@ -367,9 +349,6 @@ class OpenALTarget(CMakeStaticDependencyTarget):
         state.download_source(
             'https://openal-soft.org/openal-releases/openal-soft-1.21.1.tar.bz2',
             'c8ad767e9a3230df66756a21cc8ebf218a9d47288f2514014832204e666af5d8')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('openal.pc.in')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -406,9 +385,6 @@ class OpusTarget(CMakeStaticDependencyTarget):
             'https://ftp.osuosl.org/pub/xiph/releases/opus/opus-1.3.1.tar.gz',
             '65b58e1e25b2a114157014736a3d9dfeaad8d41be1c8179866f144a2fb44ff9d',
             patches='opus-fix-cmake')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('opus.pc.in')
 
     def configure(self, state: BuildState):
         state.options['PC_BUILD'] = 'floating-point'
@@ -463,9 +439,6 @@ class SndFileTarget(CMakeStaticDependencyTarget):
             'https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2',
             'a8cfb1c09ea6e90eff4ca87322d4168cdbe5035cb48717b40bf77e751cc02163')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('sndfile.pc.in')
-
     def configure(self, state: BuildState):
         opts = state.options
         opts['BUILD_REGTEST'] = 'NO'
@@ -482,9 +455,6 @@ class VorbisTarget(CMakeStaticDependencyTarget):
         state.download_source(
             'https://ftp.osuosl.org/pub/xiph/releases/vorbis/libvorbis-1.3.7.tar.xz',
             'b33cc4934322bcbf6efcbacf49e3ca01aadbea4114ec9589d1b1e9d20f72954b')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('vorbis.pc.in')
 
 
 class VpxTarget(ConfigureMakeDependencyTarget):
