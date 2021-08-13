@@ -370,11 +370,11 @@ class CMakeTarget(BuildTarget):
         project_name = None
 
         # Try to get project name without whitespaces in it
-        match = re.search(r'project\s*\(\s*(\w[\w-]+)', line, re.IGNORECASE)
+        match = re.search(r'^\s*project\s*\(\s*(\w[\w-]+)', line, re.IGNORECASE)
 
         if not match:
             # Try to get project name that contains whitespaces
-            match = re.search(r'project\s*\(\s*"?(\w[\s\w-]+)"?', line, re.IGNORECASE)
+            match = re.search(r'^\s*project\s*\(\s*"?(\w[\s\w-]+)"?', line, re.IGNORECASE)
 
         if match:
             project_name = match.group(1)
