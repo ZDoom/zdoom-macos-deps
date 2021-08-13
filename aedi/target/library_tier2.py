@@ -81,9 +81,6 @@ class ExpatTarget(CMakeStaticDependencyTarget):
             'https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.xz',
             'cf032d0dba9b928636548e32b327a2d66b1aab63c4f4a13dd132c2d1d2f2fb6a')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('expat.pc.in')
-
     def configure(self, state: BuildState):
         opts = state.options
         opts['EXPAT_BUILD_EXAMPLES'] = 'NO'
@@ -101,9 +98,6 @@ class FmtTarget(CMakeStaticDependencyTarget):
         state.download_source(
             'https://github.com/fmtlib/fmt/archive/refs/tags/7.1.3.tar.gz',
             '5cae7072042b3043e12d53d50ef404bbb76949dad1de368d7f993a15c8c05ecc')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('include/fmt/format.h')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -210,9 +204,6 @@ class GlewTarget(CMakeStaticDependencyTarget):
         state.download_source(
             'https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz',
             'd4fc82893cfb00109578d0a1a2337fb8ca335b3ceccf97b97e5cc7f08e4353e1')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('glew.pc.in')
 
     def configure(self, state: BuildState):
         state.options['BUILD_UTILS'] = 'NO'
@@ -403,9 +394,6 @@ class PngTarget(CMakeStaticDependencyTarget):
             'https://downloads.sourceforge.net/libpng/libpng-1.6.37.tar.xz',
             '505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('libpng.pc.in')
-
     def configure(self, state: BuildState):
         opts = state.options
         opts['PNG_ARM_NEON'] = 'on'
@@ -427,9 +415,6 @@ class PortMidiTarget(CMakeTarget):
             'https://downloads.sourceforge.net/project/portmedia/portmidi/217/portmidi-src-217.zip',
             '08e9a892bd80bdb1115213fb72dc29a7bf2ff108b378180586aa65f3cfd42e0f',
             patches='portmidi-modernize-cmake')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('pm_common/portmidi.h')
 
     def post_build(self, state: BuildState):
         if state.install_path.exists():
@@ -454,9 +439,6 @@ class SamplerateTarget(CMakeStaticDependencyTarget):
             'https://github.com/libsndfile/libsamplerate/releases/download/0.2.1/libsamplerate-0.2.1.tar.bz2',
             'f6323b5e234753579d70a0af27796dde4ebeddf58aae4be598e39b3cee00c90a')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('samplerate.pc.in')
-
     def post_build(self, state: BuildState):
         super().post_build(state)
 
@@ -476,9 +458,6 @@ class Sdl2Target(CMakeStaticDependencyTarget):
         state.download_source(
             'https://libsdl.org/release/SDL2-2.0.14.tar.gz',
             'd8215b571a581be1332d2106f8036fcb03d12a70bae01e20f424976d275432bc')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('sdl2.pc.in')
 
     def configure(self, state: BuildState):
         # Need to have uniform settings for x86_64 and arm64 because of linking with Metal framework
@@ -649,9 +628,6 @@ class SfmlTarget(CMakeStaticDependencyTarget):
 
         super().configure(state)
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('libtiff-4.pc.in')
-
 
 class TiffTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='tiff'):
@@ -662,9 +638,6 @@ class TiffTarget(CMakeStaticDependencyTarget):
             'https://download.osgeo.org/libtiff/tiff-4.3.0.tar.gz',
             '0e46e5acb087ce7d1ac53cf4f56a09b221537fc86dfc5daaad1c2e89e1b37ac8',
             patches='tiff-remove-useless')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('libtiff-4.pc.in')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -697,9 +670,6 @@ class WebpTarget(CMakeStaticDependencyTarget):
         state.download_source(
             'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.2.0.tar.gz',
             '2fc8bbde9f97f2ab403c0224fb9ca62b2e6852cbc519e91ceaa7c153ffd88a0c')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('src/libwebp.pc.in')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -734,9 +704,6 @@ class WxWidgetsTarget(CMakeStaticDependencyTarget):
             'https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.5/wxWidgets-3.1.5.tar.bz2',
             'd7b3666de33aa5c10ea41bb9405c40326e1aeb74ee725bb88f90f1d50270a224',
             patches='wxwidgets-library-suffix')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('wx-config.in')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -800,9 +767,6 @@ class ZstdTarget(CMakeStaticDependencyTarget):
         state.download_source(
             'https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz',
             '5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('lib/libzstd.pc.in')
 
     def configure(self, state: BuildState):
         opts = state.options
