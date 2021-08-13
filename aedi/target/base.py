@@ -347,7 +347,6 @@ class CMakeTarget(BuildTarget):
             cmakelists_path = state.source / self.src_root / 'CMakeLists.txt'
 
             if not cmakelists_path.exists():
-                self.cached_project_name = '@non-existing-project@'
                 return False
 
             for line in open(cmakelists_path).readlines():
