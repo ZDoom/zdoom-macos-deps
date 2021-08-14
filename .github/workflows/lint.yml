@@ -14,6 +14,7 @@ jobs:
       uses: docker://ghcr.io/github/super-linter:slim-v4
       env:
           FILTER_REGEX_INCLUDE: .*(\.py|\.md|\.yml)$
+          FILTER_REGEX_EXCLUDE: .*/deps/.*
           VALIDATE_PYTHON_BLACK: false
 
     - name: Bandit
