@@ -290,14 +290,12 @@ class MakeTarget(BuildTarget):
         subprocess.check_call(args, cwd=work_path, env=state.environment)
 
 
-class ConfigureMakeTarget(BuildTarget):
+class ConfigureMakeTarget(MakeTarget):
     def __init__(self, name=None):
         super().__init__(name)
-        self.make = MakeTarget(name)
 
     def configure(self, state: BuildState):
         super().configure(state)
-        self.make.configure(state)
 
         work_path = state.build_path / self.src_root
         configure_path = work_path / 'configure'
@@ -330,8 +328,10 @@ class ConfigureMakeTarget(BuildTarget):
                 subprocess.check_call(common_args, cwd=work_path, env=state.environment)
 
     def build(self, state: BuildState):
-        assert not state.xcode
-        self.make.build(state)
+        # Clear configure script options
+        state.options = CommandLineOptions()
+
+        super().build(state)
 
 
 class CMakeTarget(BuildTarget):

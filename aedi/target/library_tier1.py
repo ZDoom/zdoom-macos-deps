@@ -239,12 +239,20 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
 class IntlTarget(GettextTarget):
     def __init__(self, name='intl'):
         super().__init__(name)
+
+    def configure(self, state: BuildState):
+        # No way no configure intl only, do this for the runtime
         self.src_root = 'gettext-runtime'
-        self.make.src_root += self.src_root + os.sep + 'intl'
+        super().configure(state)
+
+    def build(self, state: BuildState):
+        # Build intl only, avoid complete gettext runtime
+        self.src_root += '/intl'
+        super().build(state)
 
     def post_build(self, state: BuildState):
-        # Do install of intl only, avoid complete gettext runtime
-        self.src_root = self.make.src_root
+        # Install intl only, avoid complete gettext runtime
+        state.build_path /= self.src_root
         self.install(state)
 
 
