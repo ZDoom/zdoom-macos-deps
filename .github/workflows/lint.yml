@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   lint:
-    if: "!contains(github.event.head_commit.message, '[skip lint]')"
+    if: "${{ !contains(github.event.head_commit.message, '[skip lint]') }}"
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
@@ -13,7 +13,7 @@ jobs:
     - name: Super-Linter
       uses: docker://ghcr.io/github/super-linter:slim-v4
       env:
-          FILTER_REGEX_INCLUDE: .*(\.py|\.md)$
+          FILTER_REGEX_INCLUDE: .*(\.py|\.md|\.yml)$
           VALIDATE_PYTHON_BLACK: false
 
     - name: Bandit
