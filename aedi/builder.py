@@ -138,7 +138,7 @@ class Builder(object):
 
     def _build(self, target: Target):
         state = self._state
-        state.environment = os.environ
+        state.environment = os.environ.copy()
         state.options = CommandLineOptions()
 
         target.configure(state)
