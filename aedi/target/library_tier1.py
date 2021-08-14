@@ -241,7 +241,7 @@ class IntlTarget(GettextTarget):
         super().__init__(name)
 
     def configure(self, state: BuildState):
-        # No way no configure intl only, do this for the runtime
+        # There is no way to configure intl only, do this for the runtime
         self.src_root = 'gettext-runtime'
         super().configure(state)
 
