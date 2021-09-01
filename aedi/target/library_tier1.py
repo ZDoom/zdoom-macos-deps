@@ -157,6 +157,12 @@ class GlibTarget(BuildTarget):
         environment = state.environment
         environment['LDFLAGS'] += ' -framework CoreFoundation -framework Foundation'
 
+        c_compiler = state.c_compiler()
+        assert c_compiler
+
+        cxx_compiler = state.cxx_compiler()
+        assert cxx_compiler
+
         cpu = state.architecture()
         cpu_family = 'arm' if 'arm64' == cpu else cpu
 
@@ -164,10 +170,10 @@ class GlibTarget(BuildTarget):
         with open(cross_file, 'w') as f:
             f.write(f'''
 [binaries]
-c = '{state.c_compiler()}'
-cpp = '{state.cxx_compiler()}'
-objc = '{state.c_compiler()}'
-objcpp = '{state.cxx_compiler()}'
+c = '{c_compiler}'
+cpp = '{cxx_compiler}'
+objc = '{c_compiler}'
+objcpp = '{cxx_compiler}'
 pkgconfig = '{state.prefix_path}/bin/pkg-config'
 strip = '/usr/bin/strip'
 

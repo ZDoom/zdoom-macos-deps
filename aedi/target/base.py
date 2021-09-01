@@ -99,8 +99,10 @@ class BuildTarget(Target):
         if state.xcode:
             return
 
-        env['CC'] = str(state.c_compiler())
-        env['CXX'] = str(state.cxx_compiler())
+        if c_compiler := state.c_compiler():
+            env['CC'] = str(c_compiler)
+        if cxx_compiler := state.cxx_compiler():
+            env['CXX'] = str(cxx_compiler)
 
         for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
             var_name = f'{prefix}FLAGS'
@@ -281,9 +283,13 @@ class MakeTarget(BuildTarget):
         args = [
             self.tool,
             '-j', state.jobs,
-            f'CC={state.c_compiler()}',
-            f'CXX={state.cxx_compiler()}',
         ]
+
+        if c_compiler := state.c_compiler():
+            args.append(f'CC={c_compiler}')
+        if cxx_compiler := state.cxx_compiler():
+            args.append(f'CXX={cxx_compiler}')
+
         args += state.options.to_list()
 
         work_path = state.build_path / self.src_root
@@ -395,8 +401,11 @@ class CMakeTarget(BuildTarget):
             args.append('-GXcode')
         else:
             args.append('-GUnix Makefiles')
-            args.append(f'-DCMAKE_C_COMPILER={state.c_compiler()}')
-            args.append(f'-DCMAKE_CXX_COMPILER={state.cxx_compiler()}')
+
+            if c_compiler := state.c_compiler():
+                args.append(f'-DCMAKE_C_COMPILER={c_compiler}')
+            if cxx_compiler := state.cxx_compiler():
+                args.append(f'-DCMAKE_CXX_COMPILER={cxx_compiler}')
 
             architecture = state.architecture()
             if architecture != machine():

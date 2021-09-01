@@ -217,8 +217,11 @@ class ZipTarget(MakeTarget):
         return state.has_source_file('zip.h')
 
     def build(self, state: BuildState):
+        c_compiler = state.c_compiler()
+        assert c_compiler
+
         args = [
-            str(state.c_compiler()),
+            str(c_compiler),
             '-O3', '-I.', '-DUNIX',
             '-DBZIP2_SUPPORT', '-DLARGE_FILE_SUPPORT', '-DUNICODE_SUPPORT',
             '-DHAVE_DIRENT_H', '-DHAVE_TERMIOS_H',
