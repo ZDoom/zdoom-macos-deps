@@ -321,7 +321,7 @@ class MoltenVKTarget(MakeTarget):
 
         src_path = state.build_path / 'Package/Latest/MoltenVK'
         shutil.copytree(src_path / 'include', state.install_path / 'include')
-        shutil.copy(state.build_path + 'LICENSE', state.install_path / 'apache2.txt')
+        shutil.copy(state.build_path / 'LICENSE', state.install_path / 'apache2.txt')
         shutil.copy(src_path / 'dylib/macOS/libMoltenVK.dylib', lib_path)
 
 
