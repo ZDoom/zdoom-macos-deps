@@ -96,6 +96,7 @@ def targets():
         TiffTarget(),
         WebpTarget(),
         WxWidgetsTarget(),
+        XmpTarget(),
         ZstdTarget(),
 
         # Tools

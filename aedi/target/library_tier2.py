@@ -758,6 +758,23 @@ class WxWidgetsTarget(CMakeStaticDependencyTarget):
         self.update_text_file(wx_config_path, patch_wx_config)
 
 
+class XmpTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='xmp'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://sourceforge.net/projects/xmp/files/libxmp/4.5.0/libxmp-4.5.0.tar.gz',
+            '7847d262112d14e8442f44e5ac6ed9ddbca54c251284720b563c852b31f26e75')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('libxmp.pc.in')
+
+    def configure(self, state: BuildState):
+        state.options['--enable-static'] = None
+        super().configure(state)
+
+
 class ZstdTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='zstd'):
         super().__init__(name)
