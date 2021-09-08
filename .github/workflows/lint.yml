@@ -25,4 +25,4 @@ jobs:
         # [B404:blacklist] Consider possible security implications associated with subprocess module.
         # [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
         # [B607:start_process_with_partial_path] Starting a process with a partial executable path
-        bandit --skip B101,B310,B404,B603,B607 --recursive .
+        bandit --skip B101,B310,B404,B603,B607 --recursive . --exclude ./deps/vulkan-headers/share/vulkan/registry
