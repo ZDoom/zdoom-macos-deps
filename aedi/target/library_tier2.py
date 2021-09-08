@@ -673,6 +673,21 @@ class VulkanHeadersTarget(CMakeStaticDependencyTarget):
             '0939d6cb950746f6f9cab59399c0a99628ed186426a972996599f90d34d8a99a')
 
 
+class VulkanLoaderTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='vulkan-loader'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            # Version should match with the current MoltenVK release
+            'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/sdk-1.2.189.0.tar.gz',
+            'd72534194263992e23ad7c32469a71b66e9801b00cc1a067d7ff46fdca9dba33')
+
+    def configure(self, state: BuildState):
+        state.options['BUILD_STATIC_LOADER'] = 'YES'
+        super().configure(state)
+
+
 class WebpTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='webp'):
         super().__init__(name)

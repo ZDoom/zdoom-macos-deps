@@ -95,6 +95,7 @@ def targets():
         SodiumTarget(),
         TiffTarget(),
         VulkanHeadersTarget(),
+        VulkanLoaderTarget(),
         WebpTarget(),
         WxWidgetsTarget(),
         XmpTarget(),
