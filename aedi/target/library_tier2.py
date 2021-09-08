@@ -456,8 +456,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://libsdl.org/release/SDL2-2.0.14.tar.gz',
-            'd8215b571a581be1332d2106f8036fcb03d12a70bae01e20f424976d275432bc')
+            'https://libsdl.org/release/SDL2-2.0.16.tar.gz',
+            '65be9ff6004034b5b2ce9927b5a4db1814930f169c4b2dae0a1e4697075f287b')
 
     def configure(self, state: BuildState):
         # Need to have uniform settings for x86_64 and arm64 because of linking with Metal framework
@@ -469,8 +469,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
         super().configure(state)
 
-    FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa' \
-        ' -framework CoreAudio -framework CoreFoundation -framework CoreVideo' \
+    FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon' \
+        ' -framework Cocoa -framework CoreAudio -framework CoreVideo' \
         ' -framework ForceFeedback -framework Foundation -framework IOKit'
     LINKER_FLAGS = ' -L${libdir} -lSDL2 ' + FRAMEWORKS + os.linesep
 
@@ -479,8 +479,12 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
         self.make_platform_header(state, 'SDL2/SDL_config.h')
 
-        def update_sdl2_config(line: str):
-            if line.startswith('      echo -L${exec_prefix}/lib'):
+        def update_sdl2_config(_: Path, line: str):
+            if line.startswith('#    '):
+                return None
+            elif line.startswith('      echo -I'):
+                return '      echo -I${prefix}/include/SDL2 -D_THREAD_SAFE\n'
+            elif line.startswith('      echo -L'):
                 return '      echo' + Sdl2Target.LINKER_FLAGS
 
             return line
