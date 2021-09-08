@@ -1,9 +1,9 @@
 #!/bin/sh
 
 prefix="$(cd "${0%/*}/.."; pwd)"
-exec_prefix=${prefix}
+exec_prefix="${prefix}"
 exec_prefix_set=no
-libdir=${exec_prefix}/lib
+libdir="${exec_prefix}/lib"
 
 #usage="\
 #Usage: $0 [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cflags] [--libs]"
@@ -39,17 +39,13 @@ while test $# -gt 0; do
       echo $exec_prefix
       ;;
     --version)
-      echo 2.0.14
+      echo 2.0.16
       ;;
     --cflags)
-      echo -I${prefix}/include/SDL2  -D_THREAD_SAFE
+      echo -I${prefix}/include/SDL2 -D_THREAD_SAFE
       ;;
-#    --libs)
-#      echo -L${exec_prefix}/lib  -lSDL2 
-#      ;;
-#    --static-libs)
     --libs|--static-libs)
-      echo -L${libdir} -lSDL2 -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreFoundation -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit
+      echo -L${libdir} -lSDL2 -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit
       ;;
     *)
       echo "${usage}" 1>&2
