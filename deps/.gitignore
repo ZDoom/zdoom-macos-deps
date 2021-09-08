@@ -54,6 +54,7 @@
 /webp/**/libwebpdecoder.*
 /webp/**/libwebpdemux.*
 !/vulkan-headers/share
+/vulkan-loader/loader/
 /wxwidgets/bin/wxrc-3.1
 /wxwidgets/lib/wx/config/
 

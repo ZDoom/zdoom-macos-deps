@@ -1,0 +1,12 @@
+prefix=
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Vulkan-Loader
+Description: Vulkan Loader
+Version: 1.2.189
+Libs: -L${libdir} -lvulkan
+Libs.private:  -lc++
+Cflags: -I${includedir}
+
