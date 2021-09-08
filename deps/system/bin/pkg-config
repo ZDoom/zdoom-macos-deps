@@ -19,6 +19,7 @@
 #
 
 import os
+from pathlib import Path
 import shlex
 import subprocess
 import sys
@@ -31,16 +32,16 @@ def _main():
         cmdline = ' '.join(map(shlex.quote, args))
         log.write(f'% pkg-config {cmdline}\n')
 
-    bin_path = os.path.dirname(os.path.abspath(__file__)) + os.sep
-    prefix_path = os.path.abspath(bin_path + os.pardir)
-    config_path = prefix_path + '/lib/pkgconfig'
+    bin_path = Path(__file__).parent
+    prefix_path = bin_path.parent
+    config_path = prefix_path / 'lib/pkgconfig'
 
     environment = os.environ
-    environment['PKG_CONFIG_PATH'] = config_path
+    environment['PKG_CONFIG_PATH'] = str(config_path)
 
     predefined_args = [
-        bin_path + 'pkg-config.exe',
-        '--define-variable=prefix=' + prefix_path,
+        f'{bin_path}/pkg-config.exe',
+        f'--define-variable=prefix={prefix_path}',
         '--static'
     ]
     args = predefined_args + args
