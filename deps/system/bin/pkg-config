@@ -25,12 +25,22 @@ import subprocess
 import sys
 
 
+_LOG_FILENAME = ''  # 'pkg-config.log'
+
+
+def _write_log(message: str):
+    if not _LOG_FILENAME:
+        return
+
+    with open(_LOG_FILENAME, 'a') as log:
+        log.write(message)
+
+
 def _main():
     args = sys.argv[1:]
 
-    with open('pkg-config.log', 'a') as log:
-        cmdline = ' '.join(map(shlex.quote, args))
-        log.write(f'% pkg-config {cmdline}\n')
+    cmdline = ' '.join(map(shlex.quote, args))
+    _write_log(f'% pkg-config {cmdline}\n')
 
     bin_path = Path(__file__).parent
     prefix_path = bin_path.parent
@@ -50,11 +60,10 @@ def _main():
     stdout = result.stdout.decode('ascii')
     stderr = result.stderr.decode('ascii')
 
-    with open('pkg-config.log', 'a') as log:
-        log.write('out> ')
-        log.write(stdout if stdout else '\n')
-        log.write('err> ')
-        log.write(stderr if stderr else '\n')
+    _write_log('out> ')
+    _write_log(stdout if stdout else '\n')
+    _write_log('err> ')
+    _write_log(stderr if stderr else '\n')
 
     sys.stdout.write(stdout)
     sys.stderr.write(stderr)
