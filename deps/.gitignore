@@ -53,6 +53,7 @@
 /webp/include/webp/demux.h
 /webp/**/libwebpdecoder.*
 /webp/**/libwebpdemux.*
+!/vulkan-headers/share
 /wxwidgets/bin/wxrc-3.1
 /wxwidgets/lib/wx/config/
 
