@@ -94,6 +94,7 @@ def targets():
         SfmlTarget(),
         SodiumTarget(),
         TiffTarget(),
+        VulkanHeadersTarget(),
         WebpTarget(),
         WxWidgetsTarget(),
         XmpTarget(),

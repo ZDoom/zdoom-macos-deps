@@ -662,6 +662,17 @@ class TiffTarget(CMakeStaticDependencyTarget):
         return line
 
 
+class VulkanHeadersTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='vulkan-headers'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            # Version should match with the current MoltenVK release
+            'https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.2.189.tar.gz',
+            '0939d6cb950746f6f9cab59399c0a99628ed186426a972996599f90d34d8a99a')
+
+
 class WebpTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='webp'):
         super().__init__(name)
