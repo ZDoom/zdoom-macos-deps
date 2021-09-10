@@ -1,5 +1,5 @@
 /*
-	libmpg123: MPEG Audio Decoder library (version 1.28.2)
+	libmpg123: MPEG Audio Decoder library (version 1.29.0)
 
 	copyright 1995-2015 by the mpg123 project
 	free software under the terms of the LGPL 2.1
@@ -398,7 +398,7 @@ enum mpg123_feature_set
 	,MPG123_FEATURE_EQUALIZER            /**< tunable equalizer */
 	,MPG123_FEATURE_MOREINFO             /**< more info extraction (for frame analyzer) */
 	,MPG123_FEATURE_OUTPUT_FLOAT32      /**< 32 bit float output */
-	,MPG123_FEATURE_OUTPUT_FLOAT64      /**< 64 bit float output (usually never) */
+	,MPG123_FEATURE_OUTPUT_FLOAT64      /**< 64 bit float output (as of now: never!) */
 };
 
 #ifdef MPG123_ENUM_API
