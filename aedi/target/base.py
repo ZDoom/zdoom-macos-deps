@@ -393,6 +393,8 @@ class CMakeTarget(BuildTarget):
         args = [
             'cmake',
             '-DCMAKE_BUILD_TYPE=Release',
+            f'-DCMAKE_C_FLAGS="-ffile-prefix-map={state.source}/="',
+            f'-DCMAKE_CXX_FLAGS="-ffile-prefix-map={state.source}/="',
             f'-DCMAKE_INSTALL_PREFIX={state.install_path}',
             f'-DCMAKE_PREFIX_PATH={state.prefix_path}',
         ]
