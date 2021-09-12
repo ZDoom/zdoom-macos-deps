@@ -458,7 +458,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://libsdl.org/release/SDL2-2.0.16.tar.gz',
-            '65be9ff6004034b5b2ce9927b5a4db1814930f169c4b2dae0a1e4697075f287b')
+            '65be9ff6004034b5b2ce9927b5a4db1814930f169c4b2dae0a1e4697075f287b',
+            patches='sdl2-no-updaterev')
 
     FRAMEWORKS = ''
     LINKER_FLAGS = ''
