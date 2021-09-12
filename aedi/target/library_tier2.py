@@ -16,8 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from distutils.version import StrictVersion
 import glob
+from distutils.version import StrictVersion
 
 from .base import *
 
@@ -460,8 +460,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
             'https://libsdl.org/release/SDL2-2.0.16.tar.gz',
             '65be9ff6004034b5b2ce9927b5a4db1814930f169c4b2dae0a1e4697075f287b')
 
-    FRAMEWORKS = None
-    LINKER_FLAGS = None
+    FRAMEWORKS = ''
+    LINKER_FLAGS = ''
 
     def configure(self, state: BuildState):
         state.options['SDL_STATIC_PIC'] = 'YES'
