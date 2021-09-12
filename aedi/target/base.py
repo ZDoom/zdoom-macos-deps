@@ -22,7 +22,6 @@ import re
 import shutil
 import subprocess
 import typing
-from distutils.version import StrictVersion
 from pathlib import Path
 from platform import machine
 
