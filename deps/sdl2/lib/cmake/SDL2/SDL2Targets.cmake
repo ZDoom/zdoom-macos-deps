@@ -55,7 +55,7 @@ add_library(SDL2::SDL2 STATIC IMPORTED)
 
 set_target_properties(SDL2::SDL2 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include/SDL2"
-  INTERFACE_LINK_LIBRARIES "-framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit"
+  INTERFACE_LINK_LIBRARIES "-framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit -weak_framework Metal -weak_framework QuartzCore"
 )
 
 # Create imported target SDL2::SDL2main

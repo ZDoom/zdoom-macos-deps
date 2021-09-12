@@ -45,7 +45,7 @@ while test $# -gt 0; do
       echo -I${prefix}/include/SDL2 -D_THREAD_SAFE
       ;;
     --libs|--static-libs)
-      echo -L${libdir} -lSDL2 -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit
+      echo -L${libdir} -lSDL2 -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit -weak_framework Metal -weak_framework QuartzCore
       ;;
     *)
       echo "${usage}" 1>&2

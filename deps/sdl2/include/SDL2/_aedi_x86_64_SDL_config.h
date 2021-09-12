@@ -419,7 +419,7 @@
 /* #undef SDL_VIDEO_RENDER_OGL_ES */
 #define SDL_VIDEO_RENDER_OGL_ES2 1
 /* #undef SDL_VIDEO_RENDER_DIRECTFB */
-/* #undef SDL_VIDEO_RENDER_METAL */
+#define SDL_VIDEO_RENDER_METAL 1
 /* #undef SDL_VIDEO_RENDER_VITA_GXM */
 
 /* Enable OpenGL support */
@@ -435,10 +435,10 @@
 /* #undef SDL_VIDEO_OPENGL_OSMESA_DYNAMIC */
 
 /* Enable Vulkan support */
-/* #undef SDL_VIDEO_VULKAN */
+#define SDL_VIDEO_VULKAN 1
 
 /* Enable Metal support */
-/* #undef SDL_VIDEO_METAL */
+#define SDL_VIDEO_METAL 1
 
 /* Enable system power support */
 /* #undef SDL_POWER_ANDROID */

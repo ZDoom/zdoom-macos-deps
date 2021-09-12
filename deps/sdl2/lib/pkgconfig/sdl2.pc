@@ -10,5 +10,5 @@ Description: Simple DirectMedia Layer is a cross-platform multimedia library des
 Version: 2.0.16
 Requires:
 Conflicts:
-Libs: -L${libdir} -lSDL2 -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit
+Libs: -L${libdir} -lSDL2 -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit -weak_framework Metal -weak_framework QuartzCore
 Cflags: -I${includedir}/SDL2  -D_THREAD_SAFE
