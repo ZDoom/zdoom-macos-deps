@@ -18,6 +18,7 @@
 
 import hashlib
 import os
+import re
 import shutil
 import subprocess
 import typing
@@ -68,6 +69,13 @@ class BuildState:
 
     def sdk_path(self) -> Path:
         return self.platform.sdk_path if self.platform else None
+
+    def sdk_version(self) -> typing.Union[StrictVersion, None]:
+        if sdk_path := self.sdk_path():
+            if match := re.search(r'/MacOSX(\d+.\d+).sdk', str(sdk_path), re.IGNORECASE):
+                return StrictVersion(match[1])
+
+        return None
 
     def c_compiler(self) -> Path:
         return self.platform.c_compiler if self.platform else None

@@ -82,10 +82,8 @@ class BuildTarget(Target):
         if os_version and os_version < self.os_version[state.architecture()]:
             raise RuntimeError('Minimum OS version requirement is not met')
 
-        sdk_path = state.sdk_path()
-        if sdk_path:
-            match = re.search(r'/MacOSX(\d+.\d+).sdk', str(sdk_path), re.IGNORECASE)
-            if match and StrictVersion(match[1]) < self.sdk_version[state.architecture()]:
+        if sdk_version := state.sdk_version():
+            if sdk_version < self.sdk_version[state.architecture()]:
                 raise RuntimeError('Minimum SDK version requirement is not met')
 
         os.makedirs(state.build_path, exist_ok=True)
