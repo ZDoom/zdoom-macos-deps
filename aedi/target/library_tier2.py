@@ -464,6 +464,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
     LINKER_FLAGS = None
 
     def configure(self, state: BuildState):
+        state.options['SDL_STATIC_PIC'] = 'YES'
+
         if not Sdl2Target.FRAMEWORKS:
             # Need to have uniform settings for x86_64 and arm64 because of linking with Metal framework
             Sdl2Target.FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon' \
