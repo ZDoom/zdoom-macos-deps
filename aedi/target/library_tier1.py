@@ -110,6 +110,7 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         opts = state.options
         # TODO: Figure out why private dependencies aren't pulled
         opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'glib-2.0')
+        opts['DEFAULT_SOUNDFONT'] = 'default.sf2'
         opts['LIB_SUFFIX'] = None
         opts['enable-framework'] = 'NO'
         opts['enable-readline'] = 'NO'
