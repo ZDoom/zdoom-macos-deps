@@ -108,6 +108,7 @@ def targets():
         NasmTarget(),
         NinjaTarget(),
         P7ZipTarget(),
+        PbzxTarget(),
         PkgConfigTarget(),
         UnrarTarget(),
         YasmTarget(),

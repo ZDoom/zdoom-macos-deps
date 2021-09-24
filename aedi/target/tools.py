@@ -158,6 +158,39 @@ class P7ZipTarget(CMakeTarget):
         self.copy_to_bin(state, '7za')
 
 
+class PbzxTarget(MakeTarget):
+    def __init__(self, name='pbzx'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/nrosenstein-stuff/pbzx/archive/refs/tags/v1.0.2.tar.gz',
+            '33db3cf9dc70ae704e1bbfba52c984f4c6dbfd0cc4449fa16408910e22b4fd90')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('pbzx.c')
+
+    def build(self, state: BuildState):
+        c_compiler = state.c_compiler()
+        assert c_compiler
+
+        args = [
+            str(c_compiler),
+            '-O3',
+            'pbzx.c',
+            '-lxar', '-llzma',
+            '-o', self.name
+        ]
+
+        for var in ('CFLAGS', 'LDFLAGS'):
+            args += shlex.split(state.environment[var])
+
+        subprocess.run(args, check=True, cwd=state.build_path)
+
+    def post_build(self, state: BuildState):
+        self.copy_to_bin(state)
+
+
 class PkgConfigTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='pkg-config'):
         super().__init__(name)
