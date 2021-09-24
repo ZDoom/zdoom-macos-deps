@@ -23,6 +23,32 @@ import zipapp
 from .base import *
 
 
+class SingleExeCTarget(MakeTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+        self.options = ()
+
+    def configure(self, state: BuildState):
+        super().configure(state)
+
+        for option in self.options:
+            state.options[option] = None
+
+    def build(self, state: BuildState):
+        c_compiler = state.c_compiler()
+        assert c_compiler
+
+        args = [str(c_compiler), '-O3', '-o', self.name] + state.options.to_list()
+
+        for var in ('CFLAGS', 'LDFLAGS'):
+            args += shlex.split(state.environment[var])
+
+        subprocess.run(args, check=True, cwd=state.build_path)
+
+    def post_build(self, state: BuildState):
+        self.copy_to_bin(state)
+
+
 class BuildCMakeTarget(CMakeTarget):
     def __init__(self, name='cmake'):
         super().__init__(name)
@@ -158,9 +184,10 @@ class P7ZipTarget(CMakeTarget):
         self.copy_to_bin(state, '7za')
 
 
-class PbzxTarget(MakeTarget):
+class PbzxTarget(SingleExeCTarget):
     def __init__(self, name='pbzx'):
         super().__init__(name)
+        self.options = ('pbzx.c', '-lxar', '-llzma')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -169,26 +196,6 @@ class PbzxTarget(MakeTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('pbzx.c')
-
-    def build(self, state: BuildState):
-        c_compiler = state.c_compiler()
-        assert c_compiler
-
-        args = [
-            str(c_compiler),
-            '-O3',
-            'pbzx.c',
-            '-lxar', '-llzma',
-            '-o', self.name
-        ]
-
-        for var in ('CFLAGS', 'LDFLAGS'):
-            args += shlex.split(state.environment[var])
-
-        subprocess.run(args, check=True, cwd=state.build_path)
-
-    def post_build(self, state: BuildState):
-        self.copy_to_bin(state)
 
 
 class PkgConfigTarget(ConfigureMakeDependencyTarget):
@@ -236,9 +243,15 @@ class YasmTarget(ConfigureMakeDependencyTarget):
         return state.has_source_file('libyasm.h')
 
 
-class ZipTarget(MakeTarget):
+class ZipTarget(SingleExeCTarget):
     def __init__(self, name='zip'):
         super().__init__(name)
+        self.options = (
+            '-I.', '-DUNIX', '-DBZIP2_SUPPORT', '-DLARGE_FILE_SUPPORT', '-DUNICODE_SUPPORT',
+            '-DHAVE_DIRENT_H', '-DHAVE_TERMIOS_H', '-lbz2',
+            'crc32.c', 'crypt.c', 'deflate.c', 'fileio.c', 'globals.c', 'trees.c',
+            'ttyio.c', 'unix/unix.c', 'util.c', 'zip.c', 'zipfile.c', 'zipup.c',
+        )
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -248,25 +261,3 @@ class ZipTarget(MakeTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('zip.h')
-
-    def build(self, state: BuildState):
-        c_compiler = state.c_compiler()
-        assert c_compiler
-
-        args = [
-            str(c_compiler),
-            '-O3', '-I.', '-DUNIX',
-            '-DBZIP2_SUPPORT', '-DLARGE_FILE_SUPPORT', '-DUNICODE_SUPPORT',
-            '-DHAVE_DIRENT_H', '-DHAVE_TERMIOS_H',
-            'crc32.c', 'crypt.c', 'deflate.c', 'fileio.c', 'globals.c', 'trees.c',
-            'ttyio.c', 'unix/unix.c', 'util.c', 'zip.c', 'zipfile.c', 'zipup.c',
-            '-lbz2', '-o', 'zip'
-        ]
-
-        for var in ('CFLAGS', 'LDFLAGS'):
-            args += shlex.split(state.environment[var])
-
-        subprocess.run(args, check=True, cwd=state.build_path)
-
-    def post_build(self, state: BuildState):
-        self.copy_to_bin(state)
