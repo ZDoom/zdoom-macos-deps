@@ -23,7 +23,7 @@ import zipapp
 from .base import *
 
 
-class CMakeBuildTarget(CMakeTarget):
+class BuildCMakeTarget(CMakeTarget):
     def __init__(self, name='cmake'):
         super().__init__(name)
 

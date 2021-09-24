@@ -102,7 +102,7 @@ def targets():
         ZstdTarget(),
 
         # Tools
-        CMakeBuildTarget(),
+        BuildCMakeTarget(),
         GmakeTarget(),
         MesonTarget(),
         NasmTarget(),
