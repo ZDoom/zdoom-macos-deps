@@ -207,19 +207,6 @@ class PkgConfigTarget(ConfigureMakeDependencyTarget):
         self.copy_to_bin(state, new_filename=self.name + '.exe')
 
 
-class YasmTarget(ConfigureMakeDependencyTarget):
-    def __init__(self, name='yasm'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz',
-            '3dce6601b495f5b3d45b59f7d2492a340ee7e84b5beca17e48f862502bd5603f')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('libyasm.h')
-
-
 class UnrarTarget(MakeTarget):
     def __init__(self, name='unrar'):
         super().__init__(name)
@@ -234,6 +221,19 @@ class UnrarTarget(MakeTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('rar.hpp')
+
+
+class YasmTarget(ConfigureMakeDependencyTarget):
+    def __init__(self, name='yasm'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz',
+            '3dce6601b495f5b3d45b59f7d2492a340ee7e84b5beca17e48f862502bd5603f')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('libyasm.h')
 
 
 class ZipTarget(MakeTarget):
