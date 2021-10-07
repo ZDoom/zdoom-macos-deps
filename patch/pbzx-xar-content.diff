@@ -1,0 +1,11 @@
+--- a/pbzx.c
++++ b/pbzx.c
+@@ -127,7 +127,7 @@
+             xar_file_t f = xar_file_first(s->xar, i);
+             char* path = NULL;
+             /* Find the Payload file in the archive. */
+-            while (strncmp((path = xar_get_path(f)), "Payload", 7) &&
++            while (strncmp((path = xar_get_path(f)), "Content", 7) &&
+                    (f = xar_file_next(i))) {
+                 free(path);
+             }
