@@ -192,7 +192,8 @@ class PbzxTarget(SingleExeCTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/nrosenstein-stuff/pbzx/archive/refs/tags/v1.0.2.tar.gz',
-            '33db3cf9dc70ae704e1bbfba52c984f4c6dbfd0cc4449fa16408910e22b4fd90')
+            '33db3cf9dc70ae704e1bbfba52c984f4c6dbfd0cc4449fa16408910e22b4fd90',
+            'pbzx-xar-content')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('pbzx.c')
