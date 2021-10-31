@@ -178,10 +178,6 @@ class SladeTarget(CMakeMainTarget):
     def __init__(self, name='slade'):
         super().__init__(name)
 
-        # This should match the actual version of WxWidgets
-        self.os_version['x86_64'] = StrictVersion('10.10')
-        self.sdk_version['x86_64'] = StrictVersion('10.11')
-
     def prepare_source(self, state: BuildState):
         # TODO: support both stable and master branches
         state.checkout_git('https://github.com/sirjuddington/SLADE.git', branch='stable')
