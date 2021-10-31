@@ -461,34 +461,13 @@ class Sdl2Target(CMakeStaticDependencyTarget):
             '65be9ff6004034b5b2ce9927b5a4db1814930f169c4b2dae0a1e4697075f287b',
             patches='sdl2-no-updaterev')
 
-    FRAMEWORKS = ''
-    LINKER_FLAGS = ''
+    FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon' \
+        ' -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback' \
+        ' -framework Foundation -framework IOKit -framework Metal -framework QuartzCore'
+    LINKER_FLAGS = ' -L${libdir} -lSDL2 ' + FRAMEWORKS + os.linesep
 
     def configure(self, state: BuildState):
         state.options['SDL_STATIC_PIC'] = 'YES'
-
-        if not Sdl2Target.FRAMEWORKS:
-            # Need to have uniform settings for x86_64 and arm64 because of linking with Metal framework
-            Sdl2Target.FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon' \
-                ' -framework Cocoa -framework CoreAudio -framework CoreVideo' \
-                ' -framework ForceFeedback -framework Foundation -framework IOKit'
-
-            support_metal = False
-
-            if sdk_version := state.sdk_version():
-                if sdk_version >= StrictVersion('10.11'):
-                    support_metal = True
-
-            if support_metal:
-                Sdl2Target.FRAMEWORKS += ' -weak_framework Metal -weak_framework QuartzCore'
-            else:
-                opts = state.options
-                opts['VIDEO_VULKAN'] = 'NO'
-                opts['VIDEO_METAL'] = 'NO'
-                opts['RENDER_METAL'] = 'NO'
-
-            Sdl2Target.LINKER_FLAGS = ' -L${libdir} -lSDL2 ' + Sdl2Target.FRAMEWORKS + os.linesep
-
         super().configure(state)
 
     def post_build(self, state: BuildState):
