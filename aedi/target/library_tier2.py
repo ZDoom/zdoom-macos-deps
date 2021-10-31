@@ -722,9 +722,6 @@ class WxWidgetsTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='wxwidgets'):
         super().__init__(name)
 
-        self.os_version['x86_64'] = StrictVersion('10.10')
-        self.sdk_version['x86_64'] = StrictVersion('10.11')
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.5/wxWidgets-3.1.5.tar.bz2',
