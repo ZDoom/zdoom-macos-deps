@@ -18,7 +18,6 @@
 
 import os
 import shutil
-from distutils.version import StrictVersion
 from platform import machine
 
 from ..state import BuildState

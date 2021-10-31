@@ -17,7 +17,6 @@
 #
 
 import glob
-from distutils.version import StrictVersion
 
 from .base import *
 
