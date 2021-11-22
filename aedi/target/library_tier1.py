@@ -103,13 +103,12 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.2.3.tar.gz',
-            'b31807cb0f88e97f3096e2b378c9815a6acfdc20b0b14f97936d905b536965c4')
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.2.4.tar.gz',
+            '83cb1dba04c632ede74f0c0717018b062c0e00b639722203b23f77a961afd390')
 
     def configure(self, state: BuildState):
         opts = state.options
-        # TODO: Figure out why private dependencies aren't pulled
-        opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'glib-2.0')
+        opts['CMAKE_EXE_LINKER_FLAGS'] = f'-framework Foundation -L{state.lib_path}'
         opts['DEFAULT_SOUNDFONT'] = 'default.sf2'
         opts['LIB_SUFFIX'] = None
         opts['enable-framework'] = 'NO'
