@@ -5,11 +5,10 @@ on: [push, pull_request]
 jobs:
   test:
     if: "${{ !contains(github.event.head_commit.message, '[skip test]') }}"
-    runs-on: "macos-10.15"
+    runs-on: "macos-11"
     steps:
     - uses: actions/checkout@v1
 
     - name: Run tests
       run: |
-        # Remove SDKROOT when 11.0+ SDK will become the default one
-        SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk ./build.py --target=test-deps
+        ./build.py --target=test-deps
