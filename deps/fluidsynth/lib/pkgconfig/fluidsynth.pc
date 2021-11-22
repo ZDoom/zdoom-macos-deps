@@ -5,7 +5,8 @@ includedir=${prefix}/include
 
 Name: FluidSynth
 Description: Software SoundFont synth
-Version: 2.2.3
+Version: 2.2.4
+Requires.private: glib-2.0 gthread-2.0 sndfile libinstpatch-1.0
 Libs: -L${libdir} -lfluidsynth
 Libs.private: -lgthread-2.0 -lintl -liconv -lglib-2.0 -lintl -liconv -lm -lpcre -lsndfile -lFLAC -lm -lvorbisenc -lvorbis -lm -logg -lopus -lm -linstpatch-1.0 -lgobject-2.0 -lintl -liconv -lffi -lgthread-2.0 -lintl -liconv -lglib-2.0 -lintl -liconv -lm -lpcre -lsndfile -lFLAC -lm -lvorbisenc -lvorbis -lm -logg -lopus -Wl,-framework,CoreAudio,-framework,AudioUnit -Wl,-framework,CoreMIDI,-framework,CoreServices
 Cflags: -I${includedir}
