@@ -15,6 +15,7 @@ jobs:
       env:
           FILTER_REGEX_INCLUDE: .*(\.py|\.md|\.yml)$
           FILTER_REGEX_EXCLUDE: .*/deps/.*
+          VALIDATE_NATURAL_LANGUAGE: false
           VALIDATE_PYTHON_BLACK: false
 
     - name: Bandit
