@@ -1,14 +1,35 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2343,11 +2343,6 @@
+@@ -2449,31 +2449,7 @@
+ listtostr(EXTRA_CFLAGS _EXTRA_CFLAGS)
  set(EXTRA_CFLAGS ${_EXTRA_CFLAGS})
  
- # Compat helpers for the configuration files
--if(NOT CMAKE_HOST_WIN32)
--  # TODO: we need a Windows script, too
--  execute_process(COMMAND sh ${SDL2_SOURCE_DIR}/build-scripts/updaterev.sh
--    WORKING_DIRECTORY ${SDL2_BINARY_DIR})
+-# Compat helpers for the configuration files
+-find_package(Git)
+-if(Git_FOUND)
+-  execute_process(COMMAND
+-    "${GIT_EXECUTABLE}" remote get-url origin
+-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+-    RESULT_VARIABLE GIT_URL_STATUS
+-    OUTPUT_VARIABLE GIT_URL
+-    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+-
+-  execute_process(COMMAND
+-    "${GIT_EXECUTABLE}" rev-list --max-count=1 HEAD~..
+-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+-    RESULT_VARIABLE GIT_REVISION_STATUS
+-    OUTPUT_VARIABLE GIT_REVISION
+-    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+-
+-  if(GIT_URL_STATUS EQUAL 0 OR GIT_REVISION_STATUS EQUAL 0)
+-    set(SDL_REVISION "${GIT_URL}@${GIT_REVISION}")
+-  else()
+-    set(SDL_REVISION "")
+-  endif()
+-else()
+-  set(SDL_REVISION "")
 -endif()
- if(NOT WINDOWS OR CYGWIN OR MINGW)
++set(SDL_REVISION "https://github.com/libsdl-org/SDL.git@2e9821423a237a1206e3c09020778faacfe430be")
  
-   set(prefix ${CMAKE_INSTALL_PREFIX})
+ configure_file("${SDL2_SOURCE_DIR}/include/SDL_revision.h.cmake"
+   "${SDL2_BINARY_DIR}/include/SDL_revision.h")

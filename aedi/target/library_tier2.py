@@ -456,8 +456,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://libsdl.org/release/SDL2-2.0.16.tar.gz',
-            '65be9ff6004034b5b2ce9927b5a4db1814930f169c4b2dae0a1e4697075f287b',
+            'https://libsdl.org/release/SDL2-2.0.18.tar.gz',
+            '94d40cd73dbfa10bb6eadfbc28f355992bb2d6ef6761ad9d4074eff95ee5711c',
             patches='sdl2-no-updaterev')
 
     FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon' \
@@ -487,12 +487,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
         self.update_config_script(state.install_path / 'bin/sdl2-config', update_sdl2_config)
 
         def update_targets_cmake(line: str):
-            if line.startswith('  INTERFACE_LINK_LIBRARIES '):
-                return f'  INTERFACE_LINK_LIBRARIES "{Sdl2Target.FRAMEWORKS}"\n'
-            else:
-                line = line.replace('SDL2::SDL2-static', 'SDL2::SDL2')
-
-            return line
+            libs = '  INTERFACE_LINK_LIBRARIES '
+            return f'{libs}"{Sdl2Target.FRAMEWORKS}"\n' if line.startswith(libs) else line
 
         for suffix in ('', '-release'):
             file_path = state.install_path / f'lib/cmake/SDL2/SDL2Targets{suffix}.cmake'
