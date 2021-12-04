@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget SDL2::SDL2 SDL2::SDL2main)
+foreach(_expectedTarget SDL2::SDL2-static SDL2::SDL2main)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -50,12 +50,12 @@ if(_IMPORT_PREFIX STREQUAL "/")
   set(_IMPORT_PREFIX "")
 endif()
 
-# Create imported target SDL2::SDL2
-add_library(SDL2::SDL2 STATIC IMPORTED)
+# Create imported target SDL2::SDL2-static
+add_library(SDL2::SDL2-static STATIC IMPORTED)
 
-set_target_properties(SDL2::SDL2 PROPERTIES
+set_target_properties(SDL2::SDL2-static PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include/SDL2"
-  INTERFACE_LINK_LIBRARIES "-framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit -weak_framework Metal -weak_framework QuartzCore"
+  INTERFACE_LINK_LIBRARIES "-framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit -framework Metal -framework QuartzCore"
 )
 
 # Create imported target SDL2::SDL2main
