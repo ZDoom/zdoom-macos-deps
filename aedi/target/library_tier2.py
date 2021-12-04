@@ -458,7 +458,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
         state.download_source(
             'https://libsdl.org/release/SDL2-2.0.18.tar.gz',
             '94d40cd73dbfa10bb6eadfbc28f355992bb2d6ef6761ad9d4074eff95ee5711c',
-            patches='sdl2-no-updaterev')
+            patches=('sdl2-no-updaterev', 'sdl2-no-gamecontroller+corehaptic'))
 
     FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon' \
         ' -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback' \
