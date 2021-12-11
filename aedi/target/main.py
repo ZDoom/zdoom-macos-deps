@@ -66,6 +66,13 @@ class CMakeMainTarget(CMakeTarget):
         opts['FORCE_CROSSCOMPILE'] = 'YES'
         opts['IMPORT_EXECUTABLES'] = state.native_build_path / 'ImportExecutables.cmake'
 
+    @staticmethod
+    def _force_openal_soft(state: BuildState):
+        # Explicit OpenAL configuration to avoid selection of Apple's framework
+        opts = state.options
+        opts['OPENAL_INCLUDE_DIR'] = state.include_path / 'AL'
+        opts['OPENAL_LIBRARY'] = state.lib_path / 'libopenal.a'
+
 
 class ZDoomBaseTarget(CMakeMainTarget):
     def __init__(self, name=None):
@@ -76,11 +83,9 @@ class ZDoomBaseTarget(CMakeMainTarget):
         opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'fluidsynth', 'libmpg123')
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
-        # Explicit OpenAL configuration to avoid selection of Apple's framework
-        opts['OPENAL_INCLUDE_DIR'] = state.include_path / 'AL'
-        opts['OPENAL_LIBRARY'] = state.lib_path / 'libopenal.a'
 
         self._force_cross_compilation(state)
+        self._force_openal_soft(state)
 
         super().configure(state)
 
@@ -396,12 +401,8 @@ class YQuake2Target(CMakeMainTarget):
         state.checkout_git('https://github.com/yquake2/yquake2.git')
 
     def configure(self, state: BuildState):
-        opts = state.options
-        opts['SDL2_LIBRARY'] = state.run_pkg_config('--libs', 'SDL2')
-        # Explicit OpenAL configuration to avoid selection of Apple's framework
-        opts['OPENAL_INCLUDE_DIR'] = state.include_path / 'AL'
-        opts['OPENAL_LIBRARY'] = state.lib_path / 'libopenal.a'
-
+        state.options['SDL2_LIBRARY'] = state.run_pkg_config('--libs', 'SDL2')
+        self._force_openal_soft(state)
         super().configure(state)
 
     def post_build(self, state: BuildState):
