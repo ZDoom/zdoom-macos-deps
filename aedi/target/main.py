@@ -386,3 +386,23 @@ class QuakespasmTarget(MakeMainTarget):
         opts['USE_CODEC_UMX'] = '1'
         # Add main() alias to workaround executable linking without macOS launcher
         opts['COMMON_LIBS'] = '-framework OpenGL -Wl,-alias -Wl,_SDL_main -Wl,_main'
+
+
+class YQuake2Target(CMakeMainTarget):
+    def __init__(self, name='yquake2'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/yquake2/yquake2.git')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['SDL2_LIBRARY'] = state.run_pkg_config('--libs', 'SDL2')
+        # Explicit OpenAL configuration to avoid selection of Apple's framework
+        opts['OPENAL_INCLUDE_DIR'] = state.include_path / 'AL'
+        opts['OPENAL_LIBRARY'] = state.lib_path / 'libopenal.a'
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        shutil.copytree(state.build_path / 'release', state.install_path, dirs_exist_ok=True)
