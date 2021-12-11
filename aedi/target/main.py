@@ -406,4 +406,7 @@ class YQuake2Target(CMakeMainTarget):
         super().configure(state)
 
     def post_build(self, state: BuildState):
+        if state.xcode:
+            return
+
         shutil.copytree(state.build_path / 'release', state.install_path, dirs_exist_ok=True)
