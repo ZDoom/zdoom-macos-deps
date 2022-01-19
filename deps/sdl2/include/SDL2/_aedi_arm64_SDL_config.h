@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -251,6 +251,7 @@
 
 /* #undef HAVE_MMDEVICEAPI_H */
 /* #undef HAVE_AUDIOCLIENT_H */
+/* #undef HAVE_TPCSHRD_H */
 /* #undef HAVE_SENSORSAPI_H */
 
 /* #undef HAVE_XINPUT_GAMEPAD_EX */
@@ -315,6 +316,7 @@
 /* #undef SDL_AUDIO_DRIVER_WINMM */
 /* #undef SDL_AUDIO_DRIVER_OS2 */
 /* #undef SDL_AUDIO_DRIVER_VITA */
+/* #undef SDL_AUDIO_DRIVER_PSP */
 
 /* Enable various input drivers */
 /* #undef SDL_INPUT_LINUXEV */
@@ -337,6 +339,7 @@
 /* #undef SDL_JOYSTICK_EMSCRIPTEN */
 #define SDL_JOYSTICK_VIRTUAL 1
 /* #undef SDL_JOYSTICK_VITA */
+/* #undef SDL_JOYSTICK_PSP */
 /* #undef SDL_HAPTIC_DUMMY */
 /* #undef SDL_HAPTIC_LINUX */
 #define SDL_HAPTIC_IOKIT 1
@@ -367,6 +370,7 @@
 /* #undef SDL_THREAD_WINDOWS */
 /* #undef SDL_THREAD_OS2 */
 /* #undef SDL_THREAD_VITA */
+/* #undef SDL_THREAD_PSP */
 
 /* Enable various timer systems */
 /* #undef SDL_TIMER_HAIKU */
@@ -375,6 +379,7 @@
 /* #undef SDL_TIMER_WINDOWS */
 /* #undef SDL_TIMER_OS2 */
 /* #undef SDL_TIMER_VITA */
+/* #undef SDL_TIMER_PSP */
 
 /* Enable various video drivers */
 /* #undef SDL_VIDEO_DRIVER_ANDROID */
@@ -395,6 +400,7 @@
 /* #undef SDL_VIDEO_DRIVER_OS2 */
 /* #undef SDL_VIDEO_DRIVER_QNX */
 /* #undef SDL_VIDEO_DRIVER_RISCOS */
+/* #undef SDL_VIDEO_DRIVER_PSP */
 
 /* #undef SDL_VIDEO_DRIVER_KMSDRM */
 /* #undef SDL_VIDEO_DRIVER_KMSDRM_DYNAMIC */
@@ -439,6 +445,7 @@
 /* #undef SDL_VIDEO_RENDER_DIRECTFB */
 #define SDL_VIDEO_RENDER_METAL 1
 /* #undef SDL_VIDEO_RENDER_VITA_GXM */
+/* #undef SDL_VIDEO_RENDER_PSP */
 
 /* Enable OpenGL support */
 #define SDL_VIDEO_OPENGL 1
@@ -469,6 +476,7 @@
 /* #undef SDL_POWER_EMSCRIPTEN */
 /* #undef SDL_POWER_HARDWIRED */
 /* #undef SDL_POWER_VITA */
+/* #undef SDL_POWER_PSP */
 
 /* Enable system filesystem support */
 /* #undef SDL_FILESYSTEM_ANDROID */
@@ -481,6 +489,7 @@
 /* #undef SDL_FILESYSTEM_EMSCRIPTEN */
 /* #undef SDL_FILESYSTEM_OS2 */
 /* #undef SDL_FILESYSTEM_VITA */
+/* #undef SDL_FILESYSTEM_PSP */
 
 /* Enable assembly routines */
 #define SDL_ASSEMBLY_ROUTINES 1
