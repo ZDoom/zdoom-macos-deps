@@ -1,6 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2451,7 +2451,7 @@
+@@ -2528,7 +2528,7 @@
  
  # Compat helpers for the configuration files
  find_package(Git)
@@ -9,7 +9,7 @@
    execute_process(COMMAND
      "${GIT_EXECUTABLE}" remote get-url origin
      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-@@ -2472,7 +2472,7 @@
+@@ -2549,7 +2549,7 @@
      set(SDL_REVISION "")
    endif()
  else()
