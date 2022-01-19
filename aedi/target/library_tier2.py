@@ -456,8 +456,8 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://libsdl.org/release/SDL2-2.0.18.tar.gz',
-            '94d40cd73dbfa10bb6eadfbc28f355992bb2d6ef6761ad9d4074eff95ee5711c',
+            'https://libsdl.org/release/SDL2-2.0.20.tar.gz',
+            'c56aba1d7b5b0e7e999e4a7698c70b63a3394ff9704b5f6e1c57e0c16f04dd06',
             patches=('sdl2-no-updaterev', 'sdl2-no-gamecontroller+corehaptic'))
 
     FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon' \
@@ -491,7 +491,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
             return f'{libs}"{Sdl2Target.FRAMEWORKS}"\n' if line.startswith(libs) else line
 
         for suffix in ('', '-release'):
-            file_path = state.install_path / f'lib/cmake/SDL2/SDL2Targets{suffix}.cmake'
+            file_path = state.install_path / f'lib/cmake/SDL2/SDL2staticTargets{suffix}.cmake'
             self.update_text_file(file_path, update_targets_cmake)
 
     @staticmethod
