@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #
-# Copyright 2013-2021 The Khronos Group Inc.
+# Copyright 2013-2022 The Khronos Group Inc.
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -19,12 +19,13 @@ from interfacedocgenerator import InterfaceDocGenerator
 from generator import write
 from spirvcapgenerator import SpirvCapabilityOutputGenerator
 from hostsyncgenerator import HostSynchronizationOutputGenerator
+from formatsgenerator import FormatsOutputGenerator
 from pygenerator import PyOutputGenerator
 from rubygenerator import RubyOutputGenerator
 from reflib import logDiag, logWarn, setLogFile
 from reg import Registry
 from validitygenerator import ValidityOutputGenerator
-from vkconventions import VulkanConventions
+from apiconventions import APIConventions
 
 
 # Simple timer functions
@@ -78,6 +79,9 @@ def makeGenOpts(args):
     # SPIR-V capabilities / features to emit (list of extensions & capabilities)
     emitSpirv = args.emitSpirv
 
+    # Vulkan Formats to emit
+    emitFormats = args.emitFormats
+
     # Features to include (list of features)
     features = args.feature
 
@@ -98,20 +102,21 @@ def makeGenOpts(args):
 
     # Descriptive names for various regexp patterns used to select
     # versions and extensions
-    allSpirv = allFeatures = allExtensions = r'.*'
+    allFormats = allSpirv = allFeatures = allExtensions = r'.*'
 
     # Turn lists of names/patterns into matching regular expressions
     addExtensionsPat     = makeREstring(extensions, None)
     removeExtensionsPat  = makeREstring(removeExtensions, None)
     emitExtensionsPat    = makeREstring(emitExtensions, allExtensions)
     emitSpirvPat         = makeREstring(emitSpirv, allSpirv)
+    emitFormatsPat       = makeREstring(emitFormats, allFormats)
     featuresPat          = makeREstring(features, allFeatures)
 
     # Copyright text prefixing all headers (list of strings).
     # The SPDX formatting below works around constraints of the 'reuse' tool
     prefixStrings = [
         '/*',
-        '** Copyright 2015-2021 The Khronos Group Inc.',
+        '** Copyright 2015-2022 The Khronos Group Inc.',
         '**',
         '** SPDX' + '-License-Identifier: Apache-2.0',
         '*/',
@@ -131,7 +136,9 @@ def makeGenOpts(args):
     protectFile = protect
 
     # An API style conventions object
-    conventions = VulkanConventions()
+    conventions = APIConventions()
+
+    defaultAPIName = conventions.xml_api_name
 
     # API include files for spec and ref pages
     # Overwrites include subdirectories in spec source tree
@@ -147,7 +154,7 @@ def makeGenOpts(args):
             filename          = 'timeMarker',
             directory         = directory,
             genpath           = genpath,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = featuresPat,
@@ -163,8 +170,8 @@ def makeGenOpts(args):
             expandEnumerants  = False)
         ]
 
-    # Python representation of API information, used by scripts that
-    # don't need to load the full XML.
+    # Python and Ruby representations of API information, used by scripts
+    # that do not need to load the full XML.
     genOpts['api.py'] = [
           PyOutputGenerator,
           DocGeneratorOptions(
@@ -172,7 +179,7 @@ def makeGenOpts(args):
             filename          = 'api.py',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = featuresPat,
@@ -183,8 +190,6 @@ def makeGenOpts(args):
             reparentEnums     = False)
         ]
 
-    # Ruby representation of API information, used by scripts that
-    # don't need to load the full XML.
     genOpts['api.rb'] = [
           RubyOutputGenerator,
           DocGeneratorOptions(
@@ -192,7 +197,7 @@ def makeGenOpts(args):
             filename          = 'api.rb',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = featuresPat,
@@ -216,7 +221,7 @@ def makeGenOpts(args):
             filename          = 'timeMarker',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = featuresPat,
@@ -236,7 +241,7 @@ def makeGenOpts(args):
             filename          = 'timeMarker',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = featuresPat,
@@ -258,7 +263,7 @@ def makeGenOpts(args):
             filename          = 'timeMarker',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = None,
@@ -277,7 +282,7 @@ def makeGenOpts(args):
             filename          = 'timeMarker',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = featuresPat,
@@ -295,7 +300,7 @@ def makeGenOpts(args):
             filename          = 'timeMarker',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = featuresPat,
@@ -304,6 +309,26 @@ def makeGenOpts(args):
             removeExtensions  = removeExtensionsPat,
             emitExtensions    = emitExtensionsPat,
             emitSpirv         = emitSpirvPat,
+            reparentEnums     = False)
+        ]
+
+    # Used to generate various format chapter tables
+    genOpts['formatsinc'] = [
+          FormatsOutputGenerator,
+          DocGeneratorOptions(
+            conventions       = conventions,
+            filename          = 'timeMarker',
+            directory         = directory,
+            genpath           = None,
+            apiname           = defaultAPIName,
+            profile           = None,
+            versions          = featuresPat,
+            emitversions      = featuresPat,
+            defaultExtensions = None,
+            addExtensions     = addExtensionsPat,
+            removeExtensions  = removeExtensionsPat,
+            emitExtensions    = emitExtensionsPat,
+            emitFormats       = emitFormatsPat,
             reparentEnums     = False)
         ]
 
@@ -389,7 +414,7 @@ def makeGenOpts(args):
             filename          = headername,
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = None,
@@ -430,7 +455,7 @@ def makeGenOpts(args):
             filename          = 'vulkan_core.h',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = featuresPat,
@@ -464,7 +489,7 @@ def makeGenOpts(args):
             filename          = 'vulkan10.h',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = 'VK_VERSION_1_0',
             emitversions      = 'VK_VERSION_1_0',
@@ -486,6 +511,83 @@ def makeGenOpts(args):
             misracppstyle     = misracppstyle)
         ]
 
+    # Video header target - combines all video extension dependencies into a
+    # single header, at present.
+    genOpts['vk_video.h'] = [
+          COutputGenerator,
+          CGeneratorOptions(
+            conventions       = conventions,
+            filename          = 'vk_video.h',
+            directory         = directory,
+            genpath           = None,
+            apiname           = 'vulkan',
+            profile           = None,
+            versions          = None,
+            emitversions      = None,
+            defaultExtensions = defaultExtensions,
+            addExtensions     = addExtensionsPat,
+            removeExtensions  = removeExtensionsPat,
+            emitExtensions    = emitExtensionsPat,
+            prefixText        = prefixStrings + vkPrefixStrings,
+            genFuncPointers   = True,
+            protectFile       = protectFile,
+            protectFeature    = False,
+            protectProto      = '#ifndef',
+            protectProtoStr   = 'VK_NO_PROTOTYPES',
+            apicall           = '',
+            apientry          = '',
+            apientryp         = '',
+            alignFuncParam    = 48,
+            misracstyle       = misracstyle,
+            misracppstyle     = misracppstyle)
+    ]
+
+    # Video extension 'Std' interfaces, each in its own header files
+    # These are not Vulkan extensions, or a part of the Vulkan API at all,
+    # but are treated in a similar fashion for generation purposes.
+    #
+    # Each element of the videoStd[] array is an 'extension' name defining
+    # an iterface, and is also the basis for the generated header file name.
+
+    videoStd = [
+        'vulkan_video_codecs_common',
+        'vulkan_video_codec_h264std',
+        'vulkan_video_codec_h264std_decode',
+        'vulkan_video_codec_h264std_encode',
+        'vulkan_video_codec_h265std',
+        'vulkan_video_codec_h265std_decode',
+        'vulkan_video_codec_h265std_encode',
+    ]
+
+    addExtensionRE = makeREstring(videoStd)
+    for codec in videoStd:
+        headername = f'{codec}.h'
+
+        # Consider all of the codecs 'extensions', but only emit this one
+        emitExtensionRE = makeREstring([codec])
+
+        opts = CGeneratorOptions(
+            conventions       = conventions,
+            filename          = headername,
+            directory         = directory,
+            genpath           = None,
+            apiname           = defaultAPIName,
+            profile           = None,
+            versions          = None,
+            emitversions      = None,
+            defaultExtensions = None,
+            addExtensions     = addExtensionRE,
+            removeExtensions  = None,
+            emitExtensions    = emitExtensionRE,
+            prefixText        = prefixStrings + vkPrefixStrings,
+            genFuncPointers   = False,
+            protectFile       = protectFile,
+            protectFeature    = False,
+            alignFuncParam    = 48,
+            )
+
+        genOpts[headername] = [ COutputGenerator, opts ]
+
     # Unused - vulkan11.h target.
     # It is possible to generate a header with just the Vulkan 1.0 +
     # extension interfaces defined, but since the promoted KHR extensions
@@ -498,7 +600,7 @@ def makeGenOpts(args):
             filename          = 'vulkan11.h',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = '^VK_VERSION_1_[01]$',
             emitversions      = '^VK_VERSION_1_[01]$',
@@ -527,7 +629,7 @@ def makeGenOpts(args):
             filename          = 'alias.h',
             directory         = directory,
             genpath           = None,
-            apiname           = 'vulkan',
+            apiname           = defaultAPIName,
             profile           = None,
             versions          = featuresPat,
             emitversions      = featuresPat,
@@ -578,6 +680,8 @@ def genTarget(args):
         logDiag('* options.addExtensions     =', options.addExtensions)
         logDiag('* options.removeExtensions  =', options.removeExtensions)
         logDiag('* options.emitExtensions    =', options.emitExtensions)
+        logDiag('* options.emitSpirv         =', options.emitSpirv)
+        logDiag('* options.emitFormats       =', options.emitFormats)
 
         gen = createGenerator(errFile=errWarn,
                               warnFile=errWarn,
@@ -596,7 +700,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-defaultExtensions', action='store',
-                        default='vulkan',
+                        default=APIConventions().xml_api_name,
                         help='Specify a single class of extensions to add to targets')
     parser.add_argument('-extension', action='append',
                         default=[],
@@ -610,6 +714,9 @@ if __name__ == '__main__':
     parser.add_argument('-emitSpirv', action='append',
                         default=[],
                         help='Specify a SPIR-V extension or capability to emit in targets')
+    parser.add_argument('-emitFormats', action='append',
+                        default=[],
+                        help='Specify Vulkan Formats to emit in targets')
     parser.add_argument('-feature', action='append',
                         default=[],
                         help='Specify a core API feature name or names to add to targets')

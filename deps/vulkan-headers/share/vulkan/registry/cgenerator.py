@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -i
 #
-# Copyright 2013-2021 The Khronos Group Inc.
+# Copyright 2013-2022 The Khronos Group Inc.
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -188,7 +188,7 @@ class COutputGenerator(OutputGenerator):
         OutputGenerator.beginFeature(self, interface, emit)
         # C-specific
         # Accumulate includes, defines, types, enums, function pointer typedefs,
-        # end function prototypes separately for this feature. They're only
+        # end function prototypes separately for this feature. They are only
         # printed in endFeature().
         self.sections = {section: [] for section in self.ALL_SECTIONS}
         self.feature_not_empty = False
@@ -234,7 +234,11 @@ class COutputGenerator(OutputGenerator):
 
     def appendSection(self, section, text):
         "Append a definition to the specified section"
-        # self.sections[section].append('SECTION: ' + section + '\n')
+
+        if section is None:
+            self.logMsg('error', 'Missing section in appendSection (probably a <type> element missing its \'category\' attribute. Text:', text)
+            exit(1)
+
         self.sections[section].append(text)
         self.feature_not_empty = True
 
@@ -267,7 +271,7 @@ class COutputGenerator(OutputGenerator):
             else:
                 # Replace <apientry /> tags with an APIENTRY-style string
                 # (from self.genOpts). Copy other text through unchanged.
-                # If the resulting text is an empty string, don't emit it.
+                # If the resulting text is an empty string, do not emit it.
                 body = noneStr(typeElem.text)
                 for elem in typeElem:
                     if elem.tag == 'apientry':
@@ -306,8 +310,8 @@ class COutputGenerator(OutputGenerator):
 
     def typeMayAlias(self, typeName):
         if not self.may_alias:
-            # First time we've asked if a type may alias.
-            # So, let's populate the set of all names of types that may.
+            # First time we have asked if a type may alias.
+            # So, populate the set of all names of types that may.
 
             # Everyone with an explicit mayalias="true"
             self.may_alias = set(typeName
