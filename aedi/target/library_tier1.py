@@ -74,9 +74,8 @@ class FlacTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://ftp.osuosl.org/pub/xiph/releases/flac/flac-1.3.3.tar.xz',
-            '213e82bd716c9de6db2f98bcadbc4c24c7e2efe8c75939a1a84e28539c4e1748',
-            patches='flac-add-cmake')
+            'https://ftp.osuosl.org/pub/xiph/releases/flac/flac-1.3.4.tar.xz',
+            '8ff0607e75a322dd7cd6ec48f4f225471404ae2730d0ea945127b1355155e737')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -84,7 +83,6 @@ class FlacTarget(CMakeStaticDependencyTarget):
         opts['BUILD_CXXLIBS'] = 'NO'
         opts['BUILD_EXAMPLES'] = 'NO'
         opts['OGG_PACKAGE'] = 'ogg'
-        opts['VERSION'] = '1.3.3'
 
         super().configure(state)
 
@@ -92,8 +90,6 @@ class FlacTarget(CMakeStaticDependencyTarget):
         super().post_build(state)
 
         shutil.copytree(state.install_path / 'share/FLAC/cmake', state.install_path / 'lib/cmake/FLAC')
-        shutil.copytree(state.install_path / 'share/pkgconfig', state.install_path / 'lib/pkgconfig')
-
         self.keep_module_target(state, 'FLAC::FLAC')
 
 
