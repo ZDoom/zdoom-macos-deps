@@ -4,7 +4,7 @@ if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 2.5)
    message(FATAL_ERROR "CMake >= 2.6.0 required")
 endif()
 cmake_policy(PUSH)
-cmake_policy(VERSION 2.6...3.17)
+cmake_policy(VERSION 2.6...3.19)
 #----------------------------------------------------------------
 # Generated CMake target import file.
 #----------------------------------------------------------------
@@ -56,7 +56,7 @@ add_library(FLAC::FLAC STATIC IMPORTED)
 set_target_properties(FLAC::FLAC PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "\$<\$<NOT:\$<BOOL:NO>>:FLAC__NO_DLL>"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:\$<\$<BOOL:1>:m>>;Ogg::ogg"
+  INTERFACE_LINK_LIBRARIES "\$<\$<BOOL:1>:m>;Ogg::ogg"
 )
 
 # Create imported target FLAC::flacapp

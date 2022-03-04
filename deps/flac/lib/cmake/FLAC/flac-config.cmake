@@ -24,11 +24,8 @@ endmacro()
 
 ####################################################################################
 
-if(TRUE)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
-    include(CMakeFindDependencyMacro)
-    find_dependency(OGG)
-endif()
+include(CMakeFindDependencyMacro)
+find_dependency(Ogg)
 
 include("${CMAKE_CURRENT_LIST_DIR}/targets.cmake")
 
