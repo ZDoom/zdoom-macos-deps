@@ -99,8 +99,8 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.2.5.tar.gz',
-            '9037e703617f91c4c36039a5059e0f624164799d856af715bcd8a23c07ba03b8')
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.2.6.tar.gz',
+            'ca90fe675cacd9a7b442662783c4e7fa0e1fd638b28d64105a4e3fe0f618d20f')
 
     def configure(self, state: BuildState):
         opts = state.options
