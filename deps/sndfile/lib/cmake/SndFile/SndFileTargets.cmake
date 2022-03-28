@@ -4,7 +4,7 @@ if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 2.5)
    message(FATAL_ERROR "CMake >= 2.6.0 required")
 endif()
 cmake_policy(PUSH)
-cmake_policy(VERSION 2.6...3.17)
+cmake_policy(VERSION 2.6...3.19)
 #----------------------------------------------------------------
 # Generated CMake target import file.
 #----------------------------------------------------------------
@@ -55,7 +55,7 @@ add_library(SndFile::sndfile STATIC IMPORTED)
 
 set_target_properties(SndFile::sndfile PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:\$<\$<BOOL:1>:m>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:Vorbis::vorbisenc>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:FLAC::FLAC>>;\$<LINK_ONLY:\$<\$<AND:\$<BOOL:OFF>,\$<BOOL:ON>,\$<BOOL:OFF>>:Speex::Speex>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:Opus::opus>>"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:\$<\$<BOOL:1>:m>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:Vorbis::vorbisenc>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:FLAC::FLAC>>;\$<LINK_ONLY:\$<\$<AND:\$<BOOL:OFF>,\$<BOOL:ON>,\$<BOOL:OFF>>:Speex::Speex>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:Opus::opus>>;\$<LINK_ONLY:\$<\$<BOOL:NO>:MPG123::libmpg123>>;\$<LINK_ONLY:\$<\$<BOOL:NO>:Lame::Lame>>"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)

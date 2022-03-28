@@ -1,9 +1,10 @@
-set(SndFile_VERSION 1.0.31)
+set(SndFile_VERSION 1.1.0)
 set(SndFile_VERSION_MAJOR 1)
-set(SndFile_VERSION_MINOR 0)
-set(SndFile_VERSION_PATCH 31)
+set(SndFile_VERSION_MINOR 1)
+set(SndFile_VERSION_PATCH 0)
 
 set (SndFile_WITH_EXTERNAL_LIBS 1)
+set (SndFile_WITH_MPEG 0)
 
 
 ####### Expanded from @PACKAGE_INIT@ by configure_package_config_file() #######
@@ -38,6 +39,11 @@ if (SndFile_WITH_EXTERNAL_LIBS AND NOT NO)
 	find_dependency (Vorbis)
 	find_dependency (FLAC)
 	find_dependency (Opus)
+endif ()
+
+if (SndFile_WITH_MPEG AND NOT NO)
+	find_dependency (Lame)
+	find_dependency (MPG123)
 endif ()
 
 include (${CMAKE_CURRENT_LIST_DIR}/SndFileTargets.cmake)
