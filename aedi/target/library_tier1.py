@@ -449,13 +449,14 @@ class SndFileTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2',
-            'a8cfb1c09ea6e90eff4ca87322d4168cdbe5035cb48717b40bf77e751cc02163')
+            'https://github.com/libsndfile/libsndfile/releases/download/1.1.0/libsndfile-1.1.0.tar.xz',
+            '0f98e101c0f7c850a71225fb5feaf33b106227b3d331333ddc9bacee190bcf41')
 
     def configure(self, state: BuildState):
         opts = state.options
         opts['BUILD_REGTEST'] = 'NO'
         opts['BUILD_TESTING'] = 'NO'
+        opts['ENABLE_MPEG'] = 'NO'
 
         super().configure(state)
 
