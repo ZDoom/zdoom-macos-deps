@@ -284,8 +284,8 @@ class MoltenVKTarget(MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.1.7.tar.gz',
-            '657f8ccb5d51323c55ba64fa91da2e5ddb7326189b648f60f5e7323ddc21c42f')
+            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.1.8.tar.gz',
+            'f316c814d0cb6d60a0e8ad164d8cafa64010dee9dd41748b038b6b67fa40f08a')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('MoltenVKPackaging.xcodeproj')
