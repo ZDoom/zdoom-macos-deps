@@ -360,8 +360,8 @@ class OpenALTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://openal-soft.org/openal-releases/openal-soft-1.21.1.tar.bz2',
-            'c8ad767e9a3230df66756a21cc8ebf218a9d47288f2514014832204e666af5d8')
+            'https://openal-soft.org/openal-releases/openal-soft-1.22.0.tar.bz2',
+            'ce0f9300de3de7bc737b0be2a995619446e493521d070950eea53eddd533fc9b')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -380,7 +380,7 @@ class OpenALTarget(CMakeStaticDependencyTarget):
             link_libs = '  INTERFACE_LINK_LIBRARIES '
             return f'{link_libs}"{OpenALTarget.FRAMEWORKS}"\n' if line.startswith(link_libs) else line
 
-        config_path = state.install_path / 'lib/cmake/OpenAL/OpenALConfig.cmake'
+        config_path = state.install_path / 'lib/cmake/OpenAL/OpenALTargets.cmake'
         self.update_text_file(config_path, update_cmake_libs)
 
     @staticmethod
