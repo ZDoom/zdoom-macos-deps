@@ -472,8 +472,6 @@ class Sdl2Target(CMakeStaticDependencyTarget):
     def post_build(self, state: BuildState):
         super().post_build(state)
 
-        self.make_platform_header(state, 'SDL2/SDL_config.h')
-
         def update_sdl2_config(_: Path, line: str):
             if line.startswith('#    '):
                 return None
