@@ -1,9 +1,9 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1872,7 +1872,7 @@
+@@ -1902,7 +1902,7 @@
            #import <Foundation/Foundation.h>
            #import <CoreHaptics/CoreHaptics.h>
-           int main() {}" HAVE_FRAMEWORK_COREHAPTICS)
+           int main() { return 0; }" HAVE_FRAMEWORK_COREHAPTICS)
 -      if(HAVE_FRAMEWORK_GAMECONTROLLER AND HAVE_FRAMEWORK_COREHAPTICS)
 +      if(0)
          # Only enable MFI if we also have CoreHaptics to ensure rumble works
