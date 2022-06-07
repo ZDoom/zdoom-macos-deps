@@ -4,7 +4,7 @@ if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 2.5)
    message(FATAL_ERROR "CMake >= 2.6.0 required")
 endif()
 cmake_policy(PUSH)
-cmake_policy(VERSION 2.6...3.17)
+cmake_policy(VERSION 2.6...3.19)
 #----------------------------------------------------------------
 # Generated CMake target import file.
 #----------------------------------------------------------------
@@ -54,6 +54,7 @@ endif()
 add_library(ZMusic::zmusiclite STATIC IMPORTED)
 
 set_target_properties(ZMusic::zmusiclite PROPERTIES
+  INTERFACE_COMPILE_DEFINITIONS "\$<\$<STREQUAL:\$<TARGET_PROPERTY:ZMusic::zmusiclite,TYPE>,STATIC_LIBRARY>:ZMUSIC_STATIC>"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
   INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:>;\$<LINK_ONLY:sndfile>;\$<LINK_ONLY:mpg123>;\$<LINK_ONLY:libfluidsynth>;\$<LINK_ONLY:>;\$<LINK_ONLY:>;\$<LINK_ONLY:\$<LINK_ONLY:ZLIB::ZLIB>>;\$<LINK_ONLY:ZLIB::ZLIB>"
 )
