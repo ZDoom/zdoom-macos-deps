@@ -673,8 +673,8 @@ class VulkanLoaderTarget(CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
-            'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v1.3.211.tar.gz',
-            '1d889f093a85700f38be5d0047694c4d8c59f99e277fbe2dc781969c8f9537be')
+            'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v1.3.216.tar.gz',
+            '006de2ee5bad4ef797ce4c25df166e09f2e5dd136e99cb507da313aa86770c00')
 
     def configure(self, state: BuildState):
         state.options['BUILD_STATIC_LOADER'] = 'YES'
