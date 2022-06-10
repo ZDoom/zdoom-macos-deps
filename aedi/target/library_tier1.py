@@ -300,7 +300,9 @@ class MoltenVKTarget(MakeTarget):
         super().configure(state)
 
     def build(self, state: BuildState):
-        args = ('./fetchDependencies', '--macos', '-v')
+        args = ['./fetchDependencies', '--macos']
+        if state.verbose:
+            args.append('-v')
         subprocess.check_call(args, cwd=state.build_path)
 
         super().build(state)
