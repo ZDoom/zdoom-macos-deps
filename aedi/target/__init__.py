@@ -18,6 +18,7 @@
 
 from .library_tier1 import *
 from .library_tier2 import *
+from .library_tier3 import *
 from .main import *
 from .special import *
 from .tools import *
