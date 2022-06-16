@@ -99,9 +99,11 @@ def targets():
         VulkanHeadersTarget(),
         VulkanLoaderTarget(),
         WebpTarget(),
-        WxWidgetsTarget(),
         XmpTarget(),
         ZstdTarget(),
+
+        # Obsolete libraries without binaries
+        WxWidgetsTarget(),
 
         # Tools
         BuildCMakeTarget(),
