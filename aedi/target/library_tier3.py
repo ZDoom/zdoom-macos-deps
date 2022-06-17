@@ -59,6 +59,27 @@ class FreeImageTarget(MakeTarget):
         self.write_pc_file(state, version='3.18.0', libs='-lfreeimage -lc++')
 
 
+class FtglTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='ftgl'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://downloads.sourceforge.net/project/ftgl/FTGL%20Source/2.1.3~rc5/ftgl-2.1.3-rc5.tar.gz',
+            '5458d62122454869572d39f8aa85745fc05d5518001bcefa63bd6cbb8d26565b',
+            patches='ftgl-support-arm64')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('ftgl.pc.in')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['--with-glut-inc'] = '/dev/null'
+        opts['--with-glut-lib'] = '/dev/null'
+
+        super().configure(state)
+
+
 class WxWidgetsTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='wxwidgets'):
         super().__init__(name)

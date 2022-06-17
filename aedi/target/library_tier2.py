@@ -134,27 +134,6 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
         self.update_text_file(cmake_module, update_linker_flags)
 
 
-class FtglTarget(ConfigureMakeStaticDependencyTarget):
-    def __init__(self, name='ftgl'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://downloads.sourceforge.net/project/ftgl/FTGL%20Source/2.1.3~rc5/ftgl-2.1.3-rc5.tar.gz',
-            '5458d62122454869572d39f8aa85745fc05d5518001bcefa63bd6cbb8d26565b',
-            patches='ftgl-support-arm64')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('ftgl.pc.in')
-
-    def configure(self, state: BuildState):
-        opts = state.options
-        opts['--with-glut-inc'] = '/dev/null'
-        opts['--with-glut-lib'] = '/dev/null'
-
-        super().configure(state)
-
-
 class GlewTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='glew'):
         super().__init__(name)

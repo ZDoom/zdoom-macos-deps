@@ -74,7 +74,6 @@ def targets():
         ExpatTarget(),
         FmtTarget(),
         FreeTypeTarget(),
-        FtglTarget(),
         GlewTarget(),
         HarfBuzzTarget(),
         LuaTarget(),
@@ -102,6 +101,7 @@ def targets():
 
         # Obsolete libraries without binaries
         FreeImageTarget(),
+        FtglTarget(),
         WxWidgetsTarget(),
 
         # Tools
