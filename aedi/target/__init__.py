@@ -73,7 +73,6 @@ def targets():
         DumbTarget(),
         ExpatTarget(),
         FmtTarget(),
-        FreeImageTarget(),
         FreeTypeTarget(),
         FtglTarget(),
         GlewTarget(),
@@ -102,6 +101,7 @@ def targets():
         ZstdTarget(),
 
         # Obsolete libraries without binaries
+        FreeImageTarget(),
         WxWidgetsTarget(),
 
         # Tools
