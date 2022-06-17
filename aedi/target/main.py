@@ -178,29 +178,6 @@ class WadExtTarget(CMakeMainTarget):
         state.checkout_git('https://github.com/coelckers/wadext.git')
 
 
-class SladeTarget(CMakeMainTarget):
-    def __init__(self, name='slade'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        # TODO: support both stable and master branches
-        state.checkout_git('https://github.com/sirjuddington/SLADE.git', branch='stable')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('SLADE-osx.icns')
-
-    def configure(self, state: BuildState):
-        opts = state.options
-        opts['CMAKE_C_FLAGS'] = opts['CMAKE_CXX_FLAGS'] = f'-DNOCURL -I{state.include_path}'
-        opts['CMAKE_EXE_LINKER_FLAGS'] = \
-            state.run_pkg_config('--libs', 'fluidsynth', 'libtiff-4', 'openal', 'vorbisfile')
-        opts['wxWidgets_USE_STATIC'] = 'YES'
-        opts['WX_GTK3'] = 'NO'
-        opts['SFML_STATIC'] = 'YES'
-
-        super().configure(state)
-
-
 class PrBoomPlusTarget(CMakeMainTarget):
     def __init__(self, name='prboom-plus'):
         super().__init__(name)

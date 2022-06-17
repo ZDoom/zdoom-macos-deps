@@ -32,7 +32,6 @@ def targets():
         RazeTarget(),
         AccTarget(),
         WadExtTarget(),
-        SladeTarget(),
         PrBoomPlusTarget(),
         DsdaDoom(),
         ChocolateDoomTarget(),
