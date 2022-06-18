@@ -71,7 +71,6 @@ def targets():
         # Libraries needed for other targets
         BrotliTarget(),
         DumbTarget(),
-        ExpatTarget(),
         FmtTarget(),
         FreeTypeTarget(),
         GlewTarget(),
@@ -100,6 +99,7 @@ def targets():
         ZstdTarget(),
 
         # Obsolete libraries without binaries
+        ExpatTarget(),
         FreeImageTarget(),
         FtglTarget(),
         WxWidgetsTarget(),
