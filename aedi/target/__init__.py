@@ -74,7 +74,6 @@ def targets():
         FmtTarget(),
         FreeTypeTarget(),
         HarfBuzzTarget(),
-        LuaTarget(),
         LzmaTarget(),
         MadTarget(),
         MikmodTarget(),
@@ -102,6 +101,7 @@ def targets():
         FreeImageTarget(),
         FtglTarget(),
         GlewTarget(),
+        LuaTarget(),
         WxWidgetsTarget(),
 
         # Tools
