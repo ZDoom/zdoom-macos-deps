@@ -73,7 +73,6 @@ def targets():
         DumbTarget(),
         FmtTarget(),
         FreeTypeTarget(),
-        GlewTarget(),
         HarfBuzzTarget(),
         LuaTarget(),
         LzmaTarget(),
@@ -102,6 +101,7 @@ def targets():
         ExpatTarget(),
         FreeImageTarget(),
         FtglTarget(),
+        GlewTarget(),
         WxWidgetsTarget(),
 
         # Tools

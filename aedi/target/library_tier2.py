@@ -116,46 +116,6 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
         self.update_text_file(cmake_module, update_linker_flags)
 
 
-class GlewTarget(CMakeStaticDependencyTarget):
-    def __init__(self, name='glew'):
-        super().__init__(name)
-        self.src_root = 'build/cmake'
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz',
-            'd4fc82893cfb00109578d0a1a2337fb8ca335b3ceccf97b97e5cc7f08e4353e1')
-
-    def configure(self, state: BuildState):
-        state.options['BUILD_UTILS'] = 'NO'
-        super().configure(state)
-
-    LINKER_FLAGS = '-framework OpenGL'
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        def update_linker_flags(line: str):
-            link_var = '  INTERFACE_LINK_LIBRARIES '
-
-            if line.startswith(link_var):
-                return f'{link_var}"{GlewTarget.LINKER_FLAGS}"\n'
-
-            return line
-
-        cmake_module = state.install_path / 'lib/cmake/glew/glew-targets.cmake'
-        self.update_text_file(cmake_module, update_linker_flags)
-
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        libs = 'Libs:'
-
-        if line.startswith(libs):
-            return libs + ' -L${libdir} -lGLEW ' + GlewTarget.LINKER_FLAGS + os.linesep
-
-        return line
-
-
 class HarfBuzzTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='harfbuzz'):
         super().__init__(name)
