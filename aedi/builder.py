@@ -270,6 +270,26 @@ class Builder(object):
                 # Do symlink cleanup only once
                 cleanup = False
 
+        Builder._remove_empty_directories(state.prefix_path)
+
+    @staticmethod
+    def _remove_empty_directories(path: Path) -> int:
+        content: typing.List[str] = os.listdir(path)
+        count = len(content)
+        removed = 0
+
+        for entry in content:
+            abspath = path / entry
+
+            if os.path.isdir(abspath):
+                removed += Builder._remove_empty_directories(abspath)
+
+        if count == removed:
+            os.rmdir(path)
+            removed = 1
+
+        return removed
+
     def _detect_target(self):
         for name, target in self._targets.items():
             if target.detect(self._state):
