@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: OpenAL
 Description: OpenAL is a cross-platform 3D audio API
 Requires: 
-Version: 1.22.0
+Version: 1.22.1
 Libs: -L${libdir} -lopenal 
 Libs.private: -framework ApplicationServices -framework AudioToolbox -framework AudioUnit -framework CoreAudio
 Cflags: -I${includedir} -I${includedir}/AL -DAL_LIBTYPE_STATIC
