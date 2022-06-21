@@ -41,8 +41,6 @@
 
 # Libraries, tier 2
 /brotli/bin/
-/lua/bin/
-/lua/man/
 /lzma/bin/
 /png/bin/png-fix-itxt
 /png/bin/pngfix
@@ -55,8 +53,6 @@
 /webp/**/libwebpdemux.*
 !/vulkan-headers/share
 /vulkan-loader/loader/
-/wxwidgets/bin/wxrc-3.1
-/wxwidgets/lib/wx/config/
 
 # Tools
 /cmake/bin/*
