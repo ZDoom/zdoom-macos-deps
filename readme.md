@@ -2,6 +2,10 @@
 
 This repository contains all binary dependencies required to build macOS application bundles of [ZDoom-derived](https://zdoom.org) source ports. A few other projects are supported as well, with lesser priority though.
 
+[![Build Targets](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/build.yml/badge.svg)](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/build.yml)
+[![Lint Code](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/lint.yml/badge.svg)](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/lint.yml)
+[![Test Libraries](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/test.yml/badge.svg)](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/test.yml)
+
 ## Usage
 
 Download source code, and build a target
@@ -39,5 +43,5 @@ Xcode 12.2 or newer is required in order to build universal binaries. Launch Xco
 
 ## Common information
 
-Libraries were built using 10.9 SDK (Intel x64_64) and 11.0 SDK (ARM64).  
-macOS 10.9 SDK was obtained from Xcode 6.4. macOS 11.0 SDK was obtained from Xcode 12.2.
+Libraries were built using 10.12 SDK (Intel x86_64) and 11.0 SDK (ARM64).  
+macOS 10.12 SDK was obtained from Xcode 8.3.3. macOS 11.0 SDK was obtained from Xcode 12.2.
