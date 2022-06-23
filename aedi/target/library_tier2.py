@@ -425,32 +425,6 @@ class Sdl2NetTarget(ConfigureMakeStaticDependencyTarget):
         return state.has_source_file('SDL2_net.pc.in')
 
 
-class Sdl2TtfTarget(CMakeStaticDependencyTarget):
-    def __init__(self, name='sdl2_ttf'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.15.tar.gz',
-            'a9eceb1ad88c1f1545cd7bd28e7cbc0b2c14191d40238f531a15b01b1b22cd33',
-            patches='sdl2_ttf-fix-cmake')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('SDL2_ttf.pc.in')
-
-    def configure(self, state: BuildState):
-        state.options['VERSION'] = '2.0.15'
-        super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-        shutil.move(state.install_path / 'SDL2_ttf.framework/Resources', state.install_path / 'lib/cmake/SDL2_ttf')
-
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        return line + 'Requires.private: freetype2\n' if line.startswith('Requires:') else line
-
-
 class SodiumTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='sodium'):
         super().__init__(name)
