@@ -77,6 +77,33 @@ class FreeImageTarget(MakeTarget):
         self.write_pc_file(state, version='3.18.0', libs='-lfreeimage -lc++')
 
 
+class FreeTypeTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='freetype'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://downloads.sourceforge.net/project/freetype/freetype2/2.11.0/freetype-2.11.0.tar.xz',
+            '8bee39bd3968c4804b70614a0a3ad597299ad0e824bc8aad5ce8aaf48067bde7')
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        bin_path = state.install_path / 'bin'
+        os.makedirs(bin_path)
+        shutil.copy(state.patch_path / 'freetype-config', bin_path)
+
+        def update_linker_flags(line: str):
+            link_flags = '-lbrotlicommon -lbrotlidec -lbz2 -lfreetype -lharfbuzz -lpng16 -lz ' \
+                         '-lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText'
+            link_var = '  INTERFACE_LINK_LIBRARIES '
+
+            return f'{link_var}"{link_flags}"\n' if line.startswith(link_var) else line
+
+        cmake_module = state.install_path / 'lib/cmake/freetype/freetype-config.cmake'
+        self.update_text_file(cmake_module, update_linker_flags)
+
+
 class FtglTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='ftgl'):
         super().__init__(name)

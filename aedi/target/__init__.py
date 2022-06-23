@@ -72,7 +72,6 @@ def targets():
         BrotliTarget(),
         DumbTarget(),
         FmtTarget(),
-        FreeTypeTarget(),
         HarfBuzzTarget(),
         LzmaTarget(),
         MadTarget(),
@@ -97,6 +96,7 @@ def targets():
         # Obsolete libraries without binaries
         ExpatTarget(),
         FreeImageTarget(),
+        FreeTypeTarget(),
         FtglTarget(),
         GlewTarget(),
         LuaTarget(),
