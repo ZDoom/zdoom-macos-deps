@@ -69,7 +69,6 @@ def targets():
         ZMusicTarget(),
 
         # Libraries needed for other targets
-        BrotliTarget(),
         DumbTarget(),
         FmtTarget(),
         LzmaTarget(),
@@ -93,6 +92,7 @@ def targets():
         ZstdTarget(),
 
         # Obsolete libraries without binaries
+        BrotliTarget(),
         ExpatTarget(),
         FreeImageTarget(),
         FreeTypeTarget(),
