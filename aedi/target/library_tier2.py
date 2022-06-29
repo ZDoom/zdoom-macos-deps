@@ -417,16 +417,12 @@ class WebpTarget(CMakeStaticDependencyTarget):
             '2fc8bbde9f97f2ab403c0224fb9ca62b2e6852cbc519e91ceaa7c153ffd88a0c')
 
     def configure(self, state: BuildState):
-        opts = state.options
-        opts['WEBP_BUILD_ANIM_UTILS'] = 'NO'
-        opts['WEBP_BUILD_CWEBP'] = 'NO'
-        opts['WEBP_BUILD_DWEBP'] = 'NO'
-        opts['WEBP_BUILD_GIF2WEBP'] = 'NO'
-        opts['WEBP_BUILD_IMG2WEBP'] = 'NO'
-        opts['WEBP_BUILD_VWEBP'] = 'NO'
-        opts['WEBP_BUILD_WEBPINFO'] = 'NO'
-        opts['WEBP_BUILD_WEBPMUX'] = 'NO'
-        opts['WEBP_BUILD_EXTRAS'] = 'NO'
+        option_suffices = (
+            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'VWEBP', 'WEBPINFO', 'WEBPMUX'
+        )
+
+        for suffix in option_suffices:
+            state.options[f'WEBP_BUILD_{suffix}'] = 'NO'
 
         super().configure(state)
 
