@@ -413,12 +413,13 @@ class WebpTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.2.0.tar.gz',
-            '2fc8bbde9f97f2ab403c0224fb9ca62b2e6852cbc519e91ceaa7c153ffd88a0c')
+            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.2.2.tar.gz',
+            '7656532f837af5f4cec3ff6bafe552c044dc39bf453587bd5b77450802f4aee6',
+            patches='webp-fix-cmake')
 
     def configure(self, state: BuildState):
         option_suffices = (
-            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'VWEBP', 'WEBPINFO', 'WEBPMUX'
+            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'LIBWEBPMUX', 'VWEBP', 'WEBPINFO',
         )
 
         for suffix in option_suffices:
