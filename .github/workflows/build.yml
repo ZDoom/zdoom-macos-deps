@@ -1,3 +1,4 @@
+---
 name: Build Targets
 
 on: [push, pull_request]
@@ -11,26 +12,27 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - {
+          - {
             name: "GZDoom"
           }
-        - {
+          - {
             name: "Raze"
           }
-        - {
+          - {
             name: "PrBoom-Plus"
           }
 
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
 
-    - name: Build
-      run: |
-        ./build.py --target ${{ matrix.config.name }}
+      - name: Build
+        run: |
+          ./build.py --target ${{ matrix.config.name }}
 
-    - name: List Build Directory
-      if: always()
-      shell: bash
-      run: |
-        git status
-        ls -lR .
+      - name: List Build Directory
+        if: always()
+        shell: bash
+        run: |
+          git status
+          ls -lR .
+...
