@@ -411,13 +411,13 @@ class CMakeTarget(BuildTarget):
                 args.append('-DCMAKE_SYSTEM_NAME=Darwin')
                 args.append('-DCMAKE_SYSTEM_PROCESSOR=' + 'aarch64' if architecture == 'arm64' else architecture)
 
+            sdk_path = state.sdk_path()
+            if sdk_path:
+                args.append(f'-DCMAKE_OSX_SYSROOT={sdk_path}')
+
         os_version = state.os_version()
         if os_version:
             args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + str(os_version))
-
-        sdk_path = state.sdk_path()
-        if sdk_path:
-            args.append(f'-DCMAKE_OSX_SYSROOT={sdk_path}')
 
         args += state.options.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(state.source / self.src_root)
