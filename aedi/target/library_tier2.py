@@ -302,33 +302,35 @@ class Sdl2ImageTarget(CMakeStaticDependencyTarget):
         shutil.move(str(bad_cmake_files_path), str(good_cmake_files_path))
 
 
-class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
+class Sdl2MixerTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_mixer'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.4.tar.gz',
-            'b4cf5a382c061cd75081cf246c2aa2f9df8db04bdda8dcdc6b6cca55bede2419',
-            patches='sdl2_mixer-fix-fluidsynth')
+            'https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.6.0/SDL2_mixer-2.6.0.tar.gz',
+            'f94a4d3e878cb191c386a714be561838240012250fe17d496f4ff4341d59a391')
 
     def configure(self, state: BuildState):
-        state.options['--enable-music-mod-mikmod'] = 'yes'
-
-        # Set LDFLAGS explicitly to help with FluidSynth and FLAC detection
-        state.environment['LDFLAGS'] = state.run_pkg_config('--libs', 'fluidsynth')
+        opts = state.options
+        opts['SDL2MIXER_DEPS_SHARED'] = 'NO'
+        opts['SDL2MIXER_MP3_MPG123'] = 'YES'
+        opts['SDL2MIXER_OPUS_SHARED'] = 'NO'
+        opts['SDL2MIXER_SAMPLES'] = 'NO'
+        opts['SDL2MIXER_VORBIS'] = 'VORBISFILE'
+        opts['SDL2MIXER_VORBIS_VORBISFILE_SHARED'] = 'NO'
+        opts['SDL2MIXER_MOD_XMP'] = 'YES'
 
         super().configure(state)
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('SDL2_mixer.pc.in')
+    def post_build(self, state: BuildState):
+        super().post_build(state)
 
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        if line.startswith('Requires:'):
-            return line + 'Requires.private: fluidsynth libmikmod libmodplug libmpg123 opusfile vorbisfile\n'
-
-        return line
+        self.write_pc_file(state, filename='SDL2_mixer.pc', name='SDL2_mixer',
+                           description='mixer library for Simple DirectMedia Layer',
+                           version='2.6.0', requires='sdl2 >= 2.0.9',
+                           requires_private='flac fluidsynth libmodplug libmpg123 libxmp opusfile vorbisfile',
+                           libs='-lSDL2_mixer', cflags='-I${includedir}/SDL2')
 
 
 class Sdl2NetTarget(ConfigureMakeStaticDependencyTarget):
