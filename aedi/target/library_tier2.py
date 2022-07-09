@@ -276,21 +276,30 @@ class Sdl2Target(CMakeStaticDependencyTarget):
         return line
 
 
-class Sdl2ImageTarget(ConfigureMakeStaticDependencyTarget):
+class Sdl2ImageTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_image'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.5.tar.gz',
-            'bdd5f6e026682f7d7e1be0b6051b209da2f402a2dd8bd1c4bd9c25ad263108d0')
+            'https://github.com/libsdl-org/SDL_image/releases/download/release-2.6.0/SDL2_image-2.6.0.tar.gz',
+            '611c862f40de3b883393aabaa8d6df350aa3ae4814d65030972e402edae85aaa')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('SDL2_image.pc.in')
+    def post_build(self, state: BuildState):
+        super().post_build(state)
 
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        return line + 'Requires.private: libwebp\n' if line.startswith('Requires:') else line
+        self.write_pc_file(state, filename='SDL2_image.pc', name='SDL2_image',
+                           description='image loading library for Simple DirectMedia Layer',
+                           version='2.6.0', requires='sdl2 >= 2.0.9', requires_private='libwebp',
+                           libs='-lSDL2_image', cflags='-I${includedir}/SDL2')
+
+        bad_cmake_files_path = state.install_path / 'SDL2_image.framework/Resources'
+        good_cmake_files_path = state.install_path / 'lib/cmake'
+
+        if good_cmake_files_path.exists():
+            shutil.rmtree(bad_cmake_files_path)
+
+        shutil.move(str(bad_cmake_files_path), str(good_cmake_files_path))
 
 
 class Sdl2MixerTarget(ConfigureMakeStaticDependencyTarget):
