@@ -84,7 +84,6 @@ def targets():
         Sdl2MixerTarget(),
         Sdl2NetTarget(),
         SodiumTarget(),
-        TiffTarget(),
         VulkanHeadersTarget(),
         VulkanLoaderTarget(),
         WebpTarget(),
@@ -102,6 +101,7 @@ def targets():
         LuaTarget(),
         Sdl2TtfTarget(),
         SfmlTarget(),
+        TiffTarget(),
         WxWidgetsTarget(),
 
         # Tools

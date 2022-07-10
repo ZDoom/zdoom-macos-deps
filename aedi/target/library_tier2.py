@@ -359,39 +359,6 @@ class SodiumTarget(ConfigureMakeStaticDependencyTarget):
         return state.has_source_file('libsodium.pc.in')
 
 
-class TiffTarget(CMakeStaticDependencyTarget):
-    def __init__(self, name='tiff'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://download.osgeo.org/libtiff/tiff-4.3.0.tar.gz',
-            '0e46e5acb087ce7d1ac53cf4f56a09b221537fc86dfc5daaad1c2e89e1b37ac8',
-            patches='tiff-remove-useless')
-
-    def configure(self, state: BuildState):
-        opts = state.options
-        opts['cxx'] = 'NO'
-        opts['lzma'] = 'YES'
-
-        super().configure(state)
-
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        version = 'Version:'
-        cflags = 'Cflags:'
-        libs = 'Libs:'
-
-        if line.startswith(version):
-            return version + ' 4.3.0\n'
-        elif line.startswith(cflags):
-            return cflags + ' -I${includedir}\nRequires.private: libjpeg liblzma libwebp libzstd zlib\n'
-        elif line.startswith(libs):
-            return libs + ' -L${libdir} -ltiff\n'
-
-        return line
-
-
 class VulkanHeadersTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='vulkan-headers'):
         super().__init__(name)
