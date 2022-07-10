@@ -88,7 +88,6 @@ def targets():
         VulkanLoaderTarget(),
         WebpTarget(),
         XmpTarget(),
-        ZstdTarget(),
 
         # Obsolete libraries without binaries
         BrotliTarget(),
@@ -103,6 +102,7 @@ def targets():
         SfmlTarget(),
         TiffTarget(),
         WxWidgetsTarget(),
+        ZstdTarget(),
 
         # Tools
         BuildCMakeTarget(),
