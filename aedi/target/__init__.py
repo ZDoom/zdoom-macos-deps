@@ -86,7 +86,6 @@ def targets():
         SodiumTarget(),
         VulkanHeadersTarget(),
         VulkanLoaderTarget(),
-        WebpTarget(),
         XmpTarget(),
 
         # Obsolete libraries without binaries
@@ -101,6 +100,7 @@ def targets():
         Sdl2TtfTarget(),
         SfmlTarget(),
         TiffTarget(),
+        WebpTarget(),
         WxWidgetsTarget(),
         ZstdTarget(),
 
