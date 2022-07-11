@@ -7,7 +7,7 @@ Name: SDL2_image
 Description: image loading library for Simple DirectMedia Layer
 Version: 2.6.0
 Requires: sdl2 >= 2.0.9
-Requires.private: libwebp
+Requires.private: 
 Libs: -L${libdir} -lSDL2_image
 Libs.private: 
 Cflags: -I${includedir} -I${includedir}/SDL2
