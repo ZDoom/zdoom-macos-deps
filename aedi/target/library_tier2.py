@@ -290,7 +290,7 @@ class Sdl2ImageTarget(CMakeStaticDependencyTarget):
 
         self.write_pc_file(state, filename='SDL2_image.pc', name='SDL2_image',
                            description='image loading library for Simple DirectMedia Layer',
-                           version='2.6.0', requires='sdl2 >= 2.0.9', requires_private='libwebp',
+                           version='2.6.0', requires='sdl2 >= 2.0.9',
                            libs='-lSDL2_image', cflags='-I${includedir}/SDL2')
 
         bad_cmake_files_path = state.install_path / 'SDL2_image.framework/Resources'
