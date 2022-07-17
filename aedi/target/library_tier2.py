@@ -308,8 +308,8 @@ class Sdl2MixerTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.6.0/SDL2_mixer-2.6.0.tar.gz',
-            'f94a4d3e878cb191c386a714be561838240012250fe17d496f4ff4341d59a391')
+            'https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.6.1/SDL2_mixer-2.6.1.tar.gz',
+            'bc5c7b85f297e5f3cb34c99c366a4746922fc41365b15fd78a164dda71a861a3')
 
     def configure(self, state: BuildState):
         opts = state.options
