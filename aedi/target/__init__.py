@@ -118,6 +118,7 @@ def targets():
         ZipTarget(),
 
         # Special
+        BuildPrefix(),
         CleanAllTarget(),
         CleanDepsTarget(),
         DownloadCMakeTarget(),

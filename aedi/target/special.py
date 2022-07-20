@@ -24,6 +24,11 @@ from ..state import BuildState
 from .base import BuildTarget, Target
 
 
+class BuildPrefix(Target):
+    def __init__(self, name='build-prefix'):
+        super().__init__(name)
+
+
 class CleanTarget(Target):
     def __init__(self, name=None):
         super().__init__(name)
