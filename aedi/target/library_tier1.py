@@ -335,15 +335,14 @@ class Mpg123Target(CMakeStaticDependencyTarget):
         state.download_source(
             'https://www.mpg123.de/download/mpg123-1.30.1.tar.bz2',
             '1b20c9c751bea9be556749bd7f97cf580f52ed11f2540756e9af26ae036e4c59',
-            patches='mpg123-fix-cmake')
+            patches=('mpg123-arm64-fpu', 'mpg123-no-syn123'))
 
     def configure(self, state: BuildState):
-        state.options['CMAKE_EXE_LINKER_FLAGS'] = '-framework AudioUnit'
-        super().configure(state)
+        opts = state.options
+        opts['BUILD_LIBOUT123'] = 'NO'
+        opts['BUILD_PROGRAMS'] = 'NO'
 
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-        self.keep_module_target(state, 'MPG123::libmpg123')
+        super().configure(state)
 
 
 class OggTarget(CMakeStaticDependencyTarget):

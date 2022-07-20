@@ -27,9 +27,7 @@
 /iconv/lib/libcharset.a
 /jpeg-turbo/bin/
 /jpeg-turbo/lib/pkgconfig/libturbojpeg.pc
-/mpg123/bin/
-/mpg123/**/*out123.*
-/mpg123/**/*syn123.*
+/mpg123/lib/pkgconfig/libsyn123.pc
 /opusfile/lib/libopusurl.a
 /opusfile/lib/pkgconfig/opusurl.pc
 /pcre/bin/pcregrep
