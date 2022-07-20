@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget MPG123::libmpg123 MPG123::libout123 MPG123::libsyn123 MPG123::mpg123 MPG123::out123 MPG123::mpg123-id3dump MPG123::mpg123-strip)
+foreach(_expectedTarget MPG123::libmpg123)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -57,34 +57,6 @@ set_target_properties(MPG123::libmpg123 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
   INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:\$<\$<BOOL:1>:m>>;\$<LINK_ONLY:\$<\$<BOOL:>:shlwapi>>"
 )
-
-# Create imported target MPG123::libout123
-add_library(MPG123::libout123 STATIC IMPORTED)
-
-set_target_properties(MPG123::libout123 PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:\$<TARGET_NAME_IF_EXISTS:defaultmodule>>;\$<LINK_ONLY:\$<\$<BOOL:1>:dl>>;\$<LINK_ONLY:\$<\$<BOOL:>:shlwapi>>"
-)
-
-# Create imported target MPG123::libsyn123
-add_library(MPG123::libsyn123 STATIC IMPORTED)
-
-set_target_properties(MPG123::libsyn123 PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:\$<\$<BOOL:>:shlwapi>>"
-)
-
-# Create imported target MPG123::mpg123
-add_executable(MPG123::mpg123 IMPORTED)
-
-# Create imported target MPG123::out123
-add_executable(MPG123::out123 IMPORTED)
-
-# Create imported target MPG123::mpg123-id3dump
-add_executable(MPG123::mpg123-id3dump IMPORTED)
-
-# Create imported target MPG123::mpg123-strip
-add_executable(MPG123::mpg123-strip IMPORTED)
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
   message(FATAL_ERROR "This file relies on consumers using CMake 2.8.12 or greater.")
