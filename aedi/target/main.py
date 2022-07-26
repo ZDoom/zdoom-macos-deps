@@ -182,6 +182,14 @@ class WadExtTarget(CMakeSingleExeMainTarget):
         state.checkout_git('https://github.com/ZDoom/wadext.git')
 
 
+class ZdbspTarget(CMakeSingleExeMainTarget):
+    def __init__(self, name='zdbsp'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/ZDoom/zdbsp.git')
+
+
 class PrBoomPlusTarget(CMakeMainTarget):
     def __init__(self, name='prboom-plus'):
         super().__init__(name)
