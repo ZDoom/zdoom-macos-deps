@@ -121,7 +121,7 @@ class GZDoomTarget(ZDoomVulkanBaseTarget):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
-        state.checkout_git('https://github.com/coelckers/gzdoom.git')
+        state.checkout_git('https://github.com/ZDoom/gzdoom.git')
 
 
 class QZDoomTarget(ZDoomVulkanBaseTarget):
@@ -129,7 +129,7 @@ class QZDoomTarget(ZDoomVulkanBaseTarget):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
-        state.checkout_git('https://github.com/madame-rachelle/qzdoom.git')
+        state.checkout_git('https://github.com/ZDoom/qzdoom.git')
 
 
 class LZDoomTarget(ZDoomBaseTarget):
@@ -157,7 +157,7 @@ class RazeTarget(ZDoomVulkanBaseTarget):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
-        state.checkout_git('https://github.com/coelckers/Raze.git')
+        state.checkout_git('https://github.com/ZDoom/Raze.git')
 
 
 class AccTarget(CMakeMainTarget):
@@ -166,7 +166,7 @@ class AccTarget(CMakeMainTarget):
         self.outputs = ('acc',)
 
     def prepare_source(self, state: BuildState):
-        state.checkout_git('https://github.com/rheit/acc.git')
+        state.checkout_git('https://github.com/ZDoom/acc.git')
 
 
 class WadExtTarget(CMakeMainTarget):
@@ -175,7 +175,7 @@ class WadExtTarget(CMakeMainTarget):
         self.outputs = (name,)
 
     def prepare_source(self, state: BuildState):
-        state.checkout_git('https://github.com/coelckers/wadext.git')
+        state.checkout_git('https://github.com/ZDoom/wadext.git')
 
 
 class PrBoomPlusTarget(CMakeMainTarget):
