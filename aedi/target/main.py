@@ -74,6 +74,12 @@ class CMakeMainTarget(CMakeTarget):
         opts['OPENAL_LIBRARY'] = state.lib_path / 'libopenal.a'
 
 
+class CMakeSingleExeMainTarget(CMakeMainTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+        self.outputs = (name,)
+
+
 class ZDoomBaseTarget(CMakeMainTarget):
     def __init__(self, name=None):
         super().__init__(name)
@@ -160,19 +166,17 @@ class RazeTarget(ZDoomVulkanBaseTarget):
         state.checkout_git('https://github.com/ZDoom/Raze.git')
 
 
-class AccTarget(CMakeMainTarget):
+class AccTarget(CMakeSingleExeMainTarget):
     def __init__(self, name='acc'):
         super().__init__(name)
-        self.outputs = ('acc',)
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/ZDoom/acc.git')
 
 
-class WadExtTarget(CMakeMainTarget):
+class WadExtTarget(CMakeSingleExeMainTarget):
     def __init__(self, name='wadext'):
         super().__init__(name)
-        self.outputs = (name,)
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/ZDoom/wadext.git')
