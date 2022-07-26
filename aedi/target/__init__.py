@@ -33,6 +33,7 @@ def targets():
         AccTarget(),
         WadExtTarget(),
         ZdbspTarget(),
+        ZDRayTarget(),
         PrBoomPlusTarget(),
         DsdaDoom(),
         ChocolateDoomTarget(),

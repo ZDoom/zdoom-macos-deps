@@ -190,6 +190,14 @@ class ZdbspTarget(CMakeSingleExeMainTarget):
         state.checkout_git('https://github.com/ZDoom/zdbsp.git')
 
 
+class ZDRayTarget(CMakeSingleExeMainTarget):
+    def __init__(self, name='zdray'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/ZDoom/ZDRay.git')
+
+
 class PrBoomPlusTarget(CMakeMainTarget):
     def __init__(self, name='prboom-plus'):
         super().__init__(name)
