@@ -4,7 +4,7 @@ if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 2.5)
    message(FATAL_ERROR "CMake >= 2.6.0 required")
 endif()
 cmake_policy(PUSH)
-cmake_policy(VERSION 2.6...3.17)
+cmake_policy(VERSION 2.6...3.19)
 #----------------------------------------------------------------
 # Generated CMake target import file.
 #----------------------------------------------------------------
@@ -53,7 +53,7 @@ endif()
 add_library(png_static STATIC IMPORTED)
 
 set_target_properties(png_static PROPERTIES
-  INTERFACE_LINK_LIBRARIES "/Volumes/ramdisk/zdoom-macos-deps/prefix/lib/libz.a"
+  INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
