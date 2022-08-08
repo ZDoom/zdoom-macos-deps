@@ -177,6 +177,12 @@ class PngTarget(CMakeStaticDependencyTarget):
 
     def post_build(self, state: BuildState):
         super().post_build(state)
+
+        def update_cmake_libs(line: str):
+            link_libs = '  INTERFACE_LINK_LIBRARIES '
+            return f'{link_libs}"ZLIB::ZLIB"\n' if line.startswith(link_libs) else line
+
+        self.update_text_file(state.install_path / 'lib/libpng/libpng16.cmake', update_cmake_libs)
         self.update_config_script(state.install_path / 'bin/libpng16-config')
 
 
