@@ -148,8 +148,8 @@ class NinjaTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/ninja-build/ninja/archive/v1.10.2.tar.gz',
-            'ce35865411f0490368a8fc383f29071de6690cbadc27704734978221f25e2bed')
+            'https://github.com/ninja-build/ninja/archive/refs/tags/v1.11.0.tar.gz',
+            '3c6ba2e66400fe3f1ae83deb4b235faf3137ec20bd5b08c29bfc368db143e4c6')
 
     def configure(self, state: BuildState):
         state.options['BUILD_TESTING'] = 'NO'
