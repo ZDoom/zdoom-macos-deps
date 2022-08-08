@@ -142,7 +142,7 @@ class NasmTarget(ConfigureMakeDependencyTarget):
         return state.has_source_file('nasm.txt')
 
 
-class NinjaTarget(MakeTarget):
+class NinjaTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='ninja'):
         super().__init__(name)
 
@@ -151,20 +151,9 @@ class NinjaTarget(MakeTarget):
             'https://github.com/ninja-build/ninja/archive/v1.10.2.tar.gz',
             'ce35865411f0490368a8fc383f29071de6690cbadc27704734978221f25e2bed')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('src/ninja.cc')
-
-    def build(self, state: BuildState):
-        cmdlines = (
-            ('python3', './configure.py', '--verbose'),
-            ('ninja', '--verbose'),
-        )
-
-        for args in cmdlines:
-            subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
-
-    def post_build(self, state: BuildState):
-        self.copy_to_bin(state)
+    def configure(self, state: BuildState):
+        state.options['BUILD_TESTING'] = 'NO'
+        super().configure(state)
 
 
 class P7ZipTarget(CMakeTarget):
