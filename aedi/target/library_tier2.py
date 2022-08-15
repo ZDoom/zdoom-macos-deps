@@ -372,8 +372,8 @@ class VulkanHeadersTarget(CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
-            'https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.3.216.tar.gz',
-            '93f9a70ed9e956f3e0a1b41b71b6d030428cc3509e7e2b38d0ea6ba89b09f71e')
+            'https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.3.224.tar.gz',
+            '8829272058455c6ba393df66b9fac3ae3617eb0df48c860e225ceb1622fa7700')
 
 
 class VulkanLoaderTarget(CMakeStaticDependencyTarget):
