@@ -387,7 +387,10 @@ class VulkanLoaderTarget(CMakeStaticDependencyTarget):
             '006de2ee5bad4ef797ce4c25df166e09f2e5dd136e99cb507da313aa86770c00')
 
     def configure(self, state: BuildState):
-        state.options['BUILD_STATIC_LOADER'] = 'YES'
+        opts = state.options
+        opts['BUILD_STATIC_LOADER'] = 'YES'
+        opts['CMAKE_INSTALL_SYSCONFDIR'] = '/usr/local/etc'
+
         super().configure(state)
 
 
