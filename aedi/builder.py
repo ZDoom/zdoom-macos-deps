@@ -51,6 +51,12 @@ class Builder(object):
 
         state.platform = self._platforms[0]
 
+        if arguments.temp_path:
+            state.temp_path = Path(arguments.temp_path).absolute()
+
+        state.environment['TMPDIR'] = str(state.temp_path) + os.sep
+        os.makedirs(state.temp_path, exist_ok=True)
+
         if arguments.source_path:
             state.source_path = Path(arguments.source_path).absolute()
 
@@ -315,6 +321,7 @@ class Builder(object):
                            help='path to store downloaded and checked out source code')
         group.add_argument('--build-path', metavar='path', help='target build path')
         group.add_argument('--output-path', metavar='path', help='output path for main targets')
+        group.add_argument('--temp-path', metavar='path', help='path to temporary files directory')
         group.add_argument('--sdk-path-x64', metavar='path', help='path to macOS SDK for x86_64')
         group.add_argument('--sdk-path-arm', metavar='path', help='path to macOS SDK for ARM64')
         group.add_argument('--os-version-x64', metavar='version', help='macOS deployment version for x86_64')

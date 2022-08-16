@@ -40,6 +40,7 @@ class BuildState:
         self.lib_path = self.prefix_path / 'lib'
         self.patch_path = self.root_path / 'patch'
         self.source_path = self.root_path / 'source'
+        self.temp_path = self.root_path / 'temp'
 
         self.source = Path()
         self.external_source = True
