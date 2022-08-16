@@ -58,6 +58,8 @@ class Builder(object):
             self._target = self._targets[arguments.target]
             state.source = state.source_path / self._target.name
             state.external_source = False
+
+            os.makedirs(state.source_path, exist_ok=True)
         else:
             assert arguments.source
             state.source = Path(arguments.source).absolute()
