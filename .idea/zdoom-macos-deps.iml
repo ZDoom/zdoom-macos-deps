@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/prefix" />
       <excludeFolder url="file://$MODULE_DIR$/sdk" />
       <excludeFolder url="file://$MODULE_DIR$/source" />
+      <excludeFolder url="file://$MODULE_DIR$/temp" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
