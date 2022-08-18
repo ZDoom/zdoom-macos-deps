@@ -72,6 +72,10 @@ class Builder(object):
             state.external_source = True
             self._detect_target()
 
+        for target in self._targets.values():
+            if target != self._target:
+                target.initialize(state)
+
         del self._targets
 
         if arguments.build_path:

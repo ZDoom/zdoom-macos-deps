@@ -48,6 +48,9 @@ class Target:
     def prepare_source(self, state: BuildState):
         pass
 
+    def initialize(self, state: BuildState):
+        pass
+
     def detect(self, state: BuildState) -> bool:
         return False
 
