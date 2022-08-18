@@ -33,6 +33,7 @@ extern "C" {
 #import <Metal/Metal.h>
 #else
 typedef unsigned long MTLLanguageVersion;
+typedef unsigned long MTLArgumentBuffersTier;
 #endif
 
 
@@ -50,12 +51,12 @@ typedef unsigned long MTLLanguageVersion;
  */
 #define MVK_VERSION_MAJOR   1
 #define MVK_VERSION_MINOR   1
-#define MVK_VERSION_PATCH   10
+#define MVK_VERSION_PATCH   11
 
 #define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
 #define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
 
-#define VK_MVK_MOLTENVK_SPEC_VERSION            34
+#define VK_MVK_MOLTENVK_SPEC_VERSION            35
 #define VK_MVK_MOLTENVK_EXTENSION_NAME          "VK_MVK_moltenvk"
 
 /** Identifies the level of logging MoltenVK should be limited to outputting. */
@@ -218,8 +219,8 @@ typedef struct {
 	 * it may cause unexpected visual artifacts and unnecessary GPU load.
 	 *
 	 * This feature is incompatible with updating descriptors after binding. If any of the
-	 * *UpdateAfterBind feature flags of VkPhysicalDeviceDescriptorIndexingFeaturesEXT or
-	 * VkPhysicalDeviceInlineUniformBlockFeaturesEXT have been enabled, the value of this
+	 * *UpdateAfterBind feature flags of VkPhysicalDeviceDescriptorIndexingFeatures or
+	 * VkPhysicalDeviceInlineUniformBlockFeatures have been enabled, the value of this
 	 * setting will be ignored and treated as if it is false.
 	 *
 	 * The value of this parameter may be changed at any time during application runtime,
@@ -930,6 +931,8 @@ typedef struct {
 	MVKFloatRounding clearColorFloatRounding;		/**< Identifies the type of rounding Metal uses for MTLClearColor float to integer conversions. */
 	MVKCounterSamplingFlags counterSamplingPoints;	/**< Identifies the points where pipeline GPU counter sampling may occur. */
 	VkBool32 programmableSamplePositions;			/**< If true, programmable MSAA sample positions are supported. */
+	VkBool32 shaderBarycentricCoordinates;			/**< If true, fragment shader barycentric coordinates are supported. */
+	MTLArgumentBuffersTier argumentBuffersTier;		/**< The argument buffer tier available on this device, as a Metal enumeration. */
 } MVKPhysicalDeviceMetalFeatures;
 
 /** MoltenVK performance of a particular type of activity. */
