@@ -285,7 +285,12 @@ class MoltenVKTarget(MakeTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.1.11.tar.gz',
-            '938ea0ba13c6538b0ee505ab391a3020f206ab9d29c869f20dd19318a4ee8997')
+            '938ea0ba13c6538b0ee505ab391a3020f206ab9d29c869f20dd19318a4ee8997',
+            patches='moltenvk-deployment-target')
+
+    def initialize(self, state: BuildState):
+        super().initialize(state)
+        self._make_dylib(state)
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('MoltenVKPackaging.xcodeproj')
@@ -303,7 +308,7 @@ class MoltenVKTarget(MakeTarget):
         args = ['./fetchDependencies', '--macos']
         if state.verbose:
             args.append('-v')
-        subprocess.check_call(args, cwd=state.build_path)
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
         super().build(state)
 
@@ -323,7 +328,43 @@ class MoltenVKTarget(MakeTarget):
         src_path = state.build_path / 'Package/Latest/MoltenVK'
         shutil.copytree(src_path / 'include/MoltenVK', include_path / 'MoltenVK')
         shutil.copy(state.build_path / 'LICENSE', state.install_path / 'apache2.txt')
-        shutil.copy(src_path / 'dylib/macOS/libMoltenVK.dylib', lib_path)
+        shutil.copy(
+            src_path / 'MoltenVK.xcframework/macos-arm64_x86_64/libMoltenVK.a',
+            lib_path / 'libMoltenVK-static.a')
+
+        self._make_dylib(state)
+
+    def _make_dylib(self, state: BuildState):
+        lib_path = state.deps_path / self.name / 'lib'
+        static_lib_path = lib_path / 'libMoltenVK-static.a'
+        dynamic_lib_path = lib_path / 'libMoltenVK.dylib'
+
+        static_lib_time = os.stat(static_lib_path).st_mtime
+        dynamic_lib_time = os.stat(dynamic_lib_path).st_mtime if os.path.exists(dynamic_lib_path) else 0
+
+        if static_lib_time != dynamic_lib_time:
+            args = (
+                'clang++',
+                '-stdlib=libc++',
+                '-dynamiclib',
+                '-arch', 'arm64',
+                '-arch', 'x86_64',
+                '-mmacosx-version-min=10.12',
+                '-compatibility_version', '1.0.0',
+                '-current_version', '1.0.0',
+                '-install_name', '@rpath/libMoltenVK.dylib',
+                '-framework', 'Metal',
+                '-framework', 'IOSurface',
+                '-framework', 'AppKit',
+                '-framework', 'QuartzCore',
+                '-framework', 'CoreGraphics',
+                '-framework', 'IOKit',
+                '-framework', 'Foundation',
+                '-o', dynamic_lib_path,
+                '-force_load', static_lib_path
+            )
+            subprocess.run(args, check=True, env=state.environment)
+            os.utime(dynamic_lib_path, (static_lib_time, static_lib_time))
 
 
 class Mpg123Target(CMakeStaticDependencyTarget):
