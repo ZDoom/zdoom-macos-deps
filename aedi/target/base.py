@@ -46,21 +46,30 @@ class Target:
         self.unsupported_architectures = ()
 
     def prepare_source(self, state: BuildState):
+        """ Called when target is selected by name """
         pass
 
     def initialize(self, state: BuildState):
+        """ Called on all targets except the selected one before prefix directory creation """
         pass
 
     def detect(self, state: BuildState) -> bool:
+        """
+        Called when target is selected by source code directory
+        Called on all targets until match is found
+        """
         return False
 
     def configure(self, state: BuildState):
+        """ Called before selected target is about to build """
         pass
 
     def build(self, state: BuildState):
+        """ Does actual build """
         pass
 
     def post_build(self, state: BuildState):
+        """ Called after selected target is built """
         pass
 
 
