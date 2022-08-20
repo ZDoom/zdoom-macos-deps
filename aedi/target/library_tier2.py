@@ -277,21 +277,23 @@ class Sdl2ImageTarget(CMakeStaticDependencyTarget):
 class Sdl2MixerTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_mixer'):
         super().__init__(name)
+        self.version = '2.6.2'
 
     def prepare_source(self, state: BuildState):
+        base_url = 'https://github.com/libsdl-org/SDL_mixer/releases/download'
         state.download_source(
-            'https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.6.1/SDL2_mixer-2.6.1.tar.gz',
-            'bc5c7b85f297e5f3cb34c99c366a4746922fc41365b15fd78a164dda71a861a3')
+            f'{base_url}/release-{self.version}/SDL2_mixer-{self.version}.tar.gz',
+            '8cdea810366decba3c33d32b8071bccd1c309b2499a54946d92b48e6922aa371')
 
     def configure(self, state: BuildState):
         opts = state.options
         opts['SDL2MIXER_DEPS_SHARED'] = 'NO'
+        opts['SDL2MIXER_MOD_XMP'] = 'YES'
         opts['SDL2MIXER_MP3_MPG123'] = 'YES'
         opts['SDL2MIXER_OPUS_SHARED'] = 'NO'
         opts['SDL2MIXER_SAMPLES'] = 'NO'
         opts['SDL2MIXER_VORBIS'] = 'VORBISFILE'
         opts['SDL2MIXER_VORBIS_VORBISFILE_SHARED'] = 'NO'
-        opts['SDL2MIXER_MOD_XMP'] = 'YES'
 
         super().configure(state)
 
@@ -300,7 +302,7 @@ class Sdl2MixerTarget(CMakeStaticDependencyTarget):
 
         self.write_pc_file(state, filename='SDL2_mixer.pc', name='SDL2_mixer',
                            description='mixer library for Simple DirectMedia Layer',
-                           version='2.6.0', requires='sdl2 >= 2.0.9',
+                           version=self.version, requires='sdl2 >= 2.0.9',
                            requires_private='flac fluidsynth libmodplug libmpg123 libxmp opusfile vorbisfile',
                            libs='-lSDL2_mixer', cflags='-I${includedir}/SDL2')
 
