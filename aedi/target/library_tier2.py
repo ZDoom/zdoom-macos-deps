@@ -236,50 +236,16 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://libsdl.org/release/SDL2-2.0.22.tar.gz',
-            'fe7cbf3127882e3fc7259a75a0cb585620272c51745d3852ab9dd87960697f2e',
+            'https://github.com/libsdl-org/SDL/releases/download/release-2.24.0/SDL2-2.24.0.tar.gz',
+            '91e4c34b1768f92d399b078e171448c6af18cafda743987ed2064a28954d6d97',
             patches=('sdl2-no-updaterev', 'sdl2-no-gamecontroller+corehaptic'))
 
-    FRAMEWORKS = '-framework AudioToolbox -framework AVFoundation -framework Carbon' \
-        ' -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback' \
-        ' -framework Foundation -framework IOKit -framework Metal -framework QuartzCore'
-    LINKER_FLAGS = ' -L${libdir} -lSDL2 ' + FRAMEWORKS + os.linesep
-
     def configure(self, state: BuildState):
-        state.options['SDL_STATIC_PIC'] = 'YES'
+        opts = state.options
+        opts['SDL_STATIC_PIC'] = 'YES'
+        opts['SDL_TEST'] = 'NO'
+
         super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        def update_sdl2_config(_: Path, line: str):
-            if line.startswith('#    '):
-                return None
-            elif line.startswith('      echo -I'):
-                return '      echo -I${prefix}/include/SDL2 -D_THREAD_SAFE\n'
-            elif line.startswith('      echo -L'):
-                return '      echo' + Sdl2Target.LINKER_FLAGS
-
-            return line
-
-        self.update_config_script(state.install_path / 'bin/sdl2-config', update_sdl2_config)
-
-        def update_targets_cmake(line: str):
-            libs = '  INTERFACE_LINK_LIBRARIES '
-            return f'{libs}"{Sdl2Target.FRAMEWORKS}"\n' if line.startswith(libs) else line
-
-        for suffix in ('', '-release'):
-            file_path = state.install_path / f'lib/cmake/SDL2/SDL2staticTargets{suffix}.cmake'
-            self.update_text_file(file_path, update_targets_cmake)
-
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        libs = 'Libs:'
-
-        if line.startswith(libs):
-            return libs + Sdl2Target.LINKER_FLAGS
-
-        return line
 
 
 class Sdl2ImageTarget(CMakeStaticDependencyTarget):
