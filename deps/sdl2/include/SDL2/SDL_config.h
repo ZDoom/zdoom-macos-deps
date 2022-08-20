@@ -64,6 +64,7 @@
 #define HAVE_MEMORY_H 1
 #define HAVE_SIGNAL_H 1
 #define HAVE_STDARG_H 1
+#define HAVE_STDDEF_H 1
 #define HAVE_STDINT_H 1
 #define HAVE_STDIO_H 1
 #define HAVE_STDLIB_H 1
@@ -88,6 +89,7 @@
 #define HAVE_UNSETENV 1
 #endif
 #define HAVE_QSORT 1
+#define HAVE_BSEARCH 1
 #define HAVE_ABS 1
 #define HAVE_BCOPY 1
 #define HAVE_MEMSET 1
@@ -242,6 +244,7 @@
 
 /* #undef HAVE_D3D_H */
 /* #undef HAVE_D3D11_H */
+/* #undef HAVE_D3D12_H */
 /* #undef HAVE_DDRAW_H */
 /* #undef HAVE_DSOUND_H */
 /* #undef HAVE_DINPUT_H */
@@ -254,12 +257,15 @@
 /* #undef HAVE_TPCSHRD_H */
 /* #undef HAVE_SENSORSAPI_H */
 /* #undef HAVE_ROAPI_H */
+/* #undef HAVE_SHELLSCALINGAPI_H */
 
 /* #undef HAVE_XINPUT_GAMEPAD_EX */
 /* #undef HAVE_XINPUT_STATE_EX */
 
 /* SDL internal assertion support */
+#if 0
 /* #undef SDL_DEFAULT_ASSERT_LEVEL */
+#endif
 
 /* Allow disabling of core subsystems */
 /* #undef SDL_ATOMIC_DISABLED */
@@ -320,6 +326,7 @@
 /* #undef SDL_AUDIO_DRIVER_OS2 */
 /* #undef SDL_AUDIO_DRIVER_VITA */
 /* #undef SDL_AUDIO_DRIVER_PSP */
+/* #undef SDL_AUDIO_DRIVER_PS2 */
 
 /* Enable various input drivers */
 /* #undef SDL_INPUT_LINUXEV */
@@ -343,6 +350,7 @@
 #define SDL_JOYSTICK_VIRTUAL 1
 /* #undef SDL_JOYSTICK_VITA */
 /* #undef SDL_JOYSTICK_PSP */
+/* #undef SDL_JOYSTICK_PS2 */
 /* #undef SDL_HAPTIC_DUMMY */
 /* #undef SDL_HAPTIC_LINUX */
 #define SDL_HAPTIC_IOKIT 1
@@ -374,6 +382,7 @@
 /* #undef SDL_THREAD_OS2 */
 /* #undef SDL_THREAD_VITA */
 /* #undef SDL_THREAD_PSP */
+/* #undef SDL_THREAD_PS2 */
 
 /* Enable various timer systems */
 /* #undef SDL_TIMER_HAIKU */
@@ -383,6 +392,7 @@
 /* #undef SDL_TIMER_OS2 */
 /* #undef SDL_TIMER_VITA */
 /* #undef SDL_TIMER_PSP */
+/* #undef SDL_TIMER_PS2 */
 
 /* Enable various video drivers */
 /* #undef SDL_VIDEO_DRIVER_ANDROID */
@@ -404,6 +414,7 @@
 /* #undef SDL_VIDEO_DRIVER_QNX */
 /* #undef SDL_VIDEO_DRIVER_RISCOS */
 /* #undef SDL_VIDEO_DRIVER_PSP */
+/* #undef SDL_VIDEO_DRIVER_PS2 */
 
 /* #undef SDL_VIDEO_DRIVER_KMSDRM */
 /* #undef SDL_VIDEO_DRIVER_KMSDRM_DYNAMIC */
@@ -420,34 +431,32 @@
 /* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC */
 /* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XEXT */
 /* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XCURSOR */
-/* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XINERAMA */
 /* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XINPUT2 */
 /* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XFIXES */
 /* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XRANDR */
 /* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XSS */
-/* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XVIDMODE */
 /* #undef SDL_VIDEO_DRIVER_X11_XCURSOR */
 /* #undef SDL_VIDEO_DRIVER_X11_XDBE */
-/* #undef SDL_VIDEO_DRIVER_X11_XINERAMA */
 /* #undef SDL_VIDEO_DRIVER_X11_XINPUT2 */
 /* #undef SDL_VIDEO_DRIVER_X11_XINPUT2_SUPPORTS_MULTITOUCH */
 /* #undef SDL_VIDEO_DRIVER_X11_XFIXES */
 /* #undef SDL_VIDEO_DRIVER_X11_XRANDR */
 /* #undef SDL_VIDEO_DRIVER_X11_XSCRNSAVER */
 /* #undef SDL_VIDEO_DRIVER_X11_XSHAPE */
-/* #undef SDL_VIDEO_DRIVER_X11_XVIDMODE */
 /* #undef SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS */
 /* #undef SDL_VIDEO_DRIVER_X11_HAS_XKBKEYCODETOKEYSYM */
 /* #undef SDL_VIDEO_DRIVER_VITA */
 
 /* #undef SDL_VIDEO_RENDER_D3D */
 /* #undef SDL_VIDEO_RENDER_D3D11 */
+/* #undef SDL_VIDEO_RENDER_D3D12 */
 #define SDL_VIDEO_RENDER_OGL 1
 /* #undef SDL_VIDEO_RENDER_OGL_ES */
 #define SDL_VIDEO_RENDER_OGL_ES2 1
 /* #undef SDL_VIDEO_RENDER_DIRECTFB */
 #define SDL_VIDEO_RENDER_METAL 1
 /* #undef SDL_VIDEO_RENDER_VITA_GXM */
+/* #undef SDL_VIDEO_RENDER_PS2 */
 /* #undef SDL_VIDEO_RENDER_PSP */
 
 /* Enable OpenGL support */
@@ -493,6 +502,7 @@
 /* #undef SDL_FILESYSTEM_OS2 */
 /* #undef SDL_FILESYSTEM_VITA */
 /* #undef SDL_FILESYSTEM_PSP */
+/* #undef SDL_FILESYSTEM_PS2 */
 
 /* Enable misc subsystem */
 /* #undef SDL_MISC_DUMMY */
@@ -501,7 +511,6 @@
 /* #undef SDL_LOCALE_DUMMY */
 
 /* Enable assembly routines */
-#define SDL_ASSEMBLY_ROUTINES 1
 /* #undef SDL_ALTIVEC_BLITTERS */
 /* #undef SDL_ARM_SIMD_BLITTERS */
 /* #undef SDL_ARM_NEON_BLITTERS */

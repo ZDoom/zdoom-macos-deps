@@ -54,8 +54,10 @@ endif()
 add_library(SDL2::SDL2-static STATIC IMPORTED)
 
 set_target_properties(SDL2::SDL2-static PROPERTIES
+  COMPATIBLE_INTERFACE_BOOL "SDL2_SHARED"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include/SDL2"
-  INTERFACE_LINK_LIBRARIES "-framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit -framework Metal -framework QuartzCore"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:m>;-Wl,-framework,CoreVideo;-Wl,-framework,Cocoa;-Wl,-framework,IOKit;-Wl,-framework,ForceFeedback;-Wl,-framework,Carbon;-Wl,-framework,CoreAudio;-Wl,-framework,AudioToolbox;-Wl,-framework,AVFoundation;-Wl,-framework,Foundation;-Wl,-weak_framework,Metal;-Wl,-weak_framework,QuartzCore;\$<LINK_ONLY:>"
+  INTERFACE_SDL2_SHARED "FALSE"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)

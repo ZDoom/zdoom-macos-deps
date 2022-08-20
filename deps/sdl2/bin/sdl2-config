@@ -1,9 +1,13 @@
 #!/bin/sh
 
-prefix="$(cd "${0%/*}/.."; pwd)"
-exec_prefix="${prefix}"
+# Get the canonical path of the folder containing this script
+bindir=$(cd -P -- "$(dirname -- "$0")" && printf '%s\n' "$(pwd -P)")
+
+# Calculate the canonical path of the prefix, relative to the folder of this script
+prefix=$(cd -P -- "$bindir/../" && printf '%s\n' "$(pwd -P)")
+exec_prefix=${prefix}
 exec_prefix_set=no
-libdir="${exec_prefix}/lib"
+libdir=${exec_prefix}/lib
 
 #usage="\
 #Usage: $0 [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cflags] [--libs]"
@@ -39,13 +43,18 @@ while test $# -gt 0; do
       echo $exec_prefix
       ;;
     --version)
-      echo 2.0.22
+      echo 2.24.0
       ;;
     --cflags)
-      echo -I${prefix}/include/SDL2 -D_THREAD_SAFE
+      echo -I${prefix}/include/SDL2  -D_THREAD_SAFE
       ;;
+#    --libs)
+#      echo -L${exec_prefix}/lib   -lSDL2
+#      ;;
+#    --static-libs)
     --libs|--static-libs)
-      echo -L${libdir} -lSDL2 -framework AudioToolbox -framework AVFoundation -framework Carbon -framework Cocoa -framework CoreAudio -framework CoreVideo -framework ForceFeedback -framework Foundation -framework IOKit -framework Metal -framework QuartzCore
+      sdl_static_libs=$(echo " -lSDL2  -lSDL2 -Wl,-framework,CoreVideo -Wl,-framework,Cocoa -Wl,-framework,IOKit -Wl,-framework,ForceFeedback -Wl,-framework,Carbon -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AVFoundation -Wl,-framework,Foundation -Wl,-weak_framework,Metal -Wl,-weak_framework,QuartzCore  -lm" | sed -E "s#-lSDL2[ $]#$libdir/libSDL2.a #g")
+      echo -L${exec_prefix}/lib $sdl_static_libs
       ;;
     *)
       echo "${usage}" 1>&2
