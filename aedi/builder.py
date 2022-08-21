@@ -91,6 +91,8 @@ class Builder(object):
         state.jobs = arguments.jobs and arguments.jobs or \
             subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
 
+        self._environment = state.environment
+
     def _populate_platforms(self, arguments):
         state = self._state
 
@@ -150,7 +152,7 @@ class Builder(object):
 
     def _build(self, target: Target):
         state = self._state
-        state.environment = os.environ.copy()
+        state.environment = self._environment.copy()
         state.options = CommandLineOptions()
 
         target.configure(state)
