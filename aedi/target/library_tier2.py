@@ -307,17 +307,24 @@ class Sdl2MixerTarget(CMakeStaticDependencyTarget):
                            libs='-lSDL2_mixer', cflags='-I${includedir}/SDL2')
 
 
-class Sdl2NetTarget(ConfigureMakeStaticDependencyTarget):
+class Sdl2NetTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_net'):
         super().__init__(name)
+        self.version = '2.2.0'
 
     def prepare_source(self, state: BuildState):
+        base_url = 'https://github.com/libsdl-org/SDL_net/releases'
         state.download_source(
-            'https://www.libsdl.org/projects/SDL_net/release/SDL2_net-2.0.1.tar.gz',
-            '15ce8a7e5a23dafe8177c8df6e6c79b6749a03fff1e8196742d3571657609d21')
+            f'{base_url}/release-{self.version}/SDL2_net-{self.version}.tar.gz',
+            '4e4a891988316271974ff4e9585ed1ef729a123d22c08bd473129179dc857feb')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('SDL2_net.pc.in')
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        self.write_pc_file(state, filename='SDL2_net.pc', name='SDL2_net',
+                           description='net library for Simple DirectMedia Layer',
+                           version=self.version, requires='sdl2 >= 2.0.4',
+                           libs='-lSDL2_net', cflags='-I${includedir}/SDL2')
 
 
 class SodiumTarget(ConfigureMakeStaticDependencyTarget):
