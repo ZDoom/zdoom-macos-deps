@@ -89,11 +89,11 @@ class BuildState:
             return
 
         args = ('git', 'clone', '--recurse-submodules', url, self.source)
-        subprocess.run(args, cwd=self.root_path, check=True)
+        subprocess.run(args, check=True, cwd=self.root_path, env=self.environment)
 
         if branch:
             args = ('git', 'checkout', '-b', branch, 'origin/' + branch)
-            subprocess.run(args, cwd=self.source, check=True)
+            subprocess.run(args, check=True, cwd=self.source, env=self.environment)
 
     def download_source(self, url: str, checksum: str, patches: typing.Union[tuple, list, str] = None):
         if self.external_source:
@@ -156,7 +156,10 @@ class BuildState:
             raise Exception(f'Checksum of {filepath} does not match, expected: {checksum}, actual: {file_checksum}')
 
     def _unpack_source_package(self, filepath: Path) -> typing.Tuple[str, Path]:
-        file_paths_str = subprocess.check_output(['tar', '-tf', filepath]).decode("utf-8")
+        args = ('tar', '-tf', filepath)
+        result = subprocess.run(args, check=True, env=self.environment, stdout=subprocess.PIPE)
+
+        file_paths_str = result.stdout.decode("utf-8")
         file_paths = file_paths_str.split('\n')
         first_path_component = None
 
@@ -173,7 +176,8 @@ class BuildState:
         if not extract_path.exists():
             # Extract source code package
             try:
-                subprocess.check_call(['tar', '-xf', filepath], cwd=self.source)
+                args = ('tar', '-xf', filepath)
+                subprocess.run(args, check=True, cwd=self.source, env=self.environment)
             except (IOError, subprocess.CalledProcessError):
                 shutil.rmtree(extract_path, ignore_errors=True)
                 raise
@@ -188,18 +192,18 @@ class BuildState:
         test_arg = '--dry-run'
         args = ['patch', test_arg, '--strip=1', '--input=' + str(patch_path)]
 
-        if subprocess.call(args, cwd=extract_path) == 0:
+        if subprocess.run(args, cwd=extract_path, env=self.environment) == 0:
             # Patch wasn't applied yet, do it now
             args.remove(test_arg)
-            subprocess.check_call(args, cwd=extract_path)
+            subprocess.run(args, check=True, cwd=extract_path, env=self.environment)
 
     def run_pkg_config(self, *args) -> str:
         os.makedirs(self.build_path, exist_ok=True)
 
         args = (self.bin_path / 'pkg-config',) + args
-        result = subprocess.check_output(args, cwd=self.build_path)
+        result = subprocess.run(args, check=True, cwd=self.build_path, env=self.environment, stdout=subprocess.PIPE)
 
-        return result.decode('utf-8').rstrip('\n')
+        return result.stdout.decode('utf-8').rstrip('\n')
 
     def has_source_file(self, path: typing.Union[str, Path]):
         return (self.source / path).exists()

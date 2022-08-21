@@ -43,7 +43,7 @@ class SingleExeCTarget(MakeTarget):
         for var in ('CFLAGS', 'LDFLAGS'):
             args += shlex.split(state.environment[var])
 
-        subprocess.run(args, check=True, cwd=state.build_path)
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def post_build(self, state: BuildState):
         self.copy_to_bin(state)
@@ -70,7 +70,7 @@ class BuildCMakeTarget(CMakeTarget):
                 os.makedirs(boostrap_path, exist_ok=True)
 
                 args = (state.source / 'configure', '--parallel=' + state.jobs)
-                subprocess.run(args, cwd=boostrap_path)
+                subprocess.run(args, check=True, cwd=boostrap_path, env=state.environment)
 
                 assert boostrap_cmake.exists()
 

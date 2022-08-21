@@ -136,7 +136,7 @@ class BuildTarget(Target):
         args = [tool, 'install']
         args += options and options.to_list() or []
 
-        subprocess.check_call(args, cwd=state.build_path, env=state.environment)
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
         self.update_pc_files(state)
 
@@ -302,7 +302,7 @@ class MakeTarget(BuildTarget):
         args += state.options.to_list()
 
         work_path = state.build_path / self.src_root
-        subprocess.check_call(args, cwd=work_path, env=state.environment)
+        subprocess.run(args, check=True, cwd=work_path, env=state.environment)
 
 
 class ConfigureMakeTarget(MakeTarget):
@@ -330,17 +330,17 @@ class ConfigureMakeTarget(MakeTarget):
 
         try:
             # Try with host and disabled dependency tracking first
-            subprocess.check_call(args, cwd=work_path, env=state.environment)
+            subprocess.run(args, check=True, cwd=work_path, env=state.environment)
         except subprocess.CalledProcessError:
             # If it fails, try with disabled dependency tracking only
             args = copy.copy(common_args)
             args.append(disable_dependency_tracking)
 
             try:
-                subprocess.check_call(args, cwd=work_path, env=state.environment)
+                subprocess.run(args, check=True, cwd=work_path, env=state.environment)
             except subprocess.CalledProcessError:
                 # Use only common command line arguments
-                subprocess.check_call(common_args, cwd=work_path, env=state.environment)
+                subprocess.run(common_args, check=True, cwd=work_path, env=state.environment)
 
     def build(self, state: BuildState):
         # Clear configure script options
@@ -434,7 +434,7 @@ class CMakeTarget(BuildTarget):
         args += state.options.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(state.source / self.src_root)
 
-        subprocess.check_call(args, cwd=state.build_path, env=state.environment)
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def build(self, state: BuildState):
         if state.xcode:
@@ -445,7 +445,7 @@ class CMakeTarget(BuildTarget):
             if state.verbose:
                 args.append('VERBOSE=1')
 
-        subprocess.check_call(args, cwd=state.build_path, env=state.environment)
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
 
 class ConfigureMakeDependencyTarget(ConfigureMakeTarget):

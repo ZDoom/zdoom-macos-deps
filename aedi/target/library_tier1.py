@@ -188,11 +188,11 @@ endian = 'little'
             f'--cross-file={cross_file}',
             state.source
         )
-        subprocess.check_call(args, cwd=state.build_path, env=environment)
+        subprocess.run(args, check=True, cwd=state.build_path, env=environment)
 
     def build(self, state: BuildState):
         args = ('ninja',)
-        subprocess.check_call(args, cwd=state.build_path, env=state.environment)
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def post_build(self, state: BuildState):
         self.install(state, tool='ninja')

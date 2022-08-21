@@ -38,7 +38,7 @@ class CleanTarget(Target):
         assert not state.xcode
 
         args = ('git', 'clean') + self.args
-        subprocess.check_call(args, cwd=state.root_path)
+        subprocess.run(args, check=True, cwd=state.root_path, env=state.environment)
 
 
 class CleanAllTarget(CleanTarget):
@@ -106,5 +106,5 @@ class TestDepsTarget(BuildTarget):
                 entry,
             ]
             args += shlex.split(pkg_config_output)
-            subprocess.run(args, cwd=state.build_path, check=True)
-            subprocess.run((exe_name,), check=True)
+            subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
+            subprocess.run((exe_name,), check=True, env=state.environment)
