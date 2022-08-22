@@ -88,6 +88,7 @@ class Builder(object):
         else:
             state.output_path = state.root_path / 'output'
 
+        state.static_moltenvk = arguments.static_moltenvk
         state.jobs = arguments.jobs and arguments.jobs or \
             subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
 
@@ -334,6 +335,7 @@ class Builder(object):
         group.add_argument('--os-version-arm', metavar='version', help='macOS deployment version for ARM64')
         group.add_argument('--verbose', action='store_true', help='enable verbose build output')
         group.add_argument('--jobs', help='number of parallel compilation jobs')
+        group.add_argument('--static-moltenvk', action='store_true', help='link with static MoltenVK library')
 
         excl_group = parser.add_mutually_exclusive_group()
         excl_group.add_argument('--disable-x64', action='store_true', help='disable x86_64 support')
