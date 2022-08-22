@@ -55,6 +55,7 @@ class BuildState:
         self.xcode = False
         self.verbose = False
         self.jobs = 1
+        self.static_moltenvk = False
 
         self.environment = os.environ.copy()
         self.options = CommandLineOptions()

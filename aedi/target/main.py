@@ -18,6 +18,7 @@
 
 import os
 import shutil
+from pathlib import Path
 from platform import machine
 
 from ..state import BuildState
@@ -86,7 +87,7 @@ class ZDoomBaseTarget(CMakeMainTarget):
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'fluidsynth', 'libmpg123')
+        opts['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'fluidsynth', 'libmpg123')
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
 
@@ -100,24 +101,60 @@ class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
+    def configure(self, state: BuildState):
+        if state.static_moltenvk:
+            state.options['CMAKE_EXE_LINKER_FLAGS'] += '-framework Metal -framework IOSurface -lMoltenVK-static'
+
+            # Unset SDK because MoltenVK usually requires the latest one shipped with Xcode
+            state.platform.sdk_path = None
+
+            # Replace volk and update revision files
+            replacement_src_path = state.patch_path / 'static-moltenvk'
+            replacement_files = ('UpdateRevision.cmake', 'volk.c', 'volk.h')
+
+            replacement_dst_volk_subpath = 'common/rendering/vulkan/thirdparty/volk/'
+            replacement_dst_volk_path = Path('src') / replacement_dst_volk_subpath
+
+            if not os.path.exists(state.source / replacement_dst_volk_path):
+                replacement_dst_volk_path = Path('source') / replacement_dst_volk_subpath
+
+            replacement_dst_paths = (
+                'tools/updaterevision',
+                replacement_dst_volk_path,
+                replacement_dst_volk_path
+            )
+
+            for dst_path, filename in zip(replacement_dst_paths, replacement_files):
+                src = replacement_src_path / filename
+                dst = state.source / dst_path / filename
+
+                src_stat = os.stat(src)
+                dst_stat = os.stat(dst)
+
+                if src_stat.st_mtime != dst_stat.st_mtime:
+                    shutil.copy2(src, dst)
+
+        super().configure(state)
+
     def post_build(self, state: BuildState):
-        # Put MoltenVK library into application bundle
-        molten_lib = 'libMoltenVK.dylib'
-        src_path = state.lib_path / molten_lib
-        dst_path = state.build_path
+        if not state.static_moltenvk:
+            # Put MoltenVK library into application bundle
+            molten_lib = 'libMoltenVK.dylib'
+            src_path = state.lib_path / molten_lib
+            dst_path = state.build_path
 
-        if state.xcode:
-            # TODO: Support other configurations
-            dst_path /= 'Debug'
+            if state.xcode:
+                # TODO: Support other configurations
+                dst_path /= 'Debug'
 
-        dst_path /= self.name + '.app/Contents/MacOS'
-        os.makedirs(dst_path, exist_ok=True)
+            dst_path /= self.name + '.app/Contents/MacOS'
+            os.makedirs(dst_path, exist_ok=True)
 
-        dst_path /= molten_lib
+            dst_path /= molten_lib
 
-        if not dst_path.exists():
-            copy_func = state.xcode and os.symlink or shutil.copy
-            copy_func(src_path, dst_path)
+            if not dst_path.exists():
+                copy_func = state.xcode and os.symlink or shutil.copy
+                copy_func(src_path, dst_path)
 
         super().post_build(state)
 
