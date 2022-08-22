@@ -28,10 +28,22 @@ OS_VERSION_X86_64 = StrictVersion('10.12')
 OS_VERSION_ARM64 = StrictVersion('11.0')
 
 
+class ArgumentValue(str):
+    def __add__(self, other):
+        value = ' ' * bool(self) + other
+        return super().__add__(value)
+
+
 class CommandLineOptions(dict):
     # Rules to combine argument's name and value
     MAKE_RULES = 0
     CMAKE_RULES = 1
+
+    def __missing__(self, key):
+        return ArgumentValue()
+
+    def __setitem__(self, key, value):
+        return super().__setitem__(key, ArgumentValue(value))
 
     def to_list(self, rules=MAKE_RULES) -> list:
         result = []
