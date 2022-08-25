@@ -88,11 +88,15 @@ class Builder(object):
         else:
             state.output_path = state.root_path / 'output'
 
-        state.static_moltenvk = arguments.static_moltenvk
-        state.jobs = arguments.jobs and arguments.jobs or \
-            subprocess.check_output(['sysctl', '-n', 'hw.ncpu']).decode('ascii').strip()
-
         self._environment = state.environment
+
+        state.static_moltenvk = arguments.static_moltenvk
+        state.jobs = arguments.jobs and arguments.jobs or self._get_default_job_count()
+
+    def _get_default_job_count(self):
+        args = ('sysctl', '-n', 'hw.ncpu')
+        result = subprocess.run(args, check=True, env=self._environment, stdout=subprocess.PIPE)
+        return result.stdout.decode('ascii').strip()
 
     def _populate_platforms(self, arguments):
         state = self._state
@@ -184,7 +188,7 @@ class Builder(object):
 
             install_paths.append(state.install_path)
 
-        Builder._merge_install_paths(install_paths, base_install_path)
+        self._merge_install_paths(install_paths, base_install_path)
 
     @staticmethod
     def _compare_files(paths: typing.Sequence[Path]) -> bool:
@@ -203,8 +207,7 @@ class Builder(object):
 
         return True
 
-    @staticmethod
-    def _merge_file(src: Path, src_sub_paths: typing.Sequence[Path], dst_path: Path):
+    def _merge_file(self, src: Path, src_sub_paths: typing.Sequence[Path], dst_path: Path):
         with open(src, 'rb') as f:
             header = f.read(8)
 
@@ -218,19 +221,18 @@ class Builder(object):
             args: typing.List[typing.Union[str, Path]] = ['lipo']
             args += src_sub_paths
             args += ['-create', '-output', dst_file]
-            subprocess.check_call(args)
+            subprocess.run(args, check=True, env=self._environment)
 
             # Apply ad-hoc code signing on executable files outside of application bundles
             if is_executable and '.app/Contents/' not in str(src):
                 args = ['codesign', '--sign', '-', dst_file]
-                subprocess.check_call(args)
+                subprocess.run(args, check=True, env=self._environment)
         else:
             if not Builder._compare_files(src_sub_paths):
                 print(f'WARNING: Source files for {dst_path / src.name} don\'t match')
             shutil.copy(src_sub_paths[0], dst_path)
 
-    @staticmethod
-    def _merge_missing_files(src_paths: typing.Sequence[Path], dst_path: Path):
+    def _merge_missing_files(self, src_paths: typing.Sequence[Path], dst_path: Path):
         shifted_src_paths = [path for path in src_paths]
         last_path_index = len(src_paths) - 1
 
@@ -241,10 +243,9 @@ class Builder(object):
             if not shifted_src_paths[0].exists():
                 continue
 
-            Builder._merge_install_paths(shifted_src_paths, dst_path, missing_files_only=True)
+            self._merge_install_paths(shifted_src_paths, dst_path, missing_files_only=True)
 
-    @staticmethod
-    def _merge_install_paths(src_paths: typing.Sequence[Path], dst_path: Path, missing_files_only=False):
+    def _merge_install_paths(self, src_paths: typing.Sequence[Path], dst_path: Path, missing_files_only=False):
         if len(src_paths) == 0:
             return
 
@@ -258,7 +259,7 @@ class Builder(object):
             src_sub_paths = [path / src.name for path in src_paths]
 
             if src.is_dir():
-                Builder._merge_install_paths(src_sub_paths, dst_path / src.name, missing_files_only)
+                self._merge_install_paths(src_sub_paths, dst_path / src.name, missing_files_only)
             elif src.name.endswith('.la'):
                 # Skip libtool files
                 continue
@@ -267,10 +268,10 @@ class Builder(object):
                     if not src_sub_path.exists():
                         shutil.copy(src_sub_paths[0], dst_path)
             else:
-                Builder._merge_file(src, src_sub_paths, dst_path)
+                self._merge_file(src, src_sub_paths, dst_path)
 
         if not missing_files_only:
-            Builder._merge_missing_files(src_paths, dst_path)
+            self._merge_missing_files(src_paths, dst_path)
 
     def _create_prefix_directory(self):
         state = self._state
