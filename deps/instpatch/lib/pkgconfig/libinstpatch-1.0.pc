@@ -1,7 +1,7 @@
 prefix=
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
-includedir=${prefix}/include/libinstpatch-2
+includedir=${prefix}/include
 
 Name: libInstPatch
 Description: MIDI instrument patch library
