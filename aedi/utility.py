@@ -43,7 +43,7 @@ class CommandLineOptions(dict):
         return ArgumentValue()
 
     def __setitem__(self, key, value):
-        return super().__setitem__(key, ArgumentValue(value))
+        return super().__setitem__(key, ArgumentValue(value) if value else None)
 
     def to_list(self, rules=MAKE_RULES) -> list:
         result = []
