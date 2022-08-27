@@ -11,5 +11,5 @@ Version: 1.3.7
 Requires.private: ogg
 Conflicts:
 Libs: -L${libdir} -lvorbis 
-Libs.private: -lm
+Libs.private: 
 Cflags: -I${includedir}
