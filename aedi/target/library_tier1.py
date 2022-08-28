@@ -245,6 +245,8 @@ class IntlTarget(GettextTarget):
         super().__init__(name)
 
     def configure(self, state: BuildState):
+        state.options['--localedir'] = '/usr/local/share/locale'
+
         # There is no way to configure intl only, do this for the runtime
         self.src_root = 'gettext-runtime'
         super().configure(state)
@@ -255,9 +257,13 @@ class IntlTarget(GettextTarget):
         super().build(state)
 
     def post_build(self, state: BuildState):
+        opts = state.options
+        opts['install-exec-am'] = None
+        opts['install-nodist_includeHEADERS'] = None
+
         # Install intl only, avoid complete gettext runtime
         state.build_path /= self.src_root
-        self.install(state)
+        self.install(state, state.options)
 
 
 class JpegTurboTarget(CMakeStaticDependencyTarget):
