@@ -2,9 +2,9 @@
 
 This repository contains all binary dependencies required to build macOS application bundles of [ZDoom-derived](https://zdoom.org) source ports. A few other projects are supported as well, with lesser priority though.
 
-[![Build Targets](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/build.yml/badge.svg)](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/build.yml)
-[![Lint Code](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/lint.yml/badge.svg)](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/lint.yml)
-[![Test Libraries](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/test.yml/badge.svg)](https://github.com/alexey-lysiuk/zdoom-macos-deps/actions/workflows/test.yml)
+[![Build Targets](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/build.yml/badge.svg)](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/build.yml)
+[![Lint Code](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/lint.yml/badge.svg)](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/lint.yml)
+[![Test Libraries](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/test.yml/badge.svg)](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/test.yml)
 
 ## Usage
 
