@@ -43,7 +43,9 @@ class Bzip2Target(MakeTarget):
         opts[cflags] = state.environment[cflags] + ' -D_FILE_OFFSET_BITS=64 -O2'
 
     def post_build(self, state: BuildState):
-        state.options['PREFIX'] = state.install_path
+        opts = state.options
+        opts['install'] = None
+        opts['PREFIX'] = state.install_path
 
         self.install(state, state.options)
         self.write_pc_file(state, description='bzip2 compression library', version='1.0.8', libs='-lbz2')

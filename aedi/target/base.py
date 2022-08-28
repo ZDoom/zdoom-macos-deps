@@ -133,8 +133,8 @@ class BuildTarget(Target):
         if state.install_path.exists():
             shutil.rmtree(state.install_path)
 
-        args = [tool, 'install']
-        args += options and options.to_list() or []
+        args = [tool]
+        args += options and options.to_list() or ['install']
 
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 

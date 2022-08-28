@@ -241,7 +241,10 @@ class LuaTarget(MakeTarget):
         return state.has_source_file('src/lua.h')
 
     def post_build(self, state: BuildState):
-        state.options['INSTALL_TOP'] = state.install_path
+        opts = state.options
+        opts['install'] = None
+        opts['INSTALL_TOP'] = state.install_path
+
         self.install(state, state.options)
 
 
