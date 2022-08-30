@@ -193,7 +193,7 @@ class BuildState:
         test_arg = '--dry-run'
         args = ['patch', test_arg, '--strip=1', '--input=' + str(patch_path)]
 
-        if subprocess.run(args, cwd=extract_path, env=self.environment) == 0:
+        if subprocess.run(args, cwd=extract_path, env=self.environment).returncode == 0:
             # Patch wasn't applied yet, do it now
             args.remove(test_arg)
             subprocess.run(args, check=True, cwd=extract_path, env=self.environment)
