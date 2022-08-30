@@ -143,8 +143,8 @@ class GlibTarget(BuildTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://download.gnome.org/sources/glib/2.68/glib-2.68.3.tar.xz',
-            'e7e1a3c20c026109c45c9ec4a31d8dcebc22e86c69486993e565817d64be3138')
+            'https://download.gnome.org/sources/glib/2.72/glib-2.72.3.tar.xz',
+            '4a39a2f624b8512d500d5840173eda7fa85f51c109052eae806acece85d345f0')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('glib.doap')
