@@ -16,10 +16,12 @@
  * system printf functions.  This is useful to know, for example,
  * when using glibc's register_printf_function().
  */
-#undef GLIB_USING_SYSTEM_PRINTF
+#define GLIB_USING_SYSTEM_PRINTF
 
 #define GLIB_STATIC_COMPILATION 1
 #define GOBJECT_STATIC_COMPILATION 1
+#define G_INTL_STATIC_COMPILATION 1
+#define FFI_STATIC_BUILD 1
 
 G_BEGIN_DECLS
 
@@ -109,7 +111,7 @@ typedef unsigned long guintptr;
 #define G_GUINTPTR_FORMAT       "lu"
 
 #define GLIB_MAJOR_VERSION 2
-#define GLIB_MINOR_VERSION 68
+#define GLIB_MINOR_VERSION 72
 #define GLIB_MICRO_VERSION 3
 
 #define G_OS_UNIX
