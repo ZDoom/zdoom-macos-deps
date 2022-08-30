@@ -1,0 +1,19 @@
+--- a/meson.build
++++ b/meson.build
+@@ -2130,7 +2130,7 @@
+ glib_conf.set('HAVE_DCGETTEXT', 1)
+ glib_conf.set('HAVE_GETTEXT', 1)
+ 
+-glib_conf.set_quoted('GLIB_LOCALE_DIR', join_paths(glib_datadir, 'locale'))
++glib_conf.set_quoted('GLIB_LOCALE_DIR', '/usr/local/share/locale')
+ 
+ # libmount is only used by gio, but we need to fetch the libs to generate the
+ # pkg-config file below
+--- a/glib/libcharset/meson.build
++++ b/glib/libcharset/meson.build
+@@ -1,4 +1,4 @@
+ charset_lib = static_library('charset', 'localcharset.c',
+   include_directories : configinc,
+   pic : true,
+-  c_args : [ '-DGLIB_CHARSETALIAS_DIR="@0@"'.format(glib_charsetaliasdir) ] + glib_hidden_visibility_args)
++  c_args : [ '-DGLIB_CHARSETALIAS_DIR="/usr/local/share/locale"' ] + glib_hidden_visibility_args)
