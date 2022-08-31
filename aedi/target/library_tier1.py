@@ -531,6 +531,9 @@ class VpxTarget(ConfigureMakeDependencyTarget):
             'https://github.com/webmproject/libvpx/archive/refs/tags/v1.12.0.tar.gz',
             'f1acc15d0fd0cb431f4bf6eac32d5e932e40ea1186fe78e074254d6d003957bb')
 
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('vpxstats.h')
+
     def configure(self, state: BuildState):
         hosts = {
             'x86_64': 'x86_64-darwin16-gcc',
@@ -543,9 +546,6 @@ class VpxTarget(ConfigureMakeDependencyTarget):
         opts['--target'] = hosts[state.architecture()]
 
         super().configure(state)
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('vpxstats.h')
 
 
 class ZlibNgTarget(CMakeStaticDependencyTarget):
