@@ -547,6 +547,12 @@ class VpxTarget(ConfigureMakeDependencyTarget):
 
         super().configure(state)
 
+        def clean_build_config(line: str):
+            cfg_prefix = 'static const char* const cfg = '
+            return f'{cfg_prefix}"";\n' if line.startswith(cfg_prefix) else line
+
+        self.update_text_file(state.build_path / 'vpx_config.c', clean_build_config)
+
 
 class ZlibNgTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='zlib-ng'):
