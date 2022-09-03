@@ -211,6 +211,14 @@ class HandsOfNecromancyTarget(ZDoomVulkanBaseTarget):
         state.checkout_git('https://github.com/HandsOfNecromancy/HandsOfNecromancy-Engine.git')
 
 
+class RedemptionTarget(ZDoomVulkanBaseTarget):
+    def __init__(self, name='redemption'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/RedemptionEngine/redemption.git')
+
+
 class AccTarget(CMakeSingleExeMainTarget):
     def __init__(self, name='acc'):
         super().__init__(name)

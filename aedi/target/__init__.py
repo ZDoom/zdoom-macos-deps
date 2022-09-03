@@ -31,6 +31,7 @@ def targets():
         LZDoomTarget(),
         RazeTarget(),
         HandsOfNecromancyTarget(),
+        RedemptionTarget(),
         AccTarget(),
         WadExtTarget(),
         ZdbspTarget(),
