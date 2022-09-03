@@ -36,7 +36,7 @@
 |libOPNMIDI|[Homepage](https://github.com/Wohlstand/libOPNMIDI/)||ZMusic||
 |libsndfile|[Homepage](http://www.mega-nerd.com/libsndfile/) / [Download](https://github.com/erikd/libsndfile/releases)|[libsndfile.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libsndfile.rb)|*ZDoom, FluidSynth||
 |libvorbis|[Homepage](https://xiph.org/vorbis/) / [Download](https://github.com/xiph/vorbis/releases)|[libvorbis.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libvorbis.rb)|libsndfile||
-|libvpx|[Homepage](https://www.webmproject.org/code/)|[libvpx.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libvpx.rb)|Raze||
+|libvpx|[Homepage](https://www.webmproject.org/code/)|[libvpx.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libvpx.rb)|*ZDoom||
 |MoltenVK|[Homepage](https://moltengl.com/moltenvk/) / [Download](https://github.com/KhronosGroup/MoltenVK/releases)|[molten-vk.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/molten-vk.rb)|*ZDoom||
 |mpg123|[Homepage](https://www.mpg123.de/)|[mpg123.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/mpg123.rb)|*ZDoom||
 |OpenAL Soft|[Homepage](https://openal-soft.org/) / [Download](https://github.com/kcat/openal-soft/releases)|[openal-soft.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/openal-soft.rb)|*ZDoom||
@@ -54,7 +54,6 @@ Note: OPL implementations used by ZMusic are not listed
 
 |Name|Links|Homebrew Formula|Pulled by|Notes|
 |---|---|---|---|---|
-|freetype|[Homepage](https://www.freetype.org/)|[freetype.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/freetype.rb)|SDL2_ttf||
 |libmikmod|[Homepage](https://modplug-xmms.sourceforge.io/)|[libmikmod.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libmikmod.rb)|SDL2_mixer||
 |libmodplug|[Homepage](https://mikmod.sourceforge.io/)|[libmodplug.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libmodplug.rb)|SDL2_mixer||
 |libpng|[Homepage](http://www.libpng.org/pub/png/libpng.html)|[libpng.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libpng.rb)|SDL2_image||
@@ -67,8 +66,6 @@ Note: OPL implementations used by ZMusic are not listed
 |SDL2_image|[Homepage](https://www.libsdl.org/projects/SDL_image/)|[sdl2_image.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_image.rb)|PrBoom+||
 |SDL2_mixer|[Homepage](https://www.libsdl.org/projects/SDL_mixer/)|[sdl2_mixer.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_mixer.rb)|PrBoom+, DevilutionX||
 |SDL2_net|[Homepage](https://www.libsdl.org/projects/SDL_net/)|[sdl2_net.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_net.rb)|PrBoom+||
-|SDL2_ttf|[Homepage](https://www.libsdl.org/projects/SDL_ttf/)|[sdl2_ttf.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/sdl2_ttf.rb)|DevilutionX||
-|webp|[Homepage](https://developers.google.com/speed/webp/)|[webp.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/webp.rb)|SDL2_image||
 
 ## Tool dependencies
 
