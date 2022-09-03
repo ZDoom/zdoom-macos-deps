@@ -106,5 +106,9 @@ class TestDepsTarget(BuildTarget):
                 entry,
             ]
             args += shlex.split(pkg_config_output)
+
+            if state.verbose:
+                print(' '.join(str(arg) for arg in args))
+
             subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
             subprocess.run((exe_name,), check=True, env=state.environment)
