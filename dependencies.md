@@ -56,7 +56,7 @@ Note: OPL implementations used by ZMusic are not listed
 |---|---|---|---|---|
 |libmikmod|[Homepage](https://modplug-xmms.sourceforge.io/)|[libmikmod.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libmikmod.rb)|SDL2_mixer||
 |libmodplug|[Homepage](https://mikmod.sourceforge.io/)|[libmodplug.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libmodplug.rb)|SDL2_mixer||
-|libpng|[Homepage](http://www.libpng.org/pub/png/libpng.html)|[libpng.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libpng.rb)|SDL2_image||
+|libpng|[Homepage](http://www.libpng.org/pub/png/libpng.html)|[libpng.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libpng.rb)|Chocolate Doom||
 |libsamplerate|[Homepage](http://www.mega-nerd.com/SRC/)|[libsamplerate.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libsamplerate.rb)|Chocolate Doom||
 |libsodium|[Homepage](https://libsodium.org/)|[libsodium.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/libsodium.rb)|DevilutionX||
 |mad|[Homepage](https://www.underbit.com/products/mad/)|[mad.rb](https://github.com/Homebrew/homebrew-core/blob/master/Formula/mad.rb)|PrBoom+||
