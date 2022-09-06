@@ -240,6 +240,14 @@ class InstPatchTarget(CMakeStaticDependencyTarget):
 
         super().configure(state)
 
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        # Remove extra directory from include path
+        include_path = state.install_path / 'include'
+        include_subpath = include_path / 'libinstpatch-2/libinstpatch'
+        shutil.move(str(include_subpath), include_path)
+
 
 class IntlTarget(GettextTarget):
     def __init__(self, name='intl'):
