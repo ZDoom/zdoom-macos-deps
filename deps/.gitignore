@@ -4,7 +4,6 @@
 # Libraries, tier 1
 /bzip2/bin/
 /bzip2/man/
-/flac/bin/
 /flac/include/FLAC++/
 /fluidsynth/bin/
 /glib/bin/gdbus*

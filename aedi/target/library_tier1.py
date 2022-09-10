@@ -82,10 +82,10 @@ class FlacTarget(CMakeStaticDependencyTarget):
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['CMAKE_EXE_LINKER_FLAGS'] = f'-framework CoreFoundation -L{state.lib_path}'
         opts['BUILD_CXXLIBS'] = 'NO'
         opts['BUILD_EXAMPLES'] = 'NO'
-        opts['OGG_PACKAGE'] = 'ogg'
+        opts['BUILD_PROGRAMS'] = 'NO'
+        opts['BUILD_TESTING'] = 'NO'
 
         super().configure(state)
 
@@ -93,7 +93,6 @@ class FlacTarget(CMakeStaticDependencyTarget):
         super().post_build(state)
 
         shutil.copytree(state.install_path / 'share/FLAC/cmake', state.install_path / 'lib/cmake/FLAC')
-        self.keep_module_target(state, 'FLAC::FLAC')
 
 
 class FluidSynthTarget(CMakeStaticDependencyTarget):
