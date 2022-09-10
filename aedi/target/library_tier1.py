@@ -77,7 +77,8 @@ class FlacTarget(CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/xiph/flac/releases/download/1.4.0/flac-1.4.0.tar.xz',
-            'af41c0733c93c237c3e52f64dd87e3b0d9af38259f1c7d11e8cbf583c48c2506')
+            'af41c0733c93c237c3e52f64dd87e3b0d9af38259f1c7d11e8cbf583c48c2506',
+            patches='flac-no-git')
 
     def configure(self, state: BuildState):
         opts = state.options
