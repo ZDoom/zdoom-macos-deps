@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget FLAC::FLAC FLAC::flacapp FLAC::metaflac)
+foreach(_expectedTarget FLAC::FLAC)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -58,12 +58,6 @@ set_target_properties(FLAC::FLAC PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
   INTERFACE_LINK_LIBRARIES "\$<\$<BOOL:1>:m>;Ogg::ogg"
 )
-
-# Create imported target FLAC::flacapp
-add_executable(FLAC::flacapp IMPORTED)
-
-# Create imported target FLAC::metaflac
-add_executable(FLAC::metaflac IMPORTED)
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
   message(FATAL_ERROR "This file relies on consumers using CMake 2.8.12 or greater.")

@@ -25,7 +25,9 @@ endmacro()
 ####################################################################################
 
 include(CMakeFindDependencyMacro)
-find_dependency(Ogg)
+if(NOT TARGET Ogg::ogg)
+    find_dependency(Ogg)
+endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/targets.cmake")
 
