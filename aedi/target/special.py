@@ -97,7 +97,7 @@ class TestDepsTarget(BuildTarget):
             print('Testing ' + test_name)
 
             args = [
-                'clang',
+                'clang++',
                 '-arch', 'x86_64',
                 '-arch', 'arm64',
                 '-std=c++17',
