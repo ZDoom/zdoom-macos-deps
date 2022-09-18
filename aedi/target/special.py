@@ -92,23 +92,23 @@ class TestDepsTarget(BuildTarget):
 
             test_name = entry.stem
             pkg_config_output = state.run_pkg_config('--cflags', '--libs', test_name)
-            exe_name = state.build_path / test_name
+            exe_path = state.build_path / test_name
 
             print('Testing ' + test_name)
 
-            args = [
+            build_args = [
                 'clang++',
                 '-arch', 'x86_64',
                 '-arch', 'arm64',
                 '-std=c++17',
                 '-include', test_path / 'aedi.h',
-                '-o', exe_name,
+                '-o', exe_path,
                 entry,
             ]
-            args += shlex.split(pkg_config_output)
+            build_args += shlex.split(pkg_config_output)
 
             if state.verbose:
-                print(' '.join(str(arg) for arg in args))
+                print(' '.join(str(arg) for arg in build_args))
 
-            subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
-            subprocess.run((exe_name,), check=True, env=state.environment)
+            for args in (build_args, (exe_path,)):
+                subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
