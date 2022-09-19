@@ -102,6 +102,7 @@ class TestDepsTarget(BuildTarget):
                 '-arch', 'arm64',
                 '-std=c++17',
                 '-include', test_path / 'aedi.h',
+                '-g',
                 '-o', exe_path,
                 entry,
             ]
