@@ -101,14 +101,12 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.2.9.tar.gz',
-            'bc62494ec2554fdcfc01512a2580f12fc1e1b01ce37a18b370dd7902af7a8159')
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.0.tar.gz',
+            '1df5a1afb91acf3b945b7fdb89ac0d99877622161d9b5155533da59113eaaa20')
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['CMAKE_EXE_LINKER_FLAGS'] = f'-framework Foundation -L{state.lib_path}'
         opts['DEFAULT_SOUNDFONT'] = 'default.sf2'
-        opts['LIB_SUFFIX'] = None
         opts['enable-framework'] = 'NO'
         opts['enable-readline'] = 'NO'
         opts['enable-sdl2'] = 'NO'
