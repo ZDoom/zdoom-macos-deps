@@ -76,9 +76,8 @@ class FlacTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/xiph/flac/releases/download/1.4.0/flac-1.4.0.tar.xz',
-            'af41c0733c93c237c3e52f64dd87e3b0d9af38259f1c7d11e8cbf583c48c2506',
-            patches='flac-no-git')
+            'https://github.com/xiph/flac/releases/download/1.4.1/flac-1.4.1.tar.xz',
+            '91303c3e5dfde52c3e94e75976c0ab3ee14ced278ab8f60033a3a12db9209ae6')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -88,11 +87,6 @@ class FlacTarget(CMakeStaticDependencyTarget):
         opts['BUILD_TESTING'] = 'NO'
 
         super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        shutil.copytree(state.install_path / 'share/FLAC/cmake', state.install_path / 'lib/cmake/FLAC')
 
 
 class FluidSynthTarget(CMakeStaticDependencyTarget):
