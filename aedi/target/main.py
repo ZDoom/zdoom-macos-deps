@@ -401,12 +401,6 @@ class EDuke32Target(MakeMainTarget):
 
         return has_bundle('EDuke32') and not has_bundle('NBlood')
 
-    def configure(self, state: BuildState):
-        super().configure(state)
-
-        # Fix missing definition when building with SDK older than 10.12
-        state.update_environment('CXXFLAGS', '-DCLOCK_MONOTONIC=0')
-
 
 class NBloodTarget(EDuke32Target):
     def __init__(self, name='nblood'):
