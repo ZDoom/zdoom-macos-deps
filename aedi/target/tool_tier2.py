@@ -19,6 +19,21 @@
 from .base import *
 
 
+class PbzxTarget(SingleExeCTarget):
+    def __init__(self, name='pbzx'):
+        super().__init__(name)
+        self.options = ('pbzx.c', '-lxar', '-llzma')
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/nrosenstein-stuff/pbzx/archive/refs/tags/v1.0.2.tar.gz',
+            '33db3cf9dc70ae704e1bbfba52c984f4c6dbfd0cc4449fa16408910e22b4fd90',
+            'pbzx-xar-content')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('pbzx.c')
+
+
 class ZipTarget(SingleExeCTarget):
     def __init__(self, name='zip'):
         super().__init__(name)
