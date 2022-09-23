@@ -109,7 +109,7 @@ def targets():
         WxWidgetsTarget(),
         ZstdTarget(),
 
-        # Tools
+        # Tools needed to build main targets and libraries (tiers 1 and 2)
         BuildCMakeTarget(),
         GmakeTarget(),
         MesonTarget(),
@@ -120,6 +120,8 @@ def targets():
         PkgConfigTarget(),
         UnrarTarget(),
         YasmTarget(),
+
+        # Tools without binaries stored in the repo, can be outdated
         ZipTarget(),
 
         # Special

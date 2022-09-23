@@ -205,23 +205,3 @@ class YasmTarget(ConfigureMakeDependencyTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('libyasm.h')
-
-
-class ZipTarget(SingleExeCTarget):
-    def __init__(self, name='zip'):
-        super().__init__(name)
-        self.options = (
-            '-I.', '-DUNIX', '-DBZIP2_SUPPORT', '-DLARGE_FILE_SUPPORT', '-DUNICODE_SUPPORT',
-            '-DHAVE_DIRENT_H', '-DHAVE_TERMIOS_H', '-lbz2',
-            'crc32.c', 'crypt.c', 'deflate.c', 'fileio.c', 'globals.c', 'trees.c',
-            'ttyio.c', 'unix/unix.c', 'util.c', 'zip.c', 'zipfile.c', 'zipup.c',
-        )
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://downloads.sourceforge.net/project/infozip/Zip%203.x%20%28latest%29/3.0/zip30.tar.gz',
-            'f0e8bb1f9b7eb0b01285495a2699df3a4b766784c1765a8f1aeedf63c0806369',
-            patches='zip-fix-misc')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('zip.h')
