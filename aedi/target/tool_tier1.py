@@ -17,36 +17,9 @@
 #
 
 import pathlib
-import shlex
 import zipapp
 
 from .base import *
-
-
-class SingleExeCTarget(MakeTarget):
-    def __init__(self, name=None):
-        super().__init__(name)
-        self.options = ()
-
-    def configure(self, state: BuildState):
-        super().configure(state)
-
-        for option in self.options:
-            state.options[option] = None
-
-    def build(self, state: BuildState):
-        c_compiler = state.c_compiler()
-        assert c_compiler
-
-        args = [str(c_compiler), '-O3', '-o', self.name] + state.options.to_list()
-
-        for var in ('CFLAGS', 'LDFLAGS'):
-            args += shlex.split(state.environment[var])
-
-        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
-
-    def post_build(self, state: BuildState):
-        self.copy_to_bin(state)
 
 
 class BuildCMakeTarget(CMakeTarget):
