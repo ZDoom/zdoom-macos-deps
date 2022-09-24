@@ -38,8 +38,6 @@
 /sndfile/include/sndfile.hh
 
 # Libraries, tier 2
-/brotli/bin/
-/lzma/bin/
 /png/bin/png-fix-itxt
 /png/bin/pngfix
 /samplerate/bin/
