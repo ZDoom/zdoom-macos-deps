@@ -163,22 +163,6 @@ class PkgConfigTarget(ConfigureMakeDependencyTarget):
         self.copy_to_bin(state, new_filename=self.name + '.exe')
 
 
-class UnrarTarget(MakeTarget):
-    def __init__(self, name='unrar'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://www.rarlab.com/rar/unrarsrc-6.0.7.tar.gz',
-            'a7029942006cbcced3f3b7322ec197683f8e7be408972ca08099b196c038f518')
-
-    def post_build(self, state: BuildState):
-        self.copy_to_bin(state)
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('rar.hpp')
-
-
 class YasmTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='yasm'):
         super().__init__(name)

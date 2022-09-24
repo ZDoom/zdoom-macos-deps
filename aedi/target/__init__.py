@@ -117,11 +117,11 @@ def targets():
         NinjaTarget(),
         P7ZipTarget(),
         PkgConfigTarget(),
-        UnrarTarget(),
         YasmTarget(),
 
         # Tools without binaries stored in the repo, can be outdated
         PbzxTarget(),
+        UnrarTarget(),
         ZipTarget(),
 
         # Special
