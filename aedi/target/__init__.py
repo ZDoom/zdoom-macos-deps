@@ -115,11 +115,11 @@ def targets():
         MesonTarget(),
         NasmTarget(),
         NinjaTarget(),
-        P7ZipTarget(),
         PkgConfigTarget(),
         YasmTarget(),
 
         # Tools without binaries stored in the repo, can be outdated
+        P7ZipTarget(),
         PbzxTarget(),
         UnrarTarget(),
         ZipTarget(),

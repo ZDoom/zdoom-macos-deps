@@ -129,24 +129,6 @@ class NinjaTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class P7ZipTarget(CMakeTarget):
-    def __init__(self, name='p7zip'):
-        super().__init__(name)
-        self.src_root = 'CPP/7zip/CMAKE/7za'
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://github.com/jinfeihan57/p7zip/archive/refs/tags/v17.04.tar.gz',
-            'ea029a2e21d2d6ad0a156f6679bd66836204aa78148a4c5e498fe682e77127ef')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('CPP/7zip/CMAKE/CMakeLists.txt') \
-            and state.has_source_file('C/fast-lzma2/fast-lzma2.h')
-
-    def post_build(self, state: BuildState):
-        self.copy_to_bin(state, '7za')
-
-
 class PkgConfigTarget(ConfigureMakeDependencyTarget):
     def __init__(self, name='pkg-config'):
         super().__init__(name)
