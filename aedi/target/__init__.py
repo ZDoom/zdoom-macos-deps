@@ -76,7 +76,6 @@ def targets():
         # Libraries needed for other targets
         DumbTarget(),
         FmtTarget(),
-        LzmaTarget(),
         MadTarget(),
         MikmodTarget(),
         ModPlugTarget(),
@@ -102,6 +101,7 @@ def targets():
         GlewTarget(),
         HarfBuzzTarget(),
         LuaTarget(),
+        LzmaTarget(),
         Sdl2TtfTarget(),
         SfmlTarget(),
         TiffTarget(),
