@@ -224,6 +224,7 @@
 /* #undef HAVE_INOTIFY_INIT */
 /* #undef HAVE_INOTIFY_INIT1 */
 /* #undef HAVE_INOTIFY */
+/* #undef HAVE_LIBUSB */
 #define HAVE_O_CLOEXEC 1
 
 /* Apple platforms might be building universal binaries, where Intel builds
