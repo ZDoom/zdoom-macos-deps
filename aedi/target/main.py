@@ -131,7 +131,7 @@ class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
                 src_stat = os.stat(src)
                 dst_stat = os.stat(dst)
 
-                if src_stat.st_mtime != dst_stat.st_mtime:
+                if src_stat.st_size != dst_stat.st_size or src_stat.st_mtime != dst_stat.st_mtime:
                     shutil.copy2(src, dst)
 
         super().configure(state)
