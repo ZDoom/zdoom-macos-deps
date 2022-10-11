@@ -429,7 +429,7 @@ class QuakespasmTarget(MakeMainTarget):
         state.checkout_git('https://git.code.sf.net/p/quakespasm/quakespasm')
 
     def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('Quakespasm.txt')
+        return state.has_source_file('Quakespasm.txt') and not QuakespasmExpTarget().detect(state)
 
     def configure(self, state: BuildState):
         super().configure(state)
@@ -443,3 +443,20 @@ class QuakespasmTarget(MakeMainTarget):
         opts['USE_CODEC_UMX'] = '1'
         # Add main() alias to workaround executable linking without macOS launcher
         opts['COMMON_LIBS'] = '-framework OpenGL -Wl,-alias -Wl,_SDL_main -Wl,_main'
+
+
+class QuakespasmExpTarget(CMakeMainTarget):
+    def __init__(self, name='quakespasm-exp'):
+        super().__init__(name)
+        self.outputs = (self.name, 'quakespasm.pak')
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/alexey-lysiuk/quakespasm-exp.git')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'ogg', 'SDL2')
+        opts['QUAKE_MACOS_BUNDLE'] = 'OFF'
+        opts['QUAKE_MACOS_MOUSE_ACCELERATION'] = 'ON'
+
+        super().configure(state)
