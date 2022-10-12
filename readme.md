@@ -40,6 +40,7 @@ Xcode 12.2 or newer is required in order to build universal binaries. Launch Xco
 * `prefix` directory stores symbolic links to all dependencies combined as one build root
 * `sdk` directory can contain macOS SDKs that will be picked if match with macOS deployment versions
 * `source` directory stores targets source code, customizable with `--source-path` command line option
+* `temp` directory stores temporary files, customizable with `--temp-path` command line option
 
 ## Common information
 
