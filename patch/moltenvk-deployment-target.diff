@@ -1,6 +1,6 @@
 --- a/ExternalDependencies.xcodeproj/project.pbxproj
 +++ b/ExternalDependencies.xcodeproj/project.pbxproj
-@@ -5690,7 +5690,7 @@
+@@ -5826,7 +5826,7 @@
  				GCC_WARN_UNUSED_VARIABLE = NO;
  				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
  				MACH_O_TYPE = staticlib;
@@ -9,7 +9,7 @@
  				SKIP_INSTALL = YES;
  				TVOS_DEPLOYMENT_TARGET = 11.0;
  			};
-@@ -5740,7 +5740,7 @@
+@@ -5876,7 +5876,7 @@
  				GCC_WARN_UNUSED_VARIABLE = NO;
  				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
  				MACH_O_TYPE = staticlib;
@@ -20,24 +20,24 @@
  				VALIDATE_PRODUCT = YES;
 --- a/MoltenVK/MoltenVK.xcodeproj/project.pbxproj
 +++ b/MoltenVK/MoltenVK.xcodeproj/project.pbxproj
-@@ -1619,7 +1619,7 @@
+@@ -1618,7 +1618,7 @@
  				);
  				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
  				MACH_O_TYPE = staticlib;
 -				MACOSX_DEPLOYMENT_TARGET = 10.13;
 +				MACOSX_DEPLOYMENT_TARGET = 10.12;
  				MTL_ENABLE_DEBUG_INFO = YES;
- 				MVK_HIDE_VULKAN_SYMBOLS = 0;
  				MVK_SKIP_DYLIB = "";
-@@ -1692,7 +1692,7 @@
+ 				"MVK_SKIP_DYLIB[sdk=appletvsimulator*]" = YES;
+@@ -1689,7 +1689,7 @@
  				);
  				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
  				MACH_O_TYPE = staticlib;
 -				MACOSX_DEPLOYMENT_TARGET = 10.13;
 +				MACOSX_DEPLOYMENT_TARGET = 10.12;
  				MTL_ENABLE_DEBUG_INFO = NO;
- 				MVK_HIDE_VULKAN_SYMBOLS = 0;
  				MVK_SKIP_DYLIB = "";
+ 				"MVK_SKIP_DYLIB[sdk=appletvsimulator*]" = YES;
 --- a/MoltenVKShaderConverter/MoltenVKShaderConverter.xcodeproj/project.pbxproj
 +++ b/MoltenVKShaderConverter/MoltenVKShaderConverter.xcodeproj/project.pbxproj
 @@ -638,7 +638,7 @@
