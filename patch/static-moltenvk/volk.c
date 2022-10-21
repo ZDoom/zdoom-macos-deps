@@ -68,13 +68,6 @@ VkDeviceAddress vkGetAccelerationStructureDeviceAddressKHR(
 	return 0;
 }
 
-VkDeviceAddress vkGetBufferDeviceAddress(
-	VkDevice                                    device,
-	const VkBufferDeviceAddressInfo*            pInfo)
-{
-	return 0;
-}
-
 #ifdef __cplusplus
 }
 #endif
