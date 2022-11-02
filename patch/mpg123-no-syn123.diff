@@ -1,6 +1,6 @@
 --- a/ports/cmake/src/CMakeLists.txt
 +++ b/ports/cmake/src/CMakeLists.txt
-@@ -363,7 +363,6 @@
+@@ -374,7 +374,6 @@
  if(BUILD_LIBOUT123)
      add_subdirectory("libout123")
  endif()

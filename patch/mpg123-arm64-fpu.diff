@@ -1,6 +1,6 @@
 --- a/ports/cmake/src/CMakeLists.txt
 +++ b/ports/cmake/src/CMakeLists.txt
-@@ -179,7 +179,7 @@
+@@ -190,7 +190,7 @@
      set(NO_ERETURN ON)
  endif()
  
