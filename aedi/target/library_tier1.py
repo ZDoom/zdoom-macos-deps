@@ -581,16 +581,29 @@ class ZMusicTarget(CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/ZDoom/ZMusic/archive/refs/tags/1.1.10.tar.gz',
-            '378435b35f02a3123ee9e01b5e7990017f9bc1244b788e3bf54b37b34a2985ba')
+            'https://github.com/ZDoom/ZMusic/archive/refs/tags/1.1.11.tar.gz',
+            '623c3d7edfcdbe1ba4e7a9dc9a4d834fb92a228881621247855ecd57447631dd')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/zmusic.h')
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['DYN_FLUIDSYNTH'] = 'OFF'
         opts['DYN_MPG123'] = 'OFF'
         opts['DYN_SNDFILE'] = 'OFF'
 
         super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        # Fix full path to glib
+        link_libs_key = '  INTERFACE_LINK_LIBRARIES '
+        link_libs_value = r'"\$<LINK_ONLY:sndfile>;\$<LINK_ONLY:mpg123>;\$<LINK_ONLY:ZLIB::ZLIB>;glib-2.0"'
+        module_path = state.install_path / 'lib/cmake/ZMusic'
+
+        def update_cmake_libs(line: str):
+            return f'{link_libs_key}{link_libs_value}\n' if line.startswith(link_libs_key) else line
+
+        for kind in ('Full', 'Lite'):
+            self.update_text_file(module_path / f'ZMusic{kind}Targets.cmake', update_cmake_libs)
