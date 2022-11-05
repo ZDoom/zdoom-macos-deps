@@ -87,7 +87,7 @@ class ZDoomBaseTarget(CMakeMainTarget):
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'fluidsynth', 'libmpg123')
+        opts['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'glib-2.0', 'libmpg123', 'openal', 'sndfile')
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
 
