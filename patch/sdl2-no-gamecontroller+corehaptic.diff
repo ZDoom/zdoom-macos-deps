@@ -1,6 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1992,7 +1992,7 @@
+@@ -2088,7 +2088,7 @@
            #import <Foundation/Foundation.h>
            #import <CoreHaptics/CoreHaptics.h>
            int main() { return 0; }" HAVE_FRAMEWORK_COREHAPTICS)

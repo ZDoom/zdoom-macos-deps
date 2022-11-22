@@ -1,20 +1,20 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2790,7 +2790,7 @@
- 
- # Compat helpers for the configuration files
+@@ -2966,7 +2966,7 @@
+ endif()
+
  find_package(Git)
 -if(Git_FOUND)
 +if(0)
    execute_process(COMMAND
-     "${GIT_EXECUTABLE}" remote get-url origin
-     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-@@ -2811,7 +2811,7 @@
-     set(SDL_REVISION "")
-   endif()
+     "${GIT_EXECUTABLE}" describe --always --tags --long
+     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+@@ -2975,7 +2975,7 @@
+     ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
  else()
--  set(SDL_REVISION "")
-+  set(SDL_REVISION "https://github.com/libsdl-org/SDL.git@53dea9830964eee8b5c2a7ee0a65d6e268dc78a1")
+   set(GIT_REVISION_STATUS 1)
+-  set(GIT_REVISION "")
++  set(SDL_REVISION "SDL-release-2.26.0-0-g0bfeed061")
  endif()
- 
- configure_file("${SDL2_SOURCE_DIR}/include/SDL_revision.h.cmake"
+
+ if(SDL_SOURCE_VERSION)
