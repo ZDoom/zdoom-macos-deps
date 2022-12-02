@@ -217,7 +217,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
         state.download_source(
             'https://github.com/libsdl-org/SDL/releases/download/release-2.26.0/SDL2-2.26.0.tar.gz',
             '8000d7169febce93c84b6bdf376631f8179132fd69f7015d4dadb8b9c2bdb295',
-            patches=('sdl2-no-updaterev', 'sdl2-no-gamecontroller+corehaptic'))
+            patches='sdl2-no-gamecontroller+corehaptic')
 
     def configure(self, state: BuildState):
         opts = state.options
