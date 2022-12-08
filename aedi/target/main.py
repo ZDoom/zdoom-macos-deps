@@ -112,16 +112,27 @@ class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
             replacement_src_path = state.patch_path / 'static-moltenvk'
             replacement_files = ('UpdateRevision.cmake', 'volk.c', 'volk.h')
 
-            replacement_dst_volk_subpath = 'common/rendering/vulkan/thirdparty/volk/'
-            replacement_dst_volk_path = Path('src') / replacement_dst_volk_subpath
+            # TODO: remove old code path when ZVulkan is merged into Raze
+            zvulkan_base_path = Path('libraries/ZVulkan')
+            has_zvulkan = os.path.exists(state.source / zvulkan_base_path)
+            replacement_dst_volk_path = None
 
-            if not os.path.exists(state.source / replacement_dst_volk_path):
-                replacement_dst_volk_path = Path('source') / replacement_dst_volk_subpath
+            if has_zvulkan:
+                volk_h_dst_path = state.source / zvulkan_base_path / 'src/volk/volk.h'
+
+                if not os.path.exists(volk_h_dst_path):
+                    os.symlink(replacement_src_path / 'volk.h', volk_h_dst_path)
+            else:
+                replacement_dst_volk_subpath = 'common/rendering/vulkan/thirdparty/volk/'
+                replacement_dst_volk_path = Path('src') / replacement_dst_volk_subpath  # GZDoom path
+
+                if not os.path.exists(state.source / replacement_dst_volk_path):
+                    replacement_dst_volk_path = Path('source') / replacement_dst_volk_subpath  # Raze path
 
             replacement_dst_paths = (
                 'tools/updaterevision',
-                replacement_dst_volk_path,
-                replacement_dst_volk_path
+                zvulkan_base_path / 'src/volk' if has_zvulkan else replacement_dst_volk_path,  # volk.c
+                zvulkan_base_path / 'include/zvulkan/volk' if has_zvulkan else replacement_dst_volk_path  # volk.h
             )
 
             for dst_path, filename in zip(replacement_dst_paths, replacement_files):
