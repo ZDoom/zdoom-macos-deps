@@ -1,6 +1,6 @@
 --- a/ExternalDependencies.xcodeproj/project.pbxproj
 +++ b/ExternalDependencies.xcodeproj/project.pbxproj
-@@ -5826,7 +5826,7 @@
+@@ -5882,7 +5882,7 @@
  				GCC_WARN_UNUSED_VARIABLE = NO;
  				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
  				MACH_O_TYPE = staticlib;
@@ -9,7 +9,7 @@
  				SKIP_INSTALL = YES;
  				TVOS_DEPLOYMENT_TARGET = 11.0;
  			};
-@@ -5876,7 +5876,7 @@
+@@ -5932,7 +5932,7 @@
  				GCC_WARN_UNUSED_VARIABLE = NO;
  				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
  				MACH_O_TYPE = staticlib;

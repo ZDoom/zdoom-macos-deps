@@ -293,8 +293,8 @@ class MoltenVKTarget(MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.2.0.tar.gz',
-            '6e7af2dad0530b2b404480dbe437ca4670c6615cc2ec6cf6a20ed04d9d75e0bd',
+            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.2.1.tar.gz',
+            '4742df8f35473c5a737f2b120ae06aa6b9e8a7a3753b88932e501b06b1d17ea8',
             patches='moltenvk-deployment-target')
 
     def initialize(self, state: BuildState):
