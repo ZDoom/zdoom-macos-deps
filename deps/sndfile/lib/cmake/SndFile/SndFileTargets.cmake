@@ -55,7 +55,7 @@ add_library(SndFile::sndfile STATIC IMPORTED)
 
 set_target_properties(SndFile::sndfile PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:\$<\$<BOOL:1>:m>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:Vorbis::vorbisenc>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:FLAC::FLAC>>;\$<LINK_ONLY:\$<\$<AND:\$<BOOL:OFF>,\$<BOOL:ON>,\$<BOOL:OFF>>:Speex::Speex>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:Opus::opus>>;\$<LINK_ONLY:\$<\$<BOOL:NO>:MPG123::libmpg123>>;\$<LINK_ONLY:\$<\$<BOOL:NO>:Lame::Lame>>"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:\$<\$<BOOL:1>:m>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:Vorbis::vorbisenc>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:FLAC::FLAC>>;\$<LINK_ONLY:\$<\$<AND:\$<BOOL:OFF>,\$<BOOL:ON>,\$<BOOL:OFF>>:Speex::Speex>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:Opus::opus>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:MPG123::libmpg123>>;\$<LINK_ONLY:\$<\$<BOOL:ON>:mp3lame::mp3lame>>"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)

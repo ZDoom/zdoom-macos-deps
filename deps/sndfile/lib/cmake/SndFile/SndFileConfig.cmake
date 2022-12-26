@@ -1,10 +1,10 @@
-set(SndFile_VERSION 1.1.0)
+set(SndFile_VERSION 1.2.0)
 set(SndFile_VERSION_MAJOR 1)
-set(SndFile_VERSION_MINOR 1)
+set(SndFile_VERSION_MINOR 2)
 set(SndFile_VERSION_PATCH 0)
 
 set (SndFile_WITH_EXTERNAL_LIBS 1)
-set (SndFile_WITH_MPEG 0)
+set (SndFile_WITH_MPEG 1)
 
 
 ####### Expanded from @PACKAGE_INIT@ by configure_package_config_file() #######
@@ -42,7 +42,7 @@ if (SndFile_WITH_EXTERNAL_LIBS AND NOT NO)
 endif ()
 
 if (SndFile_WITH_MPEG AND NOT NO)
-	find_dependency (Lame)
+	find_dependency (mp3lame)
 	find_dependency (MPG123)
 endif ()
 

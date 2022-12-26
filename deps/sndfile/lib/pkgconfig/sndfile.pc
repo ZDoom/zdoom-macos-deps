@@ -6,8 +6,8 @@ includedir=${prefix}/include
 Name: sndfile
 Description: A library for reading and writing audio files
 Requires:
-Requires.private: flac ogg vorbis vorbisenc opus 
-Version: 1.1.0
+Requires.private: flac ogg vorbis vorbisenc opus libmpg123
+Version: 1.2.0
 Libs: -L${libdir} -lsndfile
-Libs.private: 
+Libs.private: -lmp3lame
 Cflags: -I${includedir}
