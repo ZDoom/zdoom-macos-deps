@@ -284,6 +284,19 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
+class LameTarget(ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='lame'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz',
+            'ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('lame.spec')
+
+
 class MoltenVKTarget(MakeTarget):
     def __init__(self, name='moltenvk'):
         super().__init__(name)

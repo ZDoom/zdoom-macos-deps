@@ -62,6 +62,7 @@ def targets():
         InstPatchTarget(),
         IntlTarget(),
         JpegTurboTarget(),
+        LameTarget(),
         MoltenVKTarget(),
         Mpg123Target(),
         OggTarget(),
