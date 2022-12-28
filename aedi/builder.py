@@ -323,8 +323,18 @@ class Builder(object):
         excl_group.add_argument('--target', choices=self._targets.keys(), help='target to build')
         excl_group.add_argument('--source', metavar='path', help='path to target\'s source code')
 
-        group = parser.add_argument_group()
+        group = parser.add_argument_group('Configuration options')
         group.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
+        group.add_argument('--os-version-x64', metavar='version', help='macOS deployment version for x86_64')
+        group.add_argument('--os-version-arm', metavar='version', help='macOS deployment version for ARM64')
+        group.add_argument('--verbose', action='store_true', help='enable verbose build output')
+        group.add_argument('--jobs', help='number of parallel compilation jobs')
+
+        excl_group = parser.add_mutually_exclusive_group()
+        excl_group.add_argument('--disable-x64', action='store_true', help='disable x86_64 support')
+        excl_group.add_argument('--disable-arm', action='store_true', help='disable ARM64 support')
+
+        group = parser.add_argument_group('Paths')
         group.add_argument('--source-path', metavar='path',
                            help='path to store downloaded and checked out source code')
         group.add_argument('--build-path', metavar='path', help='target build path')
@@ -332,14 +342,8 @@ class Builder(object):
         group.add_argument('--temp-path', metavar='path', help='path to temporary files directory')
         group.add_argument('--sdk-path-x64', metavar='path', help='path to macOS SDK for x86_64')
         group.add_argument('--sdk-path-arm', metavar='path', help='path to macOS SDK for ARM64')
-        group.add_argument('--os-version-x64', metavar='version', help='macOS deployment version for x86_64')
-        group.add_argument('--os-version-arm', metavar='version', help='macOS deployment version for ARM64')
-        group.add_argument('--verbose', action='store_true', help='enable verbose build output')
-        group.add_argument('--jobs', help='number of parallel compilation jobs')
-        group.add_argument('--static-moltenvk', action='store_true', help='link with static MoltenVK library')
 
-        excl_group = parser.add_mutually_exclusive_group()
-        excl_group.add_argument('--disable-x64', action='store_true', help='disable x86_64 support')
-        excl_group.add_argument('--disable-arm', action='store_true', help='disable ARM64 support')
+        group = parser.add_argument_group('Hacks')
+        group.add_argument('--static-moltenvk', action='store_true', help='link with static MoltenVK library')
 
         return parser.parse_args(args)
