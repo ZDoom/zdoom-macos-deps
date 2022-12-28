@@ -69,6 +69,7 @@ def targets():
         OpenALTarget(),
         OpusTarget(),
         PcreTarget(),
+        QuasiGlibTarget(),
         SndFileTarget(),
         VorbisTarget(),
         VpxTarget(),

@@ -507,6 +507,23 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
         self.update_config_script(state.install_path / 'bin/pcre-config')
 
 
+class QuasiGlibTarget(BuildTarget):
+    def __init__(self, name='quasi-glib'):
+        super().__init__(name)
+
+    def build(self, state: BuildState):
+        lib_path = state.install_path / 'lib'
+        os.makedirs(lib_path, exist_ok=True)
+
+        commands = (
+            (state.cxx_compiler(), '-std=c++11', '-O3', '-c', state.patch_path / f'{self.name}.cpp'),
+            (state.host() + '-ar', '-crs', lib_path / f'lib{self.name}.a', f'{self.name}.o'),
+        )
+
+        for command in commands:
+            subprocess.run(command, check=True, cwd=state.build_path, env=state.environment)
+
+
 class SndFileTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
