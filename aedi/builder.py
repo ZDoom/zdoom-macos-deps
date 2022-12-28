@@ -91,6 +91,7 @@ class Builder(object):
         self._environment = state.environment
 
         state.static_moltenvk = arguments.static_moltenvk
+        state.quasi_glib = arguments.quasi_glib
         state.jobs = arguments.jobs and arguments.jobs or self._get_default_job_count()
 
     def _get_default_job_count(self):
@@ -345,5 +346,6 @@ class Builder(object):
 
         group = parser.add_argument_group('Hacks')
         group.add_argument('--static-moltenvk', action='store_true', help='link with static MoltenVK library')
+        group.add_argument('--quasi-glib', action='store_true', help='link with QuasiGlib library')
 
         return parser.parse_args(args)

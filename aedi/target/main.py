@@ -86,8 +86,16 @@ class ZDoomBaseTarget(CMakeMainTarget):
         super().__init__(name)
 
     def configure(self, state: BuildState):
+        pkg_config_args = ['--libs', 'openal', 'sndfile']
+        linker_flags = ''
+
+        if state.quasi_glib:
+            linker_flags = '-lquasi-glib '
+        else:
+            pkg_config_args.append('glib-2.0')
+
         opts = state.options
-        opts['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'glib-2.0', 'libmpg123', 'openal', 'sndfile')
+        opts['CMAKE_EXE_LINKER_FLAGS'] += linker_flags + state.run_pkg_config(*pkg_config_args)
         opts['PK3_QUIET_ZIPDIR'] = 'YES'
         opts['DYN_OPENAL'] = 'NO'
 
