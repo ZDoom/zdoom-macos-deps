@@ -114,18 +114,10 @@ class BuildTarget(Target):
         if cxx_compiler := state.cxx_compiler():
             env['CXX'] = str(cxx_compiler)
 
-        for prefix in ('CPP', 'C', 'CXX', 'OBJC', 'OBJCXX'):
-            var_name = f'{prefix}FLAGS'
+        for prefix in ('C', 'CPP', 'CXX', 'OBJC', 'OBJCXX'):
+            state.update_flags_environment_variable(f'{prefix}FLAGS', f'-I{state.include_path}')
 
-            state.update_environment(var_name, f'-I{state.include_path}')
-            state.set_sdk(var_name)
-            state.set_os_version(var_name)
-
-        ldflags = 'LDFLAGS'
-
-        state.update_environment(ldflags, f'-L{state.lib_path}')
-        state.set_sdk(ldflags)
-        state.set_os_version(ldflags)
+        state.update_flags_environment_variable('LDFLAGS', f'-L{state.lib_path}')
 
     def install(self, state: BuildState, options: CommandLineOptions = None, tool: str = 'gmake'):
         if state.xcode:

@@ -211,16 +211,14 @@ class BuildState:
     def has_source_file(self, path: typing.Union[str, Path]):
         return (self.source / path).exists()
 
-    def update_environment(self, name: str, value: str):
-        env = self.environment
-        env[name] = env[name] + ' ' + value if name in env else value
-
-    def set_sdk(self, var_name: str):
+    def update_flags_environment_variable(self, name: str, value: str):
         sdk_path = self.sdk_path()
         if sdk_path:
-            self.update_environment(var_name, f'-isysroot {sdk_path}')
+            value += f' -isysroot {sdk_path}'
 
-    def set_os_version(self, var_name: str):
         os_version = self.os_version()
         if os_version:
-            self.update_environment(var_name, f'-mmacosx-version-min={os_version}')
+            value += f' -mmacosx-version-min={os_version}'
+
+        env = self.environment
+        env[name] = env[name] + ' ' + value if name in env else value
