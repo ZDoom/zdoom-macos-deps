@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.1)
+project(quasi-glib)
+add_library(quasi-glib quasi-glib.cpp)
+set_property(TARGET quasi-glib PROPERTY CXX_STANDARD 11)
+install(TARGETS quasi-glib)
