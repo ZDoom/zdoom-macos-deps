@@ -27,12 +27,7 @@ from pathlib import Path
 from platform import machine
 
 from ..state import BuildState
-from ..utility import (
-    OS_VERSION_ARM64,
-    OS_VERSION_X86_64,
-    CommandLineOptions,
-    symlink_directory,
-)
+from ..utility import CommandLineOptions, symlink_directory
 
 
 class Target:
@@ -81,23 +76,7 @@ class BuildTarget(Target):
         self.src_root = ''
         self.multi_platform = True
 
-        self.os_version = dict()
-        self.os_version['x86_64'] = OS_VERSION_X86_64
-        self.os_version['arm64'] = OS_VERSION_ARM64
-
-        self.sdk_version = dict()
-        self.sdk_version['x86_64'] = OS_VERSION_X86_64
-        self.sdk_version['arm64'] = OS_VERSION_ARM64
-
     def configure(self, state: BuildState):
-        os_version = state.os_version()
-        if os_version and os_version < self.os_version[state.architecture()]:
-            raise RuntimeError('Minimum OS version requirement is not met')
-
-        if sdk_version := state.sdk_version():
-            if sdk_version < self.sdk_version[state.architecture()]:
-                raise RuntimeError('Minimum SDK version requirement is not met')
-
         os.makedirs(state.build_path, exist_ok=True)
 
         env = state.environment
