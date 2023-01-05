@@ -87,7 +87,7 @@ class BuildState:
     def cxx_compiler(self) -> Path:
         return self.platform.cxx_compiler if self.platform else None
 
-    def checkout_git(self, url: str, branch: str = None):
+    def checkout_git(self, url: str, branch: typing.Optional[str] = None):
         if self.source.exists():
             return
 
@@ -98,7 +98,7 @@ class BuildState:
             args = ('git', 'checkout', '-b', branch, 'origin/' + branch)
             subprocess.run(args, check=True, cwd=self.source, env=self.environment)
 
-    def download_source(self, url: str, checksum: str, patches: typing.Union[tuple, list, str] = None):
+    def download_source(self, url: str, checksum: str, patches: typing.Union[tuple, list, str, None] = None):
         if self.external_source:
             return
 

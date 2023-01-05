@@ -98,7 +98,7 @@ class BuildTarget(Target):
 
         state.update_flags_environment_variable('LDFLAGS', f'-L{state.lib_path}')
 
-    def install(self, state: BuildState, options: CommandLineOptions = None, tool: str = 'gmake'):
+    def install(self, state: BuildState, options: typing.Optional[CommandLineOptions] = None, tool: str = 'gmake'):
         if state.xcode:
             return
 
@@ -113,7 +113,7 @@ class BuildTarget(Target):
         self.update_pc_files(state)
 
     @staticmethod
-    def update_text_file(path: Path, processor: typing.Callable = None):
+    def update_text_file(path: Path, processor: typing.Optional[typing.Callable] = None):
         with open(path, 'r') as f:
             content = f.readlines()
 
@@ -129,7 +129,8 @@ class BuildTarget(Target):
             f.writelines(patched_content)
 
     @staticmethod
-    def _update_variables_file(path: Path, prefix_value: str, processor: typing.Callable = None, quotes: bool = True):
+    def _update_variables_file(path: Path, prefix_value: str,
+                               processor: typing.Optional[typing.Callable] = None, quotes: bool = True):
         prefix = 'prefix='
         exec_prefix = 'exec_prefix='
         includedir = 'includedir='
@@ -158,11 +159,11 @@ class BuildTarget(Target):
         BuildTarget.update_text_file(path, patch_proc)
 
     @staticmethod
-    def update_config_script(path: Path, processor: typing.Callable = None):
+    def update_config_script(path: Path, processor: typing.Optional[typing.Callable] = None):
         BuildTarget._update_variables_file(path, r'$(cd "${0%/*}/.."; pwd)', processor)
 
     @staticmethod
-    def update_pc_file(path: Path, processor: typing.Callable = None):
+    def update_pc_file(path: Path, processor: typing.Optional[typing.Callable] = None):
         BuildTarget._update_variables_file(path, '', processor, quotes=False)
 
     def update_pc_files(self, state: BuildState):
@@ -234,7 +235,8 @@ Cflags: -I${{includedir}} {cflags}
 #endif
 ''')
 
-    def copy_to_bin(self, state: BuildState, filename: str = None, new_filename: str = None):
+    def copy_to_bin(self, state: BuildState,
+                    filename: typing.Optional[str] = None, new_filename: typing.Optional[str] = None):
         bin_path = state.install_path / 'bin'
         os.makedirs(bin_path, exist_ok=True)
 
