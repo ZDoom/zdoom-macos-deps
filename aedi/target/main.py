@@ -172,8 +172,8 @@ class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
             dst_path /= molten_lib
 
             if not dst_path.exists():
-                copy_func = state.xcode and os.symlink or shutil.copy
-                copy_func(src_path, dst_path)
+                copy_func = os.symlink if state.xcode else shutil.copy
+                copy_func(src_path, dst_path)  # type: ignore
 
         super().post_build(state)
 
