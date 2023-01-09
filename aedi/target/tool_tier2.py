@@ -19,6 +19,24 @@
 from .base import *
 
 
+class GlslangTarget(CMakeStaticDependencyTarget):
+    def __init__(self, name='glslang'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/KhronosGroup/glslang/archive/refs/tags/11.13.0.tar.gz',
+            '592c98aeb03b3e81597ddaf83633c4e63068d14b18a766fd11033bad73127162')
+
+    def configure(self, state: BuildState):
+        args = ('python3', 'update_glslang_sources.py')
+        subprocess.run(args, check=True, cwd=state.source, env=state.environment)
+
+        state.options['ENABLE_CTEST'] = 'NO'
+
+        super().configure(state)
+
+
 class P7ZipTarget(CMakeTarget):
     def __init__(self, name='p7zip'):
         super().__init__(name)
