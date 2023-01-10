@@ -28,9 +28,8 @@ class BuildCMakeTarget(CMakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/Kitware/CMake/releases/download/v3.21.1/cmake-3.21.1.tar.gz',
-            'fac3915171d4dff25913975d712f76e69aef44bf738ba7b976793a458b4cfed4',
-            patches='cmake-fix-xcode14')
+            'https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1.tar.gz',
+            '1c511d09516af493694ed9baf13c55947a36389674d657a2d5e0ccedc6b291d8')
 
     def configure(self, state: BuildState):
         # Bootstrap native CMake binary
