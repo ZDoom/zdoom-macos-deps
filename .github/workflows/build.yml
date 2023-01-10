@@ -6,7 +6,7 @@ on: [push, pull_request]
 jobs:
   build:
     if: "!contains(github.event.head_commit.message, '[skip build]')"
-    name: ${{ matrix.target }} / ${{ matrix.flavor.name }}
+    name: ${{ matrix.target }}
     runs-on: macos-12
     strategy:
       fail-fast: false
@@ -16,23 +16,17 @@ jobs:
           Raze,
           PrBoom-Plus
         ]
-        flavor: [
-          {
-            name: Make,
-            args: ''
-          },
-          {
-            name: Xcode,
-            args: '--xcode'
-          }
-        ]
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build
+      - name: Build target
         run: |
-          ./build.py --target ${{ matrix.target }} ${{ matrix.flavor.args }}
+          ./build.py --target ${{ matrix.target }}
+
+      - name: Generate Xcode project
+        run: |
+          ./build.py --target ${{ matrix.target }}
 
       - name: List Build Directory
         if: always()
