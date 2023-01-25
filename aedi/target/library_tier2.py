@@ -349,6 +349,10 @@ class VulkanLoaderTarget(CMakeStaticDependencyTarget):
 
         super().configure(state)
 
+    @staticmethod
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
+        return line.replace('\n', ' -framework CoreFoundation\n') if line.startswith('Libs.private:') else line
+
 
 class XmpTarget(ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='xmp'):
