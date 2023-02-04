@@ -1,7 +1,9 @@
 ---
 name: Build Targets
 
-on: [push, pull_request]
+on:
+  - push
+  - pull_request
 
 jobs:
   build:
@@ -11,11 +13,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [
-          GZDoom,
-          Raze,
-          PrBoom-Plus
-        ]
+        target:
+          - GZDoom
+          - Raze
+          - PrBoom-Plus
 
     steps:
       - uses: actions/checkout@v3
