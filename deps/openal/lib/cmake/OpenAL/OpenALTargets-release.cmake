@@ -12,8 +12,8 @@ set_target_properties(OpenAL::OpenAL PROPERTIES
   IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libopenal.a"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS OpenAL::OpenAL )
-list(APPEND _IMPORT_CHECK_FILES_FOR_OpenAL::OpenAL "${_IMPORT_PREFIX}/lib/libopenal.a" )
+list(APPEND _cmake_import_check_targets OpenAL::OpenAL )
+list(APPEND _cmake_import_check_files_for_OpenAL::OpenAL "${_IMPORT_PREFIX}/lib/libopenal.a" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)
