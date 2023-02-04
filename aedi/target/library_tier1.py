@@ -435,23 +435,6 @@ class OpenALTarget(CMakeStaticDependencyTarget):
 
         super().configure(state)
 
-    FRAMEWORKS = '-framework ApplicationServices -framework AudioToolbox -framework AudioUnit -framework CoreAudio'
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        def update_cmake_libs(line: str):
-            link_libs = '  INTERFACE_LINK_LIBRARIES '
-            return f'{link_libs}"{OpenALTarget.FRAMEWORKS}"\n' if line.startswith(link_libs) else line
-
-        config_path = state.install_path / 'lib/cmake/OpenAL/OpenALTargets.cmake'
-        self.update_text_file(config_path, update_cmake_libs)
-
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        libs_private = 'Libs.private:'
-        return f'{libs_private} {OpenALTarget.FRAMEWORKS}\n' if line.startswith(libs_private) else line
-
 
 class OpusTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='opus'):
