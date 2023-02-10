@@ -230,13 +230,13 @@ class Sdl2Target(CMakeStaticDependencyTarget):
 class Sdl2ImageTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_image'):
         super().__init__(name)
-        self.version = '2.6.2'
+        self.version = '2.6.3'
 
     def prepare_source(self, state: BuildState):
         base_url = 'https://github.com/libsdl-org/SDL_image/releases/download'
         state.download_source(
             f'{base_url}/release-{self.version}/SDL2_image-{self.version}.tar.gz',
-            '48355fb4d8d00bac639cd1c4f4a7661c4afef2c212af60b340e06b7059814777')
+            '931c9be5bf1d7c8fae9b7dc157828b7eee874e23c7f24b44ba7eff6b4836312c')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
