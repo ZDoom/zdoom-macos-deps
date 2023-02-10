@@ -258,13 +258,13 @@ class Sdl2ImageTarget(CMakeStaticDependencyTarget):
 class Sdl2MixerTarget(CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_mixer'):
         super().__init__(name)
-        self.version = '2.6.2'
+        self.version = '2.6.3'
 
     def prepare_source(self, state: BuildState):
         base_url = 'https://github.com/libsdl-org/SDL_mixer/releases/download'
         state.download_source(
             f'{base_url}/release-{self.version}/SDL2_mixer-{self.version}.tar.gz',
-            '8cdea810366decba3c33d32b8071bccd1c309b2499a54946d92b48e6922aa371')
+            '7a6ba86a478648ce617e3a5e9277181bc67f7ce9876605eea6affd4a0d6eea8f')
 
     def configure(self, state: BuildState):
         opts = state.options
