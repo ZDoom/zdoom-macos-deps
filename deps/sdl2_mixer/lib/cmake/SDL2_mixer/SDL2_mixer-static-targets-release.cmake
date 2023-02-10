@@ -12,8 +12,8 @@ set_target_properties(SDL2_mixer::SDL2_mixer-static PROPERTIES
   IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libSDL2_mixer.a"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS SDL2_mixer::SDL2_mixer-static )
-list(APPEND _IMPORT_CHECK_FILES_FOR_SDL2_mixer::SDL2_mixer-static "${_IMPORT_PREFIX}/lib/libSDL2_mixer.a" )
+list(APPEND _cmake_import_check_targets SDL2_mixer::SDL2_mixer-static )
+list(APPEND _cmake_import_check_files_for_SDL2_mixer::SDL2_mixer-static "${_IMPORT_PREFIX}/lib/libSDL2_mixer.a" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)
