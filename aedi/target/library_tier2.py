@@ -294,7 +294,7 @@ class Sdl2NetTarget(CMakeStaticDependencyTarget):
         self.version = '2.2.0'
 
     def prepare_source(self, state: BuildState):
-        base_url = 'https://github.com/libsdl-org/SDL_net/releases'
+        base_url = 'https://github.com/libsdl-org/SDL_net/releases/download'
         state.download_source(
             f'{base_url}/release-{self.version}/SDL2_net-{self.version}.tar.gz',
             '4e4a891988316271974ff4e9585ed1ef729a123d22c08bd473129179dc857feb')
