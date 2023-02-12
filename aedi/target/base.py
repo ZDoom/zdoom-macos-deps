@@ -98,6 +98,9 @@ class BuildTarget(Target):
 
         state.update_flags_environment_variable('LDFLAGS', f'-L{state.lib_path}')
 
+        # Avoid timestamp only differences in static libraries
+        env['ZERO_AR_DATE'] = '1'
+
     def install(self, state: BuildState, options: typing.Optional[CommandLineOptions] = None, tool: str = 'gmake'):
         if state.xcode:
             return
