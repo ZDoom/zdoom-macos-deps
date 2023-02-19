@@ -533,8 +533,8 @@ class VpxTarget(ConfigureMakeDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/webmproject/libvpx/archive/refs/tags/v1.12.0.tar.gz',
-            'f1acc15d0fd0cb431f4bf6eac32d5e932e40ea1186fe78e074254d6d003957bb')
+            'https://github.com/webmproject/libvpx/archive/refs/tags/v1.13.0.tar.gz',
+            'cb2a393c9c1fae7aba76b950bb0ad393ba105409fe1a147ccd61b0aaa1501066')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('vpxstats.h')
