@@ -191,13 +191,15 @@ class BuildState:
         patch_path = self.patch_path / (patch + '.diff')
         assert patch_path.exists()
 
-        # Check if patch is already applied
-        test_arg = '--dry-run'
-        args = ['patch', test_arg, '--strip=1', '--input=' + str(patch_path)]
+        args = ['patch', '--strip=1', '--input=' + str(patch_path)]
 
-        if subprocess.run(args, cwd=extract_path, env=self.environment).returncode == 0:
+        # Check if patch is already applied
+        dry_run_args = args + ['--dry-run', '--force']
+        dry_run = subprocess.run(dry_run_args, cwd=extract_path, env=self.environment,
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        if dry_run.returncode == 0:
             # Patch wasn't applied yet, do it now
-            args.remove(test_arg)
             subprocess.run(args, check=True, cwd=extract_path, env=self.environment)
 
     def run_pkg_config(self, *args) -> str:
