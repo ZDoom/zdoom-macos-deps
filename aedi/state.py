@@ -164,23 +164,44 @@ class BuildState:
 
         file_paths_str = result.stdout.decode("utf-8")
         file_paths = file_paths_str.split('\n')
+        file_paths.remove('')
+        assert len(file_paths) > 0
+
+        # Determine root path of source code to be extracted
+        # If all files and directories are stored in one top level directory, this directory is used as a root
+        # If there is no single top level directory, new root directory will be created
+        need_new_directory = False
         first_path_component = None
 
         for path in file_paths:
-            if os.sep in path:
-                first_path_component = path[:path.find(os.sep)]
+            if os.sep not in path:
+                need_new_directory = True
                 break
+            else:
+                current_first_path_component = path[:path.find(os.sep)]
 
-        if not first_path_component:
-            raise Exception(f'Failed to figure out source code path for {filepath}')
+                if first_path_component:
+                    if first_path_component != current_first_path_component:
+                        need_new_directory = True
+                        break
+                else:
+                    first_path_component = current_first_path_component
+
+        work_path = self.source
+
+        if need_new_directory:
+            first_path_component = Path(filepath.name).stem
+            work_path /= first_path_component
 
         extract_path = self.source / first_path_component
 
         if not extract_path.exists():
+            os.makedirs(work_path, exist_ok=True)
+
             # Extract source code package
             try:
                 args = ('tar', '-xf', filepath)
-                subprocess.run(args, check=True, cwd=self.source, env=self.environment)
+                subprocess.run(args, check=True, cwd=work_path, env=self.environment)
             except (IOError, subprocess.CalledProcessError):
                 shutil.rmtree(extract_path, ignore_errors=True)
                 raise
