@@ -125,6 +125,7 @@ def targets():
         GlslangTarget(),
         P7ZipTarget(),
         PbzxTarget(),
+        QPakManTarget(),
         SeverZipTarget(),
         UnrarTarget(),
         ZipTarget(),

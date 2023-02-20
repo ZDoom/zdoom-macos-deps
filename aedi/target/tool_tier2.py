@@ -70,6 +70,19 @@ class PbzxTarget(SingleExeCTarget):
         return state.has_source_file('pbzx.c')
 
 
+class QPakManTarget(CMakeTarget):
+    def __init__(self, name='qpakman'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/bunder/qpakman/archive/refs/tags/v0.67.tar.gz',
+            '0b2cfc0e66a6ea3f0e332409254e06f78f5bb9b47f6b134b90681468d701d421')
+
+    def post_build(self, state: BuildState):
+        self.copy_to_bin(state)
+
+
 class SeverZipTarget(MakeTarget):
     # Build with --os-version-x64=10.13 command line option
 
