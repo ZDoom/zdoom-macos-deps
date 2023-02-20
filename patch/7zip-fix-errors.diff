@@ -1,0 +1,46 @@
+--- a/CPP/7zip/7zip_gcc.mak
++++ b/CPP/7zip/7zip_gcc.mak
+@@ -17,10 +17,6 @@
+ PROGPATH_STATIC = $(O)/$(PROG)s
+ 
+ 
+-ifneq ($(CC), xlc)
+-CFLAGS_WARN_WALL = -Wall -Werror -Wextra
+-endif
+-
+ # for object file
+ CFLAGS_BASE_LIST = -c
+ # CFLAGS_BASE_LIST = -S
+--- a/CPP/7zip/Archive/ApfsHandler.cpp
++++ b/CPP/7zip/Archive/ApfsHandler.cpp
+@@ -983,7 +983,7 @@
+ INODE_ALLOCATION_SPILLEDOVER  = 0x00010000,
+ INODE_FAST_PROMOTE            = 0x00020000,
+ */
+-INODE_HAS_UNCOMPRESSED_SIZE   = 0x00040000,
++INODE_HAS_UNCOMPRESSED_SIZE   = 0x00040000
+ /*
+ INODE_IS_PURGEABLE            = 0x00080000,
+ INODE_WANTS_TO_BE_PURGEABLE   = 0x00100000,
+--- a/CPP/7zip/Common/FileStreams.cpp
++++ b/CPP/7zip/Common/FileStreams.cpp
+@@ -12,7 +12,7 @@
+ #include <pwd.h>
+ 
+ // for major()/minor():
+-#if defined(__FreeBSD__) || defined(BSD)
++#if 1
+ #include <sys/types.h>
+ #else
+ #include <sys/sysmacros.h>
+--- a/CPP/7zip/UI/Common/UpdateCallback.cpp
++++ b/CPP/7zip/UI/Common/UpdateCallback.cpp
+@@ -9,7 +9,7 @@
+ // #include <pwd.h>
+ 
+ // for major()/minor():
+-#if defined(__FreeBSD__) || defined(BSD)
++#if 1
+ #include <sys/types.h>
+ #else
+ #include <sys/sysmacros.h>

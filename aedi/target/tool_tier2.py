@@ -44,7 +44,7 @@ class P7ZipTarget(CMakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/jinfeihan57/p7zip/archive/refs/tags/v17.04.tar.gz',
+            'https://github.com/p7zip-project/p7zip/archive/refs/tags/v17.04.tar.gz',
             'ea029a2e21d2d6ad0a156f6679bd66836204aa78148a4c5e498fe682e77127ef')
 
     def detect(self, state: BuildState) -> bool:
@@ -68,6 +68,48 @@ class PbzxTarget(SingleExeCTarget):
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('pbzx.c')
+
+
+class SeverZipTarget(MakeTarget):
+    # Build with --os-version-x64=10.13 command line option
+
+    def __init__(self, name='7zip'):
+        super().__init__(name)
+        self.src_root = 'CPP/7zip/Bundles/Alone2'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://www.7-zip.org/a/7z2201-src.tar.xz',
+            '393098730c70042392af808917e765945dc2437dee7aae3cfcc4966eb920fbc5',
+            patches='7zip-fix-errors')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('CPP/7zip/cmpl_mac_arm64.mak')
+
+    def configure(self, state: BuildState):
+        state.validate_minimum_version('10.13')
+        super().configure(state)
+
+    def build(self, state: BuildState):
+        environment = state.environment
+        mak_suffix = self._arch_suffix(state)
+
+        opts = state.options
+        opts['-f'] = None
+        opts[f'../../cmpl_mac_{mak_suffix}.mak'] = None
+        opts['CFLAGS_BASE_LIST'] = environment['CFLAGS'] + ' -c'
+        opts['LDFLAGS_STATIC_2'] = environment['LDFLAGS']
+
+        super().build(state)
+
+    def post_build(self, state: BuildState):
+        build_suffix = self._arch_suffix(state)
+        self.copy_to_bin(state, f'{self.src_root}/b/m_{build_suffix}/7zz', '7zz')
+
+    @staticmethod
+    def _arch_suffix(state: BuildState):
+        arch = state.architecture()
+        return 'x64' if arch == 'x86_64' else arch
 
 
 class UnrarTarget(MakeTarget):
