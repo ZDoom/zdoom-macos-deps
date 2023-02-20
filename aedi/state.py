@@ -245,3 +245,14 @@ class BuildState:
 
         env = self.environment
         env[name] = env[name] + ' ' + value if name in env else value
+
+    def validate_minimum_version(self, version: str):
+        minimum_version = StrictVersion(version)
+
+        if os_version := self.os_version():
+            if os_version < minimum_version:
+                raise RuntimeError('Minimum OS version requirement is not met')
+
+        if sdk_version := self.sdk_version():
+            if sdk_version < minimum_version:
+                raise RuntimeError('Minimum SDK version requirement is not met')
