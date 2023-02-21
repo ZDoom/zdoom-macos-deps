@@ -171,7 +171,7 @@ class BuildState:
         # If all files and directories are stored in one top level directory, this directory is used as a root
         # If there is no single top level directory, new root directory will be created
         need_new_directory = False
-        first_path_component = None
+        first_path_component = ''
 
         for path in file_paths:
             if os.sep not in path:
