@@ -1,0 +1,1329 @@
+--- /dev/null	2023-02-21 10:16:29
++++ a/CMakeLists.txt	2023-02-21 10:11:36
+@@ -0,0 +1,463 @@
++cmake_minimum_required(VERSION 3.12)
++
++project(bzip2
++        VERSION 1.0.8
++        DESCRIPTION "This Bzip2/libbz2 a program and library for lossless block-sorting data compression."
++        LANGUAGES C)
++
++# See versioning rule:
++#  http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
++#
++# KEEP THESE IN SYNC WITH meson.build OR STUFF WILL BREAK!
++set(LT_CURRENT  1)
++set(LT_REVISION 9)
++set(LT_AGE      0)
++
++set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
++include(Version)
++include(SymLink)
++
++set(BZ_VERSION ${PROJECT_VERSION})
++configure_file (
++    ${PROJECT_SOURCE_DIR}/bz_version.h.in
++    ${PROJECT_BINARY_DIR}/bz_version.h
++)
++include_directories(${PROJECT_BINARY_DIR})
++
++math(EXPR LT_SOVERSION "${LT_CURRENT} - ${LT_AGE}")
++set(LT_VERSION "${LT_SOVERSION}.${LT_AGE}.${LT_REVISION}")
++set(PACKAGE_VERSION ${PROJECT_VERSION})
++HexVersion(PACKAGE_VERSION_NUM ${PROJECT_VERSION_MAJOR} ${PROJECT_VERSION_MINOR} ${PROJECT_VERSION_PATCH})
++
++set(ENABLE_APP_DEFAULT ON)
++set(ENABLE_TESTS_DEFAULT ON)
++set(ENABLE_EXAMPLES_DEFAULT OFF)
++set(ENABLE_DOCS_DEFAULT OFF)
++include(CMakeOptions.txt)
++
++if(ENABLE_LIB_ONLY AND (ENABLE_APP OR ENABLE_EXAMPLES))
++    # Remember when disabled options are disabled for later diagnostics.
++    set(ENABLE_LIB_ONLY_DISABLED_OTHERS 1)
++else()
++    set(ENABLE_LIB_ONLY_DISABLED_OTHERS 0)
++endif()
++if(ENABLE_LIB_ONLY)
++    set(ENABLE_APP      OFF)
++    set(ENABLE_EXAMPLES OFF)
++endif()
++
++# Do not disable assertions based on CMAKE_BUILD_TYPE.
++foreach(_build_type Release MinSizeRel RelWithDebInfo)
++    foreach(_lang C)
++        string(TOUPPER CMAKE_${_lang}_FLAGS_${_build_type} _var)
++        string(REGEX REPLACE "(^|)[/-]D *NDEBUG($|)" " " ${_var} "${${_var}}")
++    endforeach()
++endforeach()
++
++# Support the latest c++ standard available.
++include(ExtractValidFlags)
++
++if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
++    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the build type" FORCE)
++
++    # Include "None" as option to disable any additional (optimization) flags,
++    # relying on just CMAKE_C_FLAGS and CMAKE_CXX_FLAGS (which are empty by
++    # default). These strings are presented in cmake-gui.
++    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
++        None Debug Release MinSizeRel RelWithDebInfo)
++endif()
++
++include(GNUInstallDirs)
++
++if(ENABLE_TESTS OR ENABLE_DOCS)
++    # For test scripts and documentation
++    find_package(Python3 REQUIRED)
++endif()
++
++#
++# Find other Test dependencies
++# - pytest (optional)
++# - unittest (if pytest not present)
++# - valgrind (optional, Linux only)
++#
++if(ENABLE_TESTS)
++    # Try finding pytest from the PATH
++    execute_process(
++        COMMAND pytest --version
++        RESULT_VARIABLE PYTEST_EXIT_CODE
++        ERROR_QUIET OUTPUT_QUIET
++    )
++
++    if(${PYTEST_EXIT_CODE} EQUAL 0)
++        # pytest found in the path.
++        set(PythonTest_COMMAND "pytest;-v")
++    else()
++        # Not in the path, try using: python3 -m pytest
++        execute_process(
++            COMMAND ${Python3_EXECUTABLE} -m pytest --version
++            RESULT_VARIABLE PYTEST_MODULE_EXIT_CODE
++            ERROR_QUIET OUTPUT_QUIET
++        )
++
++        if(${PYTEST_MODULE_EXIT_CODE} EQUAL 0)
++            # pytest isn't in the path, but the Python 3 we found has it.
++            set(PythonTest_COMMAND "${Python3_EXECUTABLE};-m;pytest;-v")
++        else()
++            # pytest couldn't be found, verify that we can at least use: python3 -m unittest
++            execute_process(
++                COMMAND ${Python3_EXECUTABLE} -m unittest --help
++                RESULT_VARIABLE UNITTEST_MODULE_EXIT_CODE
++                ERROR_QUIET OUTPUT_QUIET
++            )
++
++            if(${UNITTEST_MODULE_EXIT_CODE} EQUAL 0)
++                # No pytest :-(, but we'll get by with unittest
++                message("Python 3 package 'pytest' is not installed for ${Python3_EXECUTABLE} and is not available in your PATH.")
++                message("Failed unit tests will be easier to read if you install pytest.")
++                message("Eg:  python3 -m pip install --user pytest")
++
++                set(PythonTest_COMMAND "${Python3_EXECUTABLE};-m;unittest;--verbose")
++            else()
++                # No unittest either!
++                # Some weird Python installations do exist that lack standard modules like unittest.
++                # Let's make sure these folks know the Python 3 install we found won't cut it.
++                message("Python 3 found: ${Python3_EXECUTABLE}, but it is missing the unittest module (wierd!).")
++                message(FATAL_ERROR "The tests won't work with this Python installation. You can disable the tests by reconfiguring with: -D ENABLE_TESTS=OFF")
++            endif()
++        endif()
++    endif()
++
++    # Check for valgrind. If it exists, we'll enable extra tests that use valgrind.
++    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
++        find_package(Valgrind)
++    endif()
++endif()
++
++# Checks for header files.
++include(CheckIncludeFile)
++check_include_file(arpa/inet.h    HAVE_ARPA_INET_H)
++check_include_file(fcntl.h        HAVE_FCNTL_H)
++check_include_file(inttypes.h     HAVE_INTTYPES_H)
++check_include_file(limits.h       HAVE_LIMITS_H)
++check_include_file(netdb.h        HAVE_NETDB_H)
++check_include_file(netinet/in.h   HAVE_NETINET_IN_H)
++check_include_file(pwd.h          HAVE_PWD_H)
++check_include_file(sys/socket.h   HAVE_SYS_SOCKET_H)
++check_include_file(sys/time.h     HAVE_SYS_TIME_H)
++check_include_file(syslog.h       HAVE_SYSLOG_H)
++check_include_file(time.h         HAVE_TIME_H)
++check_include_file(unistd.h       HAVE_UNISTD_H)
++
++include(CheckTypeSize)
++# Checks for typedefs, structures, and compiler characteristics.
++# AC_TYPE_SIZE_T
++check_type_size("ssize_t" SIZEOF_SSIZE_T)
++if(NOT SIZEOF_SSIZE_T)
++    # ssize_t is a signed type in POSIX storing at least -1.
++    # Set it to "int" to match the behavior of AC_TYPE_SSIZE_T (autotools).
++    set(ssize_t int)
++endif()
++
++include(CheckStructHasMember)
++check_struct_has_member("struct tm" tm_gmtoff time.h HAVE_STRUCT_TM_TM_GMTOFF)
++
++# Checks for library functions.
++include(CheckFunctionExists)
++check_function_exists(_Exit     HAVE__EXIT)
++check_function_exists(accept4   HAVE_ACCEPT4)
++check_function_exists(mkostemp  HAVE_MKOSTEMP)
++
++include(CheckSymbolExists)
++# XXX does this correctly detect initgroups (un)availability on cygwin?
++check_symbol_exists(initgroups grp.h HAVE_DECL_INITGROUPS)
++if(NOT HAVE_DECL_INITGROUPS AND HAVE_UNISTD_H)
++    # FreeBSD declares initgroups() in unistd.h
++    check_symbol_exists(initgroups unistd.h HAVE_DECL_INITGROUPS2)
++    if(HAVE_DECL_INITGROUPS2)
++        set(HAVE_DECL_INITGROUPS 1)
++    endif()
++endif()
++
++set(WARNCFLAGS)
++if(CMAKE_C_COMPILER_ID MATCHES "MSVC")
++    if(ENABLE_WERROR)
++        set(WARNCFLAGS    /WX)
++    endif()
++else()
++    if(ENABLE_WERROR)
++        extract_valid_c_flags(WARNCFLAGS    -Werror)
++    endif()
++
++    # For C compiler
++    # Please keep this list in sync with meson.build
++    extract_valid_c_flags(WARNCFLAGS
++        -Wall
++        -Wextra
++        -Wmissing-prototypes
++        -Wstrict-prototypes
++        -Wmissing-declarations
++        -Wpointer-arith
++        -Wdeclaration-after-statement
++        -Wformat-security
++        -Wwrite-strings
++        -Wshadow
++        -Winline
++        -Wnested-externs
++        -Wfloat-equal
++        -Wundef
++        -Wendif-labels
++        -Wempty-body
++        -Wcast-align
++        -Wclobbered
++        -Wvla
++        -Wpragmas
++        -Wunreachable-code
++        -Waddress
++        -Wattributes
++        -Wdiv-by-zero
++        -Wshorten-64-to-32
++        -Wconversion
++        -Wextended-offsetof
++        -Wformat-nonliteral
++        -Wlanguage-extension-token
++        -Wmissing-field-initializers
++        -Wmissing-noreturn
++        -Wmissing-variable-declarations
++        # -Wpadded                          # Not used because we cannot change public structs
++        -Wsign-conversion
++        # -Wswitch-enum                     # Not used because this basically disallows default case
++        -Wunreachable-code-break
++        -Wunused-macros
++        -Wunused-parameter
++        -Wredundant-decls
++        -Wheader-guard
++        -Wno-format-nonliteral              # This is required because we pass format string as "const char*.
++    )
++endif()
++
++if(ENABLE_DEBUG)
++    set(DEBUGBUILD 1)
++endif()
++
++#add_definitions(-DHAVE_CONFIG_H)
++#configure_file(cmakeconfig.h.in config.h)
++
++# autotools-compatible names
++# Sphinx expects relative paths in the .rst files. Use the fact that the files
++# below are all one directory level deep.
++file(RELATIVE_PATH top_srcdir   ${CMAKE_CURRENT_BINARY_DIR}/dir ${CMAKE_CURRENT_SOURCE_DIR})
++file(RELATIVE_PATH top_builddir ${CMAKE_CURRENT_BINARY_DIR}/dir ${CMAKE_CURRENT_BINARY_DIR})
++set(abs_top_srcdir   ${CMAKE_CURRENT_SOURCE_DIR})
++set(abs_top_builddir ${CMAKE_CURRENT_BINARY_DIR})
++# bzip2.pc (pkg-config file)
++set(prefix      ${CMAKE_INSTALL_PREFIX})
++set(exec_prefix ${CMAKE_INSTALL_PREFIX})
++set(bindir      ${CMAKE_INSTALL_FULL_BINDIR})
++set(sbindir     ${CMAKE_INSTALL_FULL_SBINDIR})
++set(libdir      ${CMAKE_INSTALL_FULL_LIBDIR})
++set(includedir  ${CMAKE_INSTALL_FULL_INCLUDEDIR})
++set(VERSION     ${PACKAGE_VERSION})
++
++configure_file(
++    bzip2.pc.in
++    ${CMAKE_CURRENT_BINARY_DIR}/bzip2.pc
++    @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/bzip2.pc
++    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
++
++#
++# The build targets.
++#   In a larger project, the following would be in subdirectories and
++#   These targets would be included with `add_subdirectory()`
++#
++set(BZ2_SOURCES
++    blocksort.c
++    huffman.c
++    crctable.c
++    randtable.c
++    compress.c
++    decompress.c
++    bzlib.c)
++
++# The bz2 OBJECT-library, required for bzip2, bzip2recover.
++add_library(bz2_ObjLib OBJECT)
++target_sources(bz2_ObjLib
++    PRIVATE   ${BZ2_SOURCES}
++    PUBLIC    ${CMAKE_CURRENT_SOURCE_DIR}/bzlib_private.h
++    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/bzlib.h)
++
++# Windows resource file
++set(BZ2_RES "")
++if(WIN32)
++    configure_file(
++        version.rc.in
++        ${CMAKE_CURRENT_BINARY_DIR}/version.rc
++        @ONLY)
++
++    set(BZ2_RES ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
++endif()
++
++if(ENABLE_SHARED_LIB)
++    # The libbz2 shared library.
++    add_library(bz2 SHARED ${BZ2_RES})
++    target_sources(bz2
++        PRIVATE   ${BZ2_SOURCES}
++                  ${CMAKE_CURRENT_SOURCE_DIR}/libbz2.def
++        PUBLIC    ${CMAKE_CURRENT_SOURCE_DIR}/bzlib_private.h
++        INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/bzlib.h)
++    # Always use '-fPIC'/'-fPIE' option for shared libraries.
++    set_property(TARGET bz2 PROPERTY POSITION_INDEPENDENT_CODE ON)
++    set_target_properties(bz2 PROPERTIES
++        COMPILE_FLAGS "${WARNCFLAGS}"
++        VERSION ${LT_VERSION} SOVERSION ${LT_SOVERSION})
++    install(TARGETS bz2 DESTINATION ${CMAKE_INSTALL_LIBDIR})
++    install(FILES bzlib.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++
++    if(USE_OLD_SONAME)
++        # Hack to support the old libbz2.so.1.0 version by including an extra copy.
++        # Technically the old SONAME is not libtool compatible.
++        # This hack is to support binary compatibility with libbz2 in some distro packages.
++        if(UNIX AND NOT APPLE)
++            add_library(bz2_old_soname SHARED ${BZ2_RES})
++            target_sources(bz2_old_soname
++                PRIVATE   ${BZ2_SOURCES}
++                        ${CMAKE_CURRENT_SOURCE_DIR}/libbz2.def
++                PUBLIC    ${CMAKE_CURRENT_SOURCE_DIR}/bzlib_private.h
++                INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/bzlib.h
++            )
++            set_target_properties(bz2_old_soname PROPERTIES
++                COMPILE_FLAGS "${WARNCFLAGS}"
++                VERSION ${LT_SOVERSION}.${LT_AGE} SOVERSION ${LT_SOVERSION}.${LT_AGE}
++                OUTPUT_NAME bz2
++            )
++            install(TARGETS bz2_old_soname DESTINATION ${CMAKE_INSTALL_LIBDIR})
++        endif()
++    endif()
++endif()
++
++if(ENABLE_STATIC_LIB)
++    # The libbz2 static library.
++    add_library(bz2_static STATIC)
++    target_sources(bz2_static
++        PRIVATE     ${BZ2_SOURCES}
++        PUBLIC      ${CMAKE_CURRENT_SOURCE_DIR}/bzlib_private.h
++        INTERFACE   ${CMAKE_CURRENT_SOURCE_DIR}/bzlib.h)
++    set_target_properties(bz2_static PROPERTIES
++        COMPILE_FLAGS       "${WARNCFLAGS}"
++        VERSION             ${LT_VERSION}
++        SOVERSION           ${LT_SOVERSION}
++        ARCHIVE_OUTPUT_NAME bz2_static)
++    target_compile_definitions(bz2_static PUBLIC BZ2_STATICLIB)
++    install(TARGETS bz2_static DESTINATION ${CMAKE_INSTALL_LIBDIR})
++    install(FILES bzlib.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++endif()
++
++if(ENABLE_APP)
++    # The bzip2 executable.
++    add_executable(bzip2)
++    target_sources(bzip2
++        PRIVATE   bzip2.c)
++    target_link_libraries(bzip2
++        PRIVATE   bz2_ObjLib)
++    if(WIN32)
++        target_compile_definitions(bzip2 PUBLIC BZ_LCCWIN32 BZ_UNIX=0)
++    else()
++        target_compile_definitions(bzip2 PUBLIC BZ_LCCWIN32=0 BZ_UNIX)
++    endif()
++    install(TARGETS bzip2 DESTINATION ${CMAKE_INSTALL_BINDIR})
++
++    # Create bzip2 copies bzcat and bunzip.
++    # The default behavior is altered in bzip2.c code by checking the program name.
++    install_target_symlink(bzip2 bzcat)
++    install_target_symlink(bzip2 bunzip)
++
++    # The bzip2recover executable.
++    add_executable(bzip2recover)
++    target_sources(bzip2recover
++        PRIVATE   bzip2recover.c)
++    target_link_libraries(bzip2recover
++        PRIVATE bz2_ObjLib)
++    if(WIN32)
++        target_compile_definitions(bzip2recover PUBLIC BZ_LCCWIN32 BZ_UNIX=0)
++    else()
++        target_compile_definitions(bzip2recover PUBLIC BZ_LCCWIN32=0 BZ_UNIX)
++    endif()
++    install(TARGETS bzip2recover DESTINATION ${CMAKE_INSTALL_BINDIR})
++
++    if(ENABLE_EXAMPLES)
++        if(ENABLE_SHARED_LIB)
++            # The dlltest executable.
++            add_executable(dlltest)
++            target_sources(dlltest
++                PRIVATE   dlltest.c)
++            target_link_libraries(dlltest bz2)
++            install(TARGETS dlltest DESTINATION ${CMAKE_INSTALL_BINDIR})
++        endif()
++    endif()
++
++    if(NOT WIN32)
++        # Install shell scripts, and renamed copies.
++        install(PROGRAMS bzdiff bzgrep bzmore
++            DESTINATION ${CMAKE_INSTALL_BINDIR})
++
++        install_script_symlink(bzdiff bzcmp)
++
++        install_script_symlink(bzgrep bzegrep)
++        install_script_symlink(bzgrep bzfgrep)
++
++        install_script_symlink(bzmore bzless)
++    endif()
++
++endif()
++
++if(ENABLE_APP AND Python3_FOUND)
++    enable_testing()
++    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
++    add_subdirectory(tests)
++endif()
++
++add_subdirectory(man)
++
++set(DOCGEN_EXECS xsltproc perl xmllint grep pdfxmltex pdftops)
++
++if(ENABLE_DOCS)
++    foreach(EXEC IN LISTS DOCGEN_EXECS)
++        find_program(${EXEC}_EXEC ${EXEC})
++        if(NOT ${EXEC}_EXEC)
++            message(WARNING "Missing '${EXEC}', required to generate docs!")
++            set(MISSING_GENERATOR TRUE)
++        endif()
++    endforeach()
++
++    if(MISSING_GENERATOR)
++        message(FATAL_ERROR "Unable to generate docs.")
++    endif()
++
++    add_subdirectory(docs)
++endif()
++
++# The Summary Info.
++string(TOUPPER "${CMAKE_BUILD_TYPE}" _build_type)
++message(STATUS "Summary of build options:
++
++    Package version: ${VERSION}
++    Library version: ${LT_CURRENT}:${LT_REVISION}:${LT_AGE}
++    Install prefix:  ${CMAKE_INSTALL_PREFIX}
++    Target system:   ${CMAKE_SYSTEM_NAME}
++    Compiler:
++        Build type:     ${CMAKE_BUILD_TYPE}
++        C compiler:     ${CMAKE_C_COMPILER}
++        CFLAGS:         ${CMAKE_C_FLAGS_${_build_type}} ${CMAKE_C_FLAGS}
++        WARNCFLAGS:     ${WARNCFLAGS}
++    Test:
++        Python:         ${Python3_FOUND} (${Python3_VERSION}, ${Python3_EXECUTABLE})
++    Docs:
++        Build docs:     ${ENABLE_DOCS}
++    Features:
++        Applications:   ${ENABLE_APP}
++        Examples:       ${ENABLE_EXAMPLES}
++")
++if(ENABLE_LIB_ONLY_DISABLED_OTHERS)
++    message("Only the library will be built. To build other components "
++            "(such as applications and examples), set ENABLE_LIB_ONLY=OFF.")
++endif()
+--- /dev/null	2023-02-21 10:16:38
++++ a/CMakeOptions.txt	2023-02-21 09:49:49
+@@ -0,0 +1,25 @@
++# Features that can be enabled for cmake (see CMakeLists.txt)
++
++option(ENABLE_WERROR     "Turn on compile time warnings")
++
++option(ENABLE_DEBUG      "Turn on debug output")
++
++option(ENABLE_APP        "Build applications (bzip2, and bzip2recover)"
++    ${ENABLE_APP_DEFAULT})
++
++option(ENABLE_TESTS      "Build/enable unit tests."
++    ${ENABLE_TESTS_DEFAULT})
++
++option(ENABLE_DOCS       "Generate documentation"
++    ${ENABLE_DOCS_DEFAULT})
++
++option(ENABLE_EXAMPLES   "Build examples"
++    ${ENABLE_EXAMPLES_DEFAULT})
++
++option(ENABLE_LIB_ONLY   "Build libbz2 only.  This is a short hand for -DENABLE_APP=0 -DENABLE_EXAMPLES=0")
++
++option(ENABLE_STATIC_LIB "Build libbz2 in static mode also")
++
++option(ENABLE_SHARED_LIB "Build libbz2 as a shared library" ON)
++
++option(USE_OLD_SONAME "Use libbz2.so.1.0 for compatibility with old Makefiles" OFF)
+--- /dev/null	2023-02-21 10:17:29
++++ a/bz_version.h.in	2023-02-21 09:49:49
+@@ -0,0 +1 @@
++#define BZ_VERSION "@BZ_VERSION@"
+--- /dev/null	2023-02-21 10:17:40
++++ a/bzip2.pc.in	2023-02-21 09:49:49
+@@ -0,0 +1,11 @@
++prefix=@prefix@
++exec_prefix=@exec_prefix@
++bindir=@bindir@
++libdir=@libdir@
++includedir=@includedir@
++
++Name: bzip2
++Description: Lossless, block-sorting data compression
++Version: @VERSION@
++Libs: -L${libdir} -lbz2
++Cflags: -I${includedir}
+--- /dev/null	2023-02-21 10:17:57
++++ a/cmake/ExtractValidFlags.cmake	2023-02-21 09:49:49
+@@ -0,0 +1,18 @@
++# Convenience function that checks the availability of certain
++# C or C++ compiler flags and returns valid ones as a string.
++
++include(CheckCCompilerFlag)
++include(CheckCXXCompilerFlag)
++
++function(extract_valid_c_flags varname)
++  set(valid_flags)
++  foreach(flag IN LISTS ARGN)
++    string(REGEX REPLACE "[^a-zA-Z0-9_]+" "_" flag_var ${flag})
++    set(flag_var "C_FLAG_${flag_var}")
++    check_c_compiler_flag("${flag}" "${flag_var}")
++    if(${flag_var})
++      set(valid_flags "${valid_flags} ${flag}")
++    endif()
++  endforeach()
++  set(${varname} "${valid_flags}" PARENT_SCOPE)
++endfunction()
+--- /dev/null	2023-02-21 10:18:03
++++ a/cmake/SymLink.cmake	2023-02-21 09:49:49
+@@ -0,0 +1,26 @@
++# Install a symlink of script to the "bin" directory.
++# Not intended for use on Windows.
++function(install_script_symlink original symlink)
++    add_custom_command(OUTPUT ${symlink}
++        COMMAND ${CMAKE_COMMAND} -E create_symlink ${original} ${symlink}
++        DEPENDS ${original}
++        COMMENT "Generating symbolic link ${symlink} of ${original}")
++    add_custom_target(${symlink}_tgt ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${symlink})
++    install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${symlink} DESTINATION ${CMAKE_INSTALL_BINDIR})
++endfunction()
++
++# Install a symlink of binary target to the "bin" directory.
++# On Windows, it will be a copy instead of a symlink.
++function(install_target_symlink original symlink)
++    if(WIN32)
++        set(op copy)
++        set(symlink "${symlink}.exe")
++    else()
++        set(op create_symlink)
++    endif()
++    add_custom_command(TARGET ${original} POST_BUILD
++        COMMAND ${CMAKE_COMMAND} -E ${op} $<TARGET_FILE_NAME:${original}> ${symlink}
++        WORKING_DIRECTORY $<TARGET_FILE_DIR:${original}>
++        COMMENT "Generating symbolic link (or copy) ${symlink} of ${original}")
++    install(PROGRAMS $<TARGET_FILE_DIR:${original}>/${symlink} DESTINATION ${CMAKE_INSTALL_BINDIR})
++endfunction()
+--- /dev/null	2023-02-21 10:18:07
++++ a/cmake/Version.cmake	2023-02-21 09:49:49
+@@ -0,0 +1,11 @@
++# Converts a version such as 1.2.255 to 0x0102ff
++function(HexVersion version_hex_var major minor patch)
++  math(EXPR version_dec "${major} * 256 * 256 + ${minor} * 256 + ${patch}")
++  set(version_hex "0x")
++  foreach(i RANGE 5 0 -1)
++    math(EXPR num "(${version_dec} >> (4 * ${i})) & 15")
++    string(SUBSTRING "0123456789abcdef" ${num} 1 num_hex)
++    set(version_hex "${version_hex}${num_hex}")
++  endforeach()
++  set(${version_hex_var} "${version_hex}" PARENT_SCOPE)
++endfunction()
+--- /dev/null	2023-02-21 10:19:19
++++ a/man/bzdiff.1	2023-02-21 09:49:49
+@@ -0,0 +1,47 @@
++\"Shamelessly copied from zmore.1 by Philippe Troin <phil@fifi.org>
++\"for Debian GNU/Linux
++.TH BZDIFF 1
++.SH NAME
++bzcmp, bzdiff \- compare bzip2 compressed files
++.SH SYNOPSIS
++.B bzcmp
++[ cmp_options ] file1
++[ file2 ]
++.br
++.B bzdiff
++[ diff_options ] file1
++[ file2 ]
++.SH DESCRIPTION
++.I  Bzcmp
++and 
++.I bzdiff
++are used to invoke the
++.I cmp
++or the
++.I diff
++program on bzip2 compressed files.  All options specified are passed
++directly to
++.I cmp
++or
++.IR diff "."
++If only 1 file is specified, then the files compared are
++.I file1
++and an uncompressed
++.IR file1 ".bz2."
++If two files are specified, then they are uncompressed if necessary and fed to
++.I cmp
++or
++.IR diff "."
++The exit status from 
++.I cmp
++or
++.I diff
++is preserved.
++.SH "SEE ALSO"
++cmp(1), diff(1), bzmore(1), bzless(1), bzgrep(1), bzip2(1)
++.SH BUGS
++Messages from the
++.I cmp
++or
++.I diff
++programs refer to temporary filenames instead of those specified.
+--- /dev/null	2023-02-21 10:19:25
++++ a/man/bzgrep.1	2023-02-21 09:49:49
+@@ -0,0 +1,56 @@
++\"Shamelessly copied from zmore.1 by Philippe Troin <phil@fifi.org>
++\"for Debian GNU/Linux
++.TH BZGREP 1
++.SH NAME
++bzgrep, bzfgrep, bzegrep \- search possibly bzip2 compressed files for a regular expression
++.SH SYNOPSIS
++.B bzgrep
++[ grep options ]
++.BI  [\ -e\ ] " pattern"
++.IR filename ".\|.\|."
++.br
++.B bzegrep
++[ grep -E options ]
++.BI  [\ -e\ ] " pattern"
++.IR filename ".\|.\|."
++.br
++.B bzfgrep
++[ grep -F options ]
++.BI  [\ -e\ ] " pattern"
++.IR filename ".\|.\|."
++.SH DESCRIPTION
++.IR  Bzgrep
++is used to invoke the
++.I grep
++on bzip2-compressed files. All options specified are passed directly to
++.I grep.
++If no file is specified, then the standard input is decompressed
++if necessary and fed to grep.
++Otherwise the given files are uncompressed if necessary and fed to
++.I grep.
++.PP
++If
++.I bzgrep
++is invoked as
++.I bzegrep
++or
++.I bzfgrep
++then
++.I grep -E
++or
++.I grep -F
++is used instead of
++.I grep.
++If the GREP environment variable is set,
++.I bzgrep
++uses it as the
++.I grep
++program to be invoked. For example:
++
++    for sh:  GREP="grep -F" bzgrep string files
++    for csh: (setenv GREP "grep -F"; bzgrep string files)
++.SH AUTHOR
++Charles Levert (charles@comm.polymtl.ca). Adapted to bzip2 by Philippe
++Troin <phil@fifi.org> for Debian GNU/Linux.
++.SH "SEE ALSO"
++grep(1), bzdiff(1), bzmore(1), bzless(1), bzip2(1)
+--- /dev/null	2023-02-21 10:19:30
++++ a/man/bzip2.1	2023-02-21 09:49:49
+@@ -0,0 +1,475 @@
++.TH bzip2 1
++.SH NAME
++bzip2, bunzip2 \- a block-sorting file compressor, v1.0.6
++.br
++bzcat \- decompresses files to stdout
++.br
++bzip2recover \- recovers data from damaged bzip2 files
++
++.SH SYNOPSIS
++.ll +8
++.B bzip2
++.RB [ " \-cdfkqstvzVL123456789 " ]
++[
++.I "filenames \&..."
++]
++.br
++.B bzip2
++.RB [ " \-h|\-\-help " ]
++.ll -8
++.br
++.B bunzip2
++.RB [ " \-fkvsVL " ]
++[
++.I "filenames \&..."
++]
++.br
++.B bunzip2
++.RB [ " \-h|\-\-help " ]
++.br
++.B bzcat
++.RB [ " \-s " ]
++[
++.I "filenames \&..."
++]
++.br
++.B bzcat
++.RB [ " \-h|\-\-help " ]
++.br
++.B bzip2recover
++.I "filename"
++
++.SH DESCRIPTION
++.I bzip2
++compresses files using the Burrows-Wheeler block sorting
++text compression algorithm, and Huffman coding.  Compression is
++generally considerably better than that achieved by more conventional
++LZ77/LZ78-based compressors, and approaches the performance of the PPM
++family of statistical compressors.
++
++The command-line options are deliberately very similar to
++those of
++.I GNU gzip,
++but they are not identical.
++
++.I bzip2
++expects a list of file names to accompany the
++command-line flags.  Each file is replaced by a compressed version of
++itself, with the name "original_name.bz2".
++Each compressed file
++has the same modification date, permissions, and, when possible,
++ownership as the corresponding original, so that these properties can
++be correctly restored at decompression time.  File name handling is
++naive in the sense that there is no mechanism for preserving original
++file names, permissions, ownerships or dates in filesystems which lack
++these concepts, or have serious file name length restrictions, such as
++MS-DOS.
++
++.I bzip2
++and
++.I bunzip2
++will by default not overwrite existing
++files.  If you want this to happen, specify the \-f flag.
++
++If no file names are specified,
++.I bzip2
++compresses from standard
++input to standard output.  In this case,
++.I bzip2
++will decline to
++write compressed output to a terminal, as this would be entirely
++incomprehensible and therefore pointless.
++
++.I bunzip2
++(or
++.I bzip2 \-d)
++decompresses all
++specified files.  Files which were not created by
++.I bzip2
++will be detected and ignored, and a warning issued.
++.I bzip2
++attempts to guess the filename for the decompressed file
++from that of the compressed file as follows:
++
++       filename.bz2    becomes   filename
++       filename.bz     becomes   filename
++       filename.tbz2   becomes   filename.tar
++       filename.tbz    becomes   filename.tar
++       anyothername    becomes   anyothername.out
++
++If the file does not end in one of the recognised endings,
++.I .bz2,
++.I .bz,
++.I .tbz2
++or
++.I .tbz,
++.I bzip2
++complains that it cannot
++guess the name of the original file, and uses the original name
++with
++.I .out
++appended.
++
++As with compression, supplying no
++filenames causes decompression from
++standard input to standard output.
++
++.I bunzip2
++will correctly decompress a file which is the
++concatenation of two or more compressed files.  The result is the
++concatenation of the corresponding uncompressed files.  Integrity
++testing (\-t)
++of concatenated
++compressed files is also supported.
++
++You can also compress or decompress files to the standard output by
++giving the \-c flag.  Multiple files may be compressed and
++decompressed like this.  The resulting outputs are fed sequentially to
++stdout.  Compression of multiple files
++in this manner generates a stream
++containing multiple compressed file representations.  Such a stream
++can be decompressed correctly only by
++.I bzip2
++version 0.9.0 or
++later.  Earlier versions of
++.I bzip2
++will stop after decompressing
++the first file in the stream.
++
++.I bzcat
++(or
++.I bzip2 -dc)
++decompresses all specified files to
++the standard output.
++
++.I bzip2
++will read arguments from the environment variables
++.I BZIP2
++and
++.I BZIP,
++in that order, and will process them
++before any arguments read from the command line.  This gives a
++convenient way to supply default arguments.
++
++Compression is always performed, even if the compressed
++file is slightly
++larger than the original.  Files of less than about one hundred bytes
++tend to get larger, since the compression mechanism has a constant
++overhead in the region of 50 bytes.  Random data (including the output
++of most file compressors) is coded at about 8.05 bits per byte, giving
++an expansion of around 0.5%.
++
++As a self-check for your protection,
++.I bzip2
++uses 32-bit CRCs to
++make sure that the decompressed version of a file is identical to the
++original.  This guards against corruption of the compressed data, and
++against undetected bugs in
++.I bzip2
++(hopefully very unlikely).  The
++chances of data corruption going undetected is microscopic, about one
++chance in four billion for each file processed.  Be aware, though, that
++the check occurs upon decompression, so it can only tell you that
++something is wrong.  It can't help you
++recover the original uncompressed
++data.  You can use
++.I bzip2recover
++to try to recover data from
++damaged files.
++
++Unlike
++.I GNU gzip,
++.I bzip2
++will not create a series of
++.I .bz2
++suffixes even when using the
++.I --force
++option:
++
++       filename.bz2    does not become   filename.bz2.bz2
++
++Return values: 0 for a normal exit, 1 for environmental problems (file
++not found, invalid flags, I/O errors, &c), 2 to indicate a corrupt
++compressed file, 3 for an internal consistency error (eg, bug) which
++caused
++.I bzip2
++to panic.
++
++.SH OPTIONS
++.TP
++.B \-c --stdout
++Compress or decompress to standard output.
++.TP
++.B \-d --decompress
++Force decompression.
++.I bzip2,
++.I bunzip2
++and
++.I bzcat
++are
++really the same program, and the decision about what actions to take is
++done on the basis of which name is used.  This flag overrides that
++mechanism, and forces
++.I bzip2
++to decompress.
++.TP
++.B \-z --compress
++The complement to \-d: forces compression, regardless of the
++invocation name.
++.TP
++.B \-t --test
++Check integrity of the specified file(s), but don't decompress them.
++This really performs a trial decompression and throws away the result.
++.TP
++.B \-f --force
++Force overwrite of output files.  Normally,
++.I bzip2
++will not overwrite
++existing output files.  Also forces
++.I bzip2
++to break hard links
++to files, which it otherwise wouldn't do.
++
++bzip2 normally declines to decompress files which don't have the
++correct magic header bytes.  If forced (-f), however, it will pass
++such files through unmodified.  This is how GNU gzip behaves.
++.TP
++.B \-k --keep
++Keep (don't delete) input files during compression
++or decompression.
++.TP
++.B \-s --small
++Reduce memory usage, for compression, decompression and testing.  Files
++are decompressed and tested using a modified algorithm which only
++requires 2.5 bytes per block byte.  This means any file can be
++decompressed in 2300\ k of memory, albeit at about half the normal speed.
++
++During compression, \-s selects a block size of 200\ k, which limits
++memory use to around the same figure, at the expense of your compression
++ratio.  In short, if your machine is low on memory (8 megabytes or
++less), use \-s for everything.  See MEMORY MANAGEMENT below.
++.TP
++.B \-q --quiet
++Suppress non-essential warning messages.  Messages pertaining to
++I/O errors and other critical events will not be suppressed.
++.TP
++.B \-v --verbose
++Verbose mode -- show the compression ratio for each file processed.
++Further \-v's increase the verbosity level, spewing out lots of
++information which is primarily of interest for diagnostic purposes.
++.TP
++.B \-h \-\-help
++Print a help message and exit.
++.TP
++.B \-L --license -V --version
++Display the software version, license terms and conditions.
++.TP
++.B \-1 (or \-\-fast) to \-9 (or \-\-best)
++Set the block size to 100 k, 200 k ...  900 k when compressing.  Has no
++effect when decompressing.  See MEMORY MANAGEMENT below.
++The \-\-fast and \-\-best aliases are primarily for GNU gzip
++compatibility.  In particular, \-\-fast doesn't make things
++significantly faster.
++And \-\-best merely selects the default behaviour.
++.TP
++.B \--
++Treats all subsequent arguments as file names, even if they start
++with a dash.  This is so you can handle files with names beginning
++with a dash, for example: bzip2 \-- \-myfilename.
++.TP
++.B \--repetitive-fast --repetitive-best
++These flags are redundant in versions 0.9.5 and above.  They provided
++some coarse control over the behaviour of the sorting algorithm in
++earlier versions, which was sometimes useful.  0.9.5 and above have an
++improved algorithm which renders these flags irrelevant.
++
++.SH MEMORY MANAGEMENT
++.I bzip2
++compresses large files in blocks.  The block size affects
++both the compression ratio achieved, and the amount of memory needed for
++compression and decompression.  The flags \-1 through \-9
++specify the block size to be 100,000 bytes through 900,000 bytes (the
++default) respectively.  At decompression time, the block size used for
++compression is read from the header of the compressed file, and
++.I bunzip2
++then allocates itself just enough memory to decompress
++the file.  Since block sizes are stored in compressed files, it follows
++that the flags \-1 to \-9 are irrelevant to and so ignored
++during decompression.
++
++Compression and decompression requirements,
++in bytes, can be estimated as:
++
++       Compression:   400\ k + ( 8 x block size )
++
++       Decompression: 100\ k + ( 4 x block size ), or
++                      100\ k + ( 2.5 x block size )
++
++Larger block sizes give rapidly diminishing marginal returns.  Most of
++the compression comes from the first two or three hundred k of block
++size, a fact worth bearing in mind when using
++.I bzip2
++on small machines.
++It is also important to appreciate that the decompression memory
++requirement is set at compression time by the choice of block size.
++
++For files compressed with the default 900\ k block size,
++.I bunzip2
++will require about 3700 kbytes to decompress.  To support decompression
++of any file on a 4 megabyte machine,
++.I bunzip2
++has an option to
++decompress using approximately half this amount of memory, about 2300
++kbytes.  Decompression speed is also halved, so you should use this
++option only where necessary.  The relevant flag is -s.
++
++In general, try and use the largest block size memory constraints allow,
++since that maximises the compression achieved.  Compression and
++decompression speed are virtually unaffected by block size.
++
++Another significant point applies to files which fit in a single block
++-- that means most files you'd encounter using a large block size.  The
++amount of real memory touched is proportional to the size of the file,
++since the file is smaller than a block.  For example, compressing a file
++20,000 bytes long with the flag -9 will cause the compressor to
++allocate around 7600\ k of memory, but only touch 400\ k + 20000 * 8 = 560
++kbytes of it.  Similarly, the decompressor will allocate 3700\ k but only
++touch 100\ k + 20000 * 4 = 180 kbytes.
++
++Here is a table which summarises the maximum memory usage for different
++block sizes.  Also recorded is the total compressed size for 14 files of
++the Calgary Text Compression Corpus totalling 3,141,622 bytes.  This
++column gives some feel for how compression varies with block size.
++These figures tend to understate the advantage of larger block sizes for
++larger files, since the Corpus is dominated by smaller files.
++
++           Compress   Decompress   Decompress   Corpus
++    Flag     usage      usage       -s usage     Size
++
++     -1      1200k       500k         350k      914704
++     -2      2000k       900k         600k      877703
++     -3      2800k      1300k         850k      860338
++     -4      3600k      1700k        1100k      846899
++     -5      4400k      2100k        1350k      845160
++     -6      5200k      2500k        1600k      838626
++     -7      6100k      2900k        1850k      834096
++     -8      6800k      3300k        2100k      828642
++     -9      7600k      3700k        2350k      828642
++
++.SH RECOVERING DATA FROM DAMAGED FILES
++.I bzip2
++compresses files in blocks, usually 900\ kbytes long.  Each
++block is handled independently.  If a media or transmission error causes
++a multi-block .bz2
++file to become damaged, it may be possible to
++recover data from the undamaged blocks in the file.
++
++The compressed representation of each block is delimited by a 48-bit
++pattern, which makes it possible to find the block boundaries with
++reasonable certainty.  Each block also carries its own 32-bit CRC, so
++damaged blocks can be distinguished from undamaged ones.
++
++.I bzip2recover
++is a simple program whose purpose is to search for
++blocks in .bz2 files, and write each block out into its own .bz2
++file.  You can then use
++.I bzip2
++\-t
++to test the
++integrity of the resulting files, and decompress those which are
++undamaged.
++
++.I bzip2recover
++takes a single argument, the name of the damaged file,
++and writes a number of files "rec00001file.bz2",
++"rec00002file.bz2", etc., containing the  extracted  blocks.
++The output filenames are designed so that the use of
++wildcards in subsequent processing -- for example,
++"bzip2 -dc rec*file.bz2 > recovered_data" -- processes the files in
++the correct order.
++
++.I bzip2recover
++should be of most use dealing with large .bz2
++files, as these will contain many blocks.  It is clearly
++futile to use it on damaged single-block files, since a
++damaged block cannot be recovered.  If you wish to minimise
++any potential data loss through media or transmission errors,
++you might consider compressing with a smaller
++block size.
++
++.SH PERFORMANCE NOTES
++The sorting phase of compression gathers together similar strings in the
++file.  Because of this, files containing very long runs of repeated
++symbols, like "aabaabaabaab ...\&" (repeated several hundred times) may
++compress more slowly than normal.  Versions 0.9.5 and above fare much
++better than previous versions in this respect.  The ratio between
++worst-case and average-case compression time is in the region of 10:1.
++For previous versions, this figure was more like 100:1.  You can use the
++\-vvvv option to monitor progress in great detail, if you want.
++
++Decompression speed is unaffected by these phenomena.
++
++.I bzip2
++usually allocates several megabytes of memory to operate
++in, and then charges all over it in a fairly random fashion.  This means
++that performance, both for compressing and decompressing, is largely
++determined by the speed at which your machine can service cache misses.
++Because of this, small changes to the code to reduce the miss rate have
++been observed to give disproportionately large performance improvements.
++I imagine
++.I bzip2
++will perform best on machines with very large caches.
++
++.SH CAVEATS
++I/O error messages are not as helpful as they could be.
++.I bzip2
++tries hard to detect I/O errors and exit cleanly, but the details of
++what the problem is sometimes seem rather misleading.
++
++This manual page pertains to version 1.1.0 of
++.I bzip2.
++Compressed data created by this version is entirely forwards and
++backwards compatible with the previous public releases, versions
++0.1pl2, 0.9.0, 0.9.5, 1.0.0, 1.0.1, 1.0.2 and above, but with the following
++exception: 0.9.0 and above can correctly decompress multiple
++concatenated compressed files.  0.1pl2 cannot do this; it will stop
++after decompressing just the first file in the stream.
++
++.I bzip2recover
++versions prior to 1.0.2 used 32-bit integers to represent
++bit positions in compressed files, so they could not handle compressed
++files more than 512 megabytes long.  Versions 1.0.2 and above use
++64-bit ints on some platforms which support them (GNU supported
++targets, and Windows).  To establish whether or not bzip2recover was
++built with such a limitation, run it without arguments.  In any event
++you can build yourself an unlimited version if you can recompile it
++with MaybeUInt64 set to be an unsigned 64-bit integer.
++
++
++
++.SH AUTHOR
++Julian Seward, jseward@acm.org.
++
++https://gitlab.com/bzip2/bzip2
++
++The ideas embodied in
++.I bzip2
++are due to (at least) the following
++people: Michael Burrows and David Wheeler (for the block sorting
++transformation), David Wheeler (again, for the Huffman coder), Peter
++Fenwick (for the structured coding model in the original
++.I bzip,
++and many refinements), and Alistair Moffat, Radford Neal and Ian Witten
++(for the arithmetic coder in the original
++.I bzip).
++I am much
++indebted for their help, support and advice.  See the manual in the
++source distribution for pointers to sources of documentation.  Christian
++von Roques encouraged me to look for faster sorting algorithms, so as to
++speed up compression.  Bela Lubkin encouraged me to improve the
++worst-case compression performance.
++Donna Robinson XMLised the documentation.
++The bz* scripts are derived from those of GNU gzip.
++Many people sent patches, helped
++with portability problems, lent machines, gave advice and were generally
++helpful.
+--- /dev/null	2023-02-21 10:19:34
++++ a/man/bzmore.1	2023-02-21 09:49:49
+@@ -0,0 +1,152 @@
++.\"Shamelessly copied from zmore.1 by Philippe Troin <phil@fifi.org>
++.\"for Debian GNU/Linux
++.TH BZMORE 1
++.SH NAME
++bzmore, bzless \- file perusal filter for crt viewing of bzip2 compressed text
++.SH SYNOPSIS
++.B bzmore
++[ name ...  ]
++.br
++.B bzless
++[ name ...  ]
++.SH NOTE
++In the following description,
++.I bzless
++and
++.I less
++can be used interchangeably with
++.I bzmore
++and
++.I more.
++.SH DESCRIPTION
++.I  Bzmore
++is a filter which allows examination of compressed or plain text files
++one screenful at a time on a soft-copy terminal.
++.I bzmore
++works on files compressed with
++.I bzip2
++and also on uncompressed files.
++If a file does not exist,
++.I bzmore
++looks for a file of the same name with the addition of a .bz2 suffix.
++.PP
++.I Bzmore
++normally pauses after each screenful, printing --More--
++at the bottom of the screen.
++If the user then types a carriage return, one more line is displayed.
++If the user hits a space,
++another screenful is displayed.  Other possibilities are enumerated later.
++.PP
++.I Bzmore
++looks in the file
++.I /etc/termcap
++to determine terminal characteristics,
++and to determine the default window size.
++On a terminal capable of displaying 24 lines,
++the default window size is 22 lines.
++Other sequences which may be typed when
++.I bzmore
++pauses, and their effects, are as follows (\fIi\fP is an optional integer
++argument, defaulting to 1) :
++.PP
++.IP \fIi\|\fP<space>
++display
++.I i
++more lines, (or another screenful if no argument is given)
++.PP
++.IP ^D
++display 11 more lines (a ``scroll'').
++If
++.I i
++is given, then the scroll size is set to \fIi\|\fP.
++.PP
++.IP d
++same as ^D (control-D)
++.PP
++.IP \fIi\|\fPz
++same as typing a space except that \fIi\|\fP, if present, becomes the new
++window size.  Note that the window size reverts back to the default at the
++end of the current file.
++.PP
++.IP \fIi\|\fPs
++skip \fIi\|\fP lines and print a screenful of lines
++.PP
++.IP \fIi\|\fPf
++skip \fIi\fP screenfuls and print a screenful of lines
++.PP
++.IP "q or Q"
++quit reading the current file; go on to the next (if any)
++.PP
++.IP "e or q"
++When the prompt --More--(Next file: 
++.IR file )
++is printed, this command causes bzmore to exit.
++.PP
++.IP s
++When the prompt --More--(Next file: 
++.IR file )
++is printed, this command causes bzmore to skip the next file and continue.
++.PP 
++.IP =
++Display the current line number.
++.PP
++.IP \fIi\|\fP/expr
++search for the \fIi\|\fP-th occurrence of the regular expression \fIexpr.\fP
++If the pattern is not found,
++.I bzmore
++goes on to the next file (if any).
++Otherwise, a screenful is displayed, starting two lines before the place
++where the expression was found.
++The user's erase and kill characters may be used to edit the regular
++expression.
++Erasing back past the first column cancels the search command.
++.PP
++.IP \fIi\|\fPn
++search for the \fIi\|\fP-th occurrence of the last regular expression entered.
++.PP
++.IP !command
++invoke a shell with \fIcommand\|\fP. 
++The character `!' in "command" are replaced with the
++previous shell command.  The sequence "\\!" is replaced by "!".
++.PP
++.IP ":q or :Q"
++quit reading the current file; go on to the next (if any)
++(same as q or Q).
++.PP
++.IP .
++(dot) repeat the previous command.
++.PP
++The commands take effect immediately, i.e., it is not necessary to
++type a carriage return.
++Up to the time when the command character itself is given,
++the user may hit the line kill character to cancel the numerical
++argument being formed.
++In addition, the user may hit the erase character to redisplay the
++--More-- message.
++.PP
++At any time when output is being sent to the terminal, the user can
++hit the quit key (normally control\-\\).
++.I Bzmore
++will stop sending output, and will display the usual --More--
++prompt.
++The user may then enter one of the above commands in the normal manner.
++Unfortunately, some output is lost when this is done, due to the
++fact that any characters waiting in the terminal's output queue
++are flushed when the quit signal occurs.
++.PP
++The terminal is set to
++.I noecho
++mode by this program so that the output can be continuous.
++What you type will thus not show on your terminal, except for the / and !
++commands.
++.PP
++If the standard output is not a teletype, then
++.I bzmore
++acts just like
++.I bzcat,
++except that a header is printed before each file.
++.SH FILES
++.DT
++/etc/termcap		Terminal data base
++.SH "SEE ALSO"
++more(1), less(1), bzip2(1), bzdiff(1), bzgrep(1)
+--- /dev/null	2023-02-21 10:19:39
++++ a/man/CMakeLists.txt	2023-02-21 09:49:49
+@@ -0,0 +1,8 @@
++set(MAN_FILES bzip2.1 bzgrep.1 bzdiff.1 bzmore.1)
++foreach(m IN LISTS MAN_FILES)
++    install(
++        FILES
++            ${CMAKE_CURRENT_SOURCE_DIR}/${m}
++        DESTINATION
++            ${CMAKE_INSTALL_PREFIX}/man/man1)
++endforeach()

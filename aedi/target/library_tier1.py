@@ -19,36 +19,37 @@
 from .base import *
 
 
-class Bzip2Target(MakeTarget):
+class Bzip2Target(CMakeStaticDependencyTarget):
     def __init__(self, name='bzip2'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz',
-            'ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269')
+            'ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269',
+            patches='bzip2-add-cmake')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('bzlib.h')
 
     def configure(self, state: BuildState):
+        opts = state.options
+        opts['ENABLE_APP'] = 'NO'
+        opts['ENABLE_SHARED_LIB'] = 'NO'
+        opts['ENABLE_STATIC_LIB'] = 'YES'
+        opts['ENABLE_TESTS'] = 'NO'
+
         super().configure(state)
 
-        opts = state.options
-        # Add explicit targets in order to skip testing step that is incompatible with cross-compilation
-        opts['bzip2'] = None
-        opts['bzip2recover'] = None
-        # Copy compiler flags from environment to command line argument, they would be overridden by Makefile otherwise
-        cflags = 'CFLAGS'
-        opts[cflags] = state.environment[cflags] + ' -D_FILE_OFFSET_BITS=64 -O2'
-
     def post_build(self, state: BuildState):
-        opts = state.options
-        opts['install'] = None
-        opts['PREFIX'] = state.install_path
+        super().post_build(state)
 
-        self.install(state, state.options)
-        self.write_pc_file(state, description='bzip2 compression library', version='1.0.8', libs='-lbz2')
+        lib_path = state.install_path / 'lib'
+        os.rename(lib_path / 'libbz2_static.a', lib_path / 'libbz2.a')
+
+    @staticmethod
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
+        return '' if line.startswith('bindir=') else line
 
 
 class FfiTarget(ConfigureMakeStaticDependencyTarget):
