@@ -27,7 +27,7 @@ jobs:
 
       - name: Generate Xcode project
         run: |
-          ./build.py --target ${{ matrix.target }}
+          ./build.py --target ${{ matrix.target }} --xcode
 
       - name: List Build Directory
         if: always()
