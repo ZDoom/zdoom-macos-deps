@@ -163,6 +163,12 @@ class Builder(object):
         state.environment = self._environment.copy()
         state.options = CommandLineOptions()
 
+        args = ('git', f'--git-dir={state.source}/.git', 'describe', '--tags')
+        version = subprocess.run(args, env=state.environment, capture_output=True)
+
+        if version.returncode == 0:
+            print(version.stdout.decode('ascii'))
+
         target.configure(state)
         target.build(state)
         target.post_build(state)
