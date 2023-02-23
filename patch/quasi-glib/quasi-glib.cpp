@@ -156,15 +156,7 @@ struct GMutex
 
 static pthread_mutex_t* g_mutex_impl_new()
 {
-    pthread_mutexattr_t attr;
-    pthread_mutexattr_init(&attr);
-
-    pthread_mutex_t* mutex = new pthread_mutex_t;
-    pthread_mutex_init(mutex, &attr);
-
-    pthread_mutexattr_destroy(&attr);
-
-    return mutex;
+    return new pthread_mutex_t(PTHREAD_MUTEX_INITIALIZER);
 }
 
 static void g_mutex_impl_free(pthread_mutex_t* mutex)
@@ -287,15 +279,7 @@ struct GCond
 
 static pthread_cond_t* g_cond_impl_new()
 {
-    pthread_condattr_t attr;
-    pthread_condattr_init(&attr);
-
-    pthread_cond_t* cond = new pthread_cond_t;
-    pthread_cond_init(cond, &attr);
-
-    pthread_condattr_destroy(&attr);
-    
-    return cond;
+    return new pthread_cond_t(PTHREAD_COND_INITIALIZER);
 }
 
 static void g_cond_impl_free(pthread_cond_t* cond)
@@ -416,14 +400,9 @@ GThread* g_thread_try_new(const char* name, GThreadFunc func, void* data, GError
         *error = nullptr;
     }
 
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-
     GThread* thread = new GThread;
-    pthread_create(&thread->thread, &attr, func, data);
+    pthread_create(&thread->thread, nullptr, func, data);
     thread->ref_count = 1;
-
-    pthread_attr_destroy(&attr);
 
     return thread;
 }
