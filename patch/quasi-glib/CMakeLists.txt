@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.1)
 project(quasi-glib)
 add_library(quasi-glib quasi-glib.cpp)
-set_property(TARGET quasi-glib PROPERTY CXX_STANDARD 11)
+set_property(TARGET quasi-glib PROPERTY CXX_STANDARD 17)
 install(TARGETS quasi-glib)
+
+add_executable(quasi-glib-test quasi-glib-test.cpp)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+set_property(TARGET quasi-glib-test PROPERTY CXX_STANDARD 17)
+target_include_directories(quasi-glib-test PRIVATE ${GLIB_INCLUDE_DIRS})
+target_link_libraries(quasi-glib-test PRIVATE quasi-glib)
