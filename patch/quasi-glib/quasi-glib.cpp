@@ -293,6 +293,8 @@ static pthread_cond_t* g_cond_impl_new()
 	pthread_cond_t* cond = new pthread_cond_t;
 	pthread_cond_init(cond, &attr);
 
+    pthread_condattr_destroy(&attr);
+    
 	return cond;
 }
 
