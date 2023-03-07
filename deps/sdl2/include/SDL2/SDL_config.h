@@ -200,7 +200,7 @@
 /* #undef HAVE_GETPAGESIZE */
 #define HAVE_MPROTECT 1
 /* #undef HAVE_ICONV */
-/* #undef HAVE_PTHREAD_SETNAME_NP */
+#define HAVE_PTHREAD_SETNAME_NP 1
 /* #undef HAVE_PTHREAD_SET_NAME_NP */
 /* #undef HAVE_SEM_TIMEDWAIT */
 /* #undef HAVE_GETAUXVAL */
