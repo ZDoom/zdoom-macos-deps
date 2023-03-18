@@ -256,3 +256,14 @@ class BuildState:
         if sdk_version := self.sdk_version():
             if sdk_version < minimum_version:
                 raise RuntimeError('Minimum SDK version requirement is not met')
+
+    def source_version(self):
+        version = ''
+
+        args = ('git', f'--git-dir={self.source}/.git', 'describe', '--tags')
+        git_describe = subprocess.run(args, env=self.environment, capture_output=True)
+
+        if git_describe.returncode == 0:
+            version = git_describe.stdout.decode('ascii')
+
+        return version
