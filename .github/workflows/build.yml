@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - glib
+          - PrBoom-Plus
 
     steps:
       - uses: actions/checkout@v3
