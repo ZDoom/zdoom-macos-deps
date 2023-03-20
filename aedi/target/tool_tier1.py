@@ -22,8 +22,8 @@ import platform
 import subprocess
 import zipapp
 
-from . import base
 from ..state import BuildState
+from . import base
 
 
 class CMakeTarget(base.CMakeTarget):

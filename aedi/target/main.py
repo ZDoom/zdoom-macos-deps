@@ -21,8 +21,8 @@ import shutil
 from pathlib import Path
 from platform import machine
 
-from . import base
 from ..state import BuildState
+from . import base
 
 
 class MakeMainTarget(base.MakeTarget):

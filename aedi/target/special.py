@@ -20,8 +20,8 @@ import shlex
 import shutil
 import subprocess
 
-from . import base
 from ..state import BuildState
+from . import base
 
 
 class BuildPrefix(base.Target):

@@ -18,8 +18,8 @@
 
 import subprocess
 
-from . import base
 from ..state import BuildState
+from . import base
 
 
 class GlslangTarget(base.CMakeStaticDependencyTarget):

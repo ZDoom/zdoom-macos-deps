@@ -20,8 +20,8 @@ import os
 import shutil
 from pathlib import Path
 
-from . import base
 from ..state import BuildState
+from . import base
 
 
 class DumbTarget(base.CMakeStaticDependencyTarget):

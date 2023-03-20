@@ -21,8 +21,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from . import base
 from ..state import BuildState
+from . import base
 
 
 class Bzip2Target(base.MakeTarget):
@@ -149,9 +149,7 @@ class GlibTarget(base.MesonTarget):
         return state.has_source_file('glib.doap')
 
     def configure(self, state: BuildState):
-        environment = state.environment
-        environment['LDFLAGS'] += ' -framework CoreFoundation -framework Foundation'
-
+        state.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
         super().configure(state)
 
     def post_build(self, state: BuildState):
