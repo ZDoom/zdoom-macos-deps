@@ -101,8 +101,23 @@ class Radare2Target(base.MesonTarget):
     def configure(self, state: BuildState):
         super().configure(state)
 
-        # TODO: fix absolute path in r_userconf.h
-        # TODO: fix R2_GITTIP in r_version.h
+        # Fix absolute paths in r_userconf.h
+        search_subpath = str(state.install_path)
+        replace_subpath = '/usr/local'
+
+        def fix_paths(line: str):
+            return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
+
+        self.update_text_file(state.build_path / 'r_userconf.h', fix_paths)
+
+        # Fix commit hash in r_version.h
+        tip_prefix = '#define R2_GITTIP '
+        tip_value = 'ab809417aa6b676922f95cf77861924eb90e7ef2'
+
+        def fix_commit(line: str):
+            return f'{tip_prefix}"{tip_value}"\n' if line.startswith(tip_prefix) else line
+
+        self.update_text_file(state.build_path / 'r_version.h', fix_commit)
 
 
 class SeverZipTarget(base.MakeTarget):

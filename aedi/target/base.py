@@ -128,6 +128,9 @@ class BuildTarget(Target):
             if patched_line:
                 patched_content.append(patched_line)
 
+        if content == patched_content:
+            return
+
         with open(path, 'w') as f:
             f.writelines(patched_content)
 
