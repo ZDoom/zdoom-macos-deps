@@ -22,8 +22,7 @@ import platform
 import subprocess
 import zipapp
 
-import base
-
+from . import base
 from ..state import BuildState
 
 

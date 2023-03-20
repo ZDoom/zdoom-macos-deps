@@ -21,8 +21,7 @@ import shutil
 from pathlib import Path
 from platform import machine
 
-import base
-
+from . import base
 from ..state import BuildState
 
 

@@ -21,8 +21,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-import base
-
+from . import base
 from ..state import BuildState
 
 

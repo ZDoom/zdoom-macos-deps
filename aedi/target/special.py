@@ -20,8 +20,7 @@ import shlex
 import shutil
 import subprocess
 
-import base
-
+from . import base
 from ..state import BuildState
 
 
