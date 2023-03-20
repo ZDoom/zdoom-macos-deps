@@ -21,18 +21,19 @@ import shutil
 from pathlib import Path
 from platform import machine
 
+import base
+
 from ..state import BuildState
-from .base import CMakeTarget, MakeTarget
 
 
-class MakeMainTarget(MakeTarget):
+class MakeMainTarget(base.MakeTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
         self.destination = self.DESTINATION_OUTPUT
 
 
-class CMakeMainTarget(CMakeTarget):
+class CMakeMainTarget(base.CMakeTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
