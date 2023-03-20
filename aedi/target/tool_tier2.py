@@ -106,27 +106,27 @@ class Radare2Target(base.MesonTarget):
         search_subpath = str(state.install_path)
         replace_subpath = '/usr/local'
 
-        userconf_path = state.build_path / 'r_userconf.h'
-        userconf_time = os.stat(userconf_path).st_mtime
-
         def fix_paths(line: str):
             return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
 
-        self.update_text_file(userconf_path, fix_paths)
-        os.utime(userconf_path, (userconf_time, userconf_time))
+        self.update_text_file(state.build_path / 'r_userconf.h', fix_paths)
 
-        # Fix commit hash in r_version.h
-        tip_prefix = '#define R2_GITTIP '
-        tip_value = 'ab809417aa6b676922f95cf77861924eb90e7ef2'
-
-        version_path = state.build_path / 'r_version.h'
-        version_time = os.stat(version_path).st_mtime
+        # Fix commit in r_version.h
+        names_values = (
+            ('R2_GITTIP', '"ab809417aa6b676922f95cf77861924eb90e7ef2"'),
+            ('R2_VERSION_COMMIT', '1'),
+        )
 
         def fix_commit(line: str):
-            return f'{tip_prefix}"{tip_value}"\n' if line.startswith(tip_prefix) else line
+            for name, value in names_values:
+                beginning = f'#define {name} '
 
-        self.update_text_file(version_path, fix_commit)
-        os.utime(version_path, (version_time, version_time))
+                if line.startswith(beginning):
+                    return f'{beginning}{value}\n'
+
+            return line
+
+        self.update_text_file(state.build_path / 'r_version.h', fix_commit)
 
 
 class SeverZipTarget(base.MakeTarget):

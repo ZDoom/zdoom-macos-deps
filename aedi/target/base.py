@@ -131,8 +131,12 @@ class BuildTarget(Target):
         if content == patched_content:
             return
 
+        file_time = os.stat(path).st_mtime
+
         with open(path, 'w') as f:
             f.writelines(patched_content)
+
+        os.utime(path, (file_time, file_time))
 
     @staticmethod
     def _update_variables_file(path: Path, prefix_value: str,
