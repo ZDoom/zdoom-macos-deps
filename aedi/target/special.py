@@ -20,16 +20,17 @@ import shlex
 import shutil
 import subprocess
 
+import base
+
 from ..state import BuildState
-from .base import BuildTarget, Target
 
 
-class BuildPrefix(Target):
+class BuildPrefix(base.Target):
     def __init__(self, name='build-prefix'):
         super().__init__(name)
 
 
-class CleanTarget(Target):
+class CleanTarget(base.Target):
     def __init__(self, name=None):
         super().__init__(name)
         self.args = ()
@@ -55,7 +56,7 @@ class CleanDepsTarget(CleanAllTarget):
         self.args += (state.deps_path,)
 
 
-class DownloadCMakeTarget(Target):
+class DownloadCMakeTarget(base.Target):
     def __init__(self, name='download-cmake'):
         super().__init__(name)
 
@@ -76,7 +77,7 @@ class DownloadCMakeTarget(Target):
         shutil.rmtree(state.source)
 
 
-class TestDepsTarget(BuildTarget):
+class TestDepsTarget(base.BuildTarget):
     def __init__(self, name='test-deps'):
         super().__init__(name)
         self.multi_platform = False
