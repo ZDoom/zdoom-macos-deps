@@ -25,7 +25,8 @@ from pathlib import Path
 from platform import machine
 
 from .state import BuildState
-from .target import Target, targets
+from .target import targets
+from .target.base import Target
 from .utility import (
     OS_VERSION_ARM64,
     OS_VERSION_X86_64,
