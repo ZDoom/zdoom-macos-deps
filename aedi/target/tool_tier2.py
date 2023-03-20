@@ -86,6 +86,25 @@ class QPakManTarget(base.CMakeTarget):
         self.copy_to_bin(state)
 
 
+class Radare2Target(base.MesonTarget):
+    def __init__(self, name='radare2'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/radareorg/radare2/archive/refs/tags/5.8.4.tar.gz',
+            '8ea45bd82e5ea37e270ca14ac2a6f947c647a24f9de9e18bf8cebc71c0816dcd')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('man/radare2.1')
+
+    def configure(self, state: BuildState):
+        super().configure(state)
+
+        # TODO: fix absolute path in r_userconf.h
+        # TODO: fix R2_GITTIP in r_version.h
+
+
 class SeverZipTarget(base.MakeTarget):
     # Build with --os-version-x64=10.13 command line option
 
