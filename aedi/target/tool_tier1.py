@@ -16,13 +16,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import os
 import pathlib
+import platform
+import subprocess
 import zipapp
 
-from .base import *
+from ..state import BuildState
+from . import base
 
 
-class BuildCMakeTarget(CMakeTarget):
+class CMakeTarget(base.CMakeTarget):
     def __init__(self, name='cmake'):
         super().__init__(name)
 
@@ -37,7 +41,7 @@ class BuildCMakeTarget(CMakeTarget):
         boostrap_cmk_path = boostrap_path / 'Bootstrap.cmk'
         boostrap_cmake = boostrap_cmk_path / 'cmake'
 
-        if state.architecture() == machine():
+        if state.architecture() == platform.machine():
             if not boostrap_cmake.exists():
                 os.makedirs(boostrap_path, exist_ok=True)
 
@@ -60,7 +64,7 @@ class BuildCMakeTarget(CMakeTarget):
         self.install(state)
 
 
-class GmakeTarget(ConfigureMakeDependencyTarget):
+class GmakeTarget(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='gmake'):
         super().__init__(name)
 
@@ -88,7 +92,7 @@ class GmakeTarget(ConfigureMakeDependencyTarget):
         self.copy_to_bin(state, 'make', self.name)
 
 
-class MesonTarget(BuildTarget):
+class MesonTarget(base.BuildTarget):
     def __init__(self, name='meson'):
         super().__init__(name)
         self.multi_platform = False
@@ -113,7 +117,7 @@ class MesonTarget(BuildTarget):
                               filter=directory_filter, compressed=True)
 
 
-class NasmTarget(ConfigureMakeDependencyTarget):
+class NasmTarget(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='nasm'):
         super().__init__(name)
 
@@ -126,7 +130,7 @@ class NasmTarget(ConfigureMakeDependencyTarget):
         return state.has_source_file('nasm.txt')
 
 
-class NinjaTarget(CMakeStaticDependencyTarget):
+class NinjaTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='ninja'):
         super().__init__(name)
 
@@ -140,7 +144,7 @@ class NinjaTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class PkgConfigTarget(ConfigureMakeDependencyTarget):
+class PkgConfigTarget(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='pkg-config'):
         super().__init__(name)
 
@@ -156,7 +160,7 @@ class PkgConfigTarget(ConfigureMakeDependencyTarget):
         self.copy_to_bin(state, new_filename=self.name + '.exe')
 
 
-class YasmTarget(ConfigureMakeDependencyTarget):
+class YasmTarget(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='yasm'):
         super().__init__(name)
 

@@ -17,11 +17,15 @@
 #
 
 import glob
+import os
+import shutil
+from pathlib import Path
 
-from .base import *
+from ..state import BuildState
+from . import base
 
 
-class BrotliTarget(CMakeStaticDependencyTarget):
+class BrotliTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='brotli'):
         super().__init__(name)
 
@@ -48,7 +52,7 @@ class BrotliTarget(CMakeStaticDependencyTarget):
         return line.replace('-R${libdir} ', '') if line.startswith('Libs:') else line
 
 
-class ExpatTarget(CMakeStaticDependencyTarget):
+class ExpatTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='expat'):
         super().__init__(name)
 
@@ -66,7 +70,7 @@ class ExpatTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class FreeImageTarget(MakeTarget):
+class FreeImageTarget(base.MakeTarget):
     def __init__(self, name='freeimage'):
         super().__init__(name)
 
@@ -106,7 +110,7 @@ class FreeImageTarget(MakeTarget):
         self.write_pc_file(state, version='3.18.0', libs='-lfreeimage -lc++')
 
 
-class FreeTypeTarget(CMakeStaticDependencyTarget):
+class FreeTypeTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='freetype'):
         super().__init__(name)
 
@@ -133,7 +137,7 @@ class FreeTypeTarget(CMakeStaticDependencyTarget):
         self.update_text_file(cmake_module, update_linker_flags)
 
 
-class FtglTarget(ConfigureMakeStaticDependencyTarget):
+class FtglTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='ftgl'):
         super().__init__(name)
 
@@ -154,7 +158,7 @@ class FtglTarget(ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class GlewTarget(CMakeStaticDependencyTarget):
+class GlewTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='glew'):
         super().__init__(name)
         self.src_root = 'build/cmake'
@@ -194,7 +198,7 @@ class GlewTarget(CMakeStaticDependencyTarget):
         return line
 
 
-class HarfBuzzTarget(CMakeStaticDependencyTarget):
+class HarfBuzzTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='harfbuzz'):
         super().__init__(name)
 
@@ -228,7 +232,7 @@ class HarfBuzzTarget(CMakeStaticDependencyTarget):
                            libs_private='-lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText')
 
 
-class LuaTarget(MakeTarget):
+class LuaTarget(base.MakeTarget):
     def __init__(self, name='lua'):
         super().__init__(name)
 
@@ -248,7 +252,7 @@ class LuaTarget(MakeTarget):
         self.install(state, state.options)
 
 
-class LzmaTarget(CMakeStaticDependencyTarget):
+class LzmaTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='lzma'):
         super().__init__(name)
 
@@ -269,7 +273,7 @@ class LzmaTarget(CMakeStaticDependencyTarget):
                            version='5.2.5', libs='-llzma')
 
 
-class Sdl2TtfTarget(CMakeStaticDependencyTarget):
+class Sdl2TtfTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_ttf'):
         super().__init__(name)
 
@@ -295,7 +299,7 @@ class Sdl2TtfTarget(CMakeStaticDependencyTarget):
         return line + 'Requires.private: freetype2\n' if line.startswith('Requires:') else line
 
 
-class SfmlTarget(CMakeStaticDependencyTarget):
+class SfmlTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sfml'):
         super().__init__(name)
 
@@ -317,7 +321,7 @@ class SfmlTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class TiffTarget(CMakeStaticDependencyTarget):
+class TiffTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='tiff'):
         super().__init__(name)
 
@@ -350,7 +354,7 @@ class TiffTarget(CMakeStaticDependencyTarget):
         return line
 
 
-class WebpTarget(CMakeStaticDependencyTarget):
+class WebpTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='webp'):
         super().__init__(name)
 
@@ -377,7 +381,7 @@ class WebpTarget(CMakeStaticDependencyTarget):
         self.keep_module_target(state, 'WebP::webp')
 
 
-class WxWidgetsTarget(CMakeStaticDependencyTarget):
+class WxWidgetsTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='wxwidgets'):
         super().__init__(name)
 
@@ -440,7 +444,7 @@ class WxWidgetsTarget(CMakeStaticDependencyTarget):
         self.update_text_file(wx_config_path, patch_wx_config)
 
 
-class ZstdTarget(CMakeStaticDependencyTarget):
+class ZstdTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='zstd'):
         super().__init__(name)
         self.src_root = 'build/cmake'

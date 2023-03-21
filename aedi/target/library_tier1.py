@@ -16,10 +16,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from .base import *
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+from ..state import BuildState
+from . import base
 
 
-class Bzip2Target(MakeTarget):
+class Bzip2Target(base.MakeTarget):
     def __init__(self, name='bzip2'):
         super().__init__(name)
 
@@ -51,7 +57,7 @@ class Bzip2Target(MakeTarget):
         self.write_pc_file(state, description='bzip2 compression library', version='1.0.8', libs='-lbz2')
 
 
-class FfiTarget(ConfigureMakeStaticDependencyTarget):
+class FfiTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='ffi'):
         super().__init__(name)
 
@@ -70,7 +76,7 @@ class FfiTarget(ConfigureMakeStaticDependencyTarget):
             self.make_platform_header(state, header)
 
 
-class FlacTarget(CMakeStaticDependencyTarget):
+class FlacTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='flac'):
         super().__init__(name)
 
@@ -89,7 +95,7 @@ class FlacTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class FluidSynthTarget(CMakeStaticDependencyTarget):
+class FluidSynthTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='fluidsynth'):
         super().__init__(name)
 
@@ -108,7 +114,7 @@ class FluidSynthTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class GettextTarget(ConfigureMakeStaticDependencyTarget):
+class GettextTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='gettext'):
         super().__init__(name)
 
@@ -129,7 +135,7 @@ class GettextTarget(ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class GlibTarget(BuildTarget):
+class GlibTarget(base.BuildTarget):
     def __init__(self, name='glib'):
         super().__init__(name)
 
@@ -198,7 +204,7 @@ endian = 'little'
         return 'exec_prefix=${prefix}\n' + line if line.startswith('libdir=') else line
 
 
-class IconvTarget(ConfigureMakeStaticDependencyTarget):
+class IconvTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='iconv'):
         super().__init__(name)
 
@@ -215,7 +221,7 @@ class IconvTarget(ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class InstPatchTarget(CMakeStaticDependencyTarget):
+class InstPatchTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='instpatch'):
         super().__init__(name)
 
@@ -267,7 +273,7 @@ class IntlTarget(GettextTarget):
         self.install(state, state.options)
 
 
-class JpegTurboTarget(CMakeStaticDependencyTarget):
+class JpegTurboTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='jpeg-turbo'):
         super().__init__(name)
 
@@ -284,7 +290,7 @@ class JpegTurboTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class LameTarget(ConfigureMakeStaticDependencyTarget):
+class LameTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='lame'):
         super().__init__(name)
 
@@ -297,7 +303,7 @@ class LameTarget(ConfigureMakeStaticDependencyTarget):
         return state.has_source_file('lame.spec')
 
 
-class MoltenVKTarget(MakeTarget):
+class MoltenVKTarget(base.MakeTarget):
     def __init__(self, name='moltenvk'):
         super().__init__(name)
 
@@ -389,7 +395,7 @@ class MoltenVKTarget(MakeTarget):
             os.utime(dynamic_lib_path, (static_lib_time, static_lib_time))
 
 
-class Mpg123Target(CMakeStaticDependencyTarget):
+class Mpg123Target(base.CMakeStaticDependencyTarget):
     def __init__(self, name='mpg123'):
         super().__init__(name)
         self.src_root = 'ports/cmake'
@@ -408,7 +414,7 @@ class Mpg123Target(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class OggTarget(CMakeStaticDependencyTarget):
+class OggTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='ogg'):
         super().__init__(name)
 
@@ -418,7 +424,7 @@ class OggTarget(CMakeStaticDependencyTarget):
             'c4d91be36fc8e54deae7575241e03f4211eb102afb3fc0775fbbc1b740016705')
 
 
-class OpenALTarget(CMakeStaticDependencyTarget):
+class OpenALTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='openal'):
         super().__init__(name)
 
@@ -436,7 +442,7 @@ class OpenALTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class OpusTarget(CMakeStaticDependencyTarget):
+class OpusTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='opus'):
         super().__init__(name)
 
@@ -466,7 +472,7 @@ class OpusTarget(CMakeStaticDependencyTarget):
         return line
 
 
-class PcreTarget(ConfigureMakeStaticDependencyTarget):
+class PcreTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='pcre'):
         super().__init__(name)
 
@@ -490,7 +496,7 @@ class PcreTarget(ConfigureMakeStaticDependencyTarget):
         self.update_config_script(state.install_path / 'bin/pcre-config')
 
 
-class QuasiGlibTarget(CMakeStaticDependencyTarget):
+class QuasiGlibTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='quasi-glib'):
         super().__init__(name)
 
@@ -498,7 +504,7 @@ class QuasiGlibTarget(CMakeStaticDependencyTarget):
         state.source = state.patch_path / self.name
 
 
-class SndFileTarget(CMakeStaticDependencyTarget):
+class SndFileTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sndfile'):
         super().__init__(name)
 
@@ -517,7 +523,7 @@ class SndFileTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class VorbisTarget(CMakeStaticDependencyTarget):
+class VorbisTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='vorbis'):
         super().__init__(name)
 
@@ -527,7 +533,7 @@ class VorbisTarget(CMakeStaticDependencyTarget):
             'b33cc4934322bcbf6efcbacf49e3ca01aadbea4114ec9589d1b1e9d20f72954b')
 
 
-class VpxTarget(ConfigureMakeDependencyTarget):
+class VpxTarget(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='vpx'):
         super().__init__(name)
 
@@ -559,7 +565,7 @@ class VpxTarget(ConfigureMakeDependencyTarget):
         self.update_text_file(state.build_path / 'vpx_config.c', clean_build_config)
 
 
-class ZlibNgTarget(CMakeStaticDependencyTarget):
+class ZlibNgTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='zlib-ng'):
         super().__init__(name)
 
@@ -579,7 +585,7 @@ class ZlibNgTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class ZMusicTarget(CMakeStaticDependencyTarget):
+class ZMusicTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='zmusic'):
         super().__init__(name)
 

@@ -16,10 +16,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from .base import *
+import os
+import shutil
+from pathlib import Path
+
+from ..state import BuildState
+from . import base
 
 
-class DumbTarget(CMakeStaticDependencyTarget):
+class DumbTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='dumb'):
         super().__init__(name)
 
@@ -43,7 +48,7 @@ class DumbTarget(CMakeStaticDependencyTarget):
         return 'Libs: -L${libdir} -ldumb\n' if line.startswith('Libs:') else line
 
 
-class FmtTarget(CMakeStaticDependencyTarget):
+class FmtTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='fmt'):
         super().__init__(name)
 
@@ -60,7 +65,7 @@ class FmtTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class MadTarget(ConfigureMakeStaticDependencyTarget):
+class MadTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mad'):
         super().__init__(name)
 
@@ -82,7 +87,7 @@ class MadTarget(ConfigureMakeStaticDependencyTarget):
         self.write_pc_file(state, description='MPEG Audio Decoder', version='0.15.1b')
 
 
-class MikmodTarget(ConfigureMakeStaticDependencyTarget):
+class MikmodTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mikmod'):
         super().__init__(name)
 
@@ -99,7 +104,7 @@ class MikmodTarget(ConfigureMakeStaticDependencyTarget):
         self.update_config_script(state.install_path / 'bin/libmikmod-config')
 
 
-class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
+class ModPlugTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='modplug'):
         super().__init__(name)
 
@@ -121,7 +126,7 @@ class ModPlugTarget(ConfigureMakeStaticDependencyTarget):
         return line
 
 
-class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
+class OpusFileTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='opusfile'):
         super().__init__(name)
 
@@ -138,7 +143,7 @@ class OpusFileTarget(ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class PngTarget(CMakeStaticDependencyTarget):
+class PngTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='png'):
         super().__init__(name)
 
@@ -165,7 +170,7 @@ class PngTarget(CMakeStaticDependencyTarget):
         self.update_config_script(state.install_path / 'bin/libpng16-config')
 
 
-class PortMidiTarget(CMakeTarget):
+class PortMidiTarget(base.CMakeTarget):
     def __init__(self, name='portmidi'):
         super().__init__(name)
 
@@ -189,7 +194,7 @@ class PortMidiTarget(CMakeTarget):
         shutil.copy(state.build_path / 'libportmidi_s.a', lib_path / 'libportmidi.a')
 
 
-class SamplerateTarget(CMakeStaticDependencyTarget):
+class SamplerateTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='samplerate'):
         super().__init__(name)
 
@@ -209,7 +214,7 @@ class SamplerateTarget(CMakeStaticDependencyTarget):
         self.update_text_file(cmake_module, update_linker_flags)
 
 
-class Sdl2Target(CMakeStaticDependencyTarget):
+class Sdl2Target(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2'):
         super().__init__(name)
 
@@ -227,7 +232,7 @@ class Sdl2Target(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class Sdl2ImageTarget(CMakeStaticDependencyTarget):
+class Sdl2ImageTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_image'):
         super().__init__(name)
         self.version = '2.6.3'
@@ -255,7 +260,7 @@ class Sdl2ImageTarget(CMakeStaticDependencyTarget):
         shutil.move(str(bad_cmake_files_path), str(good_cmake_files_path))
 
 
-class Sdl2MixerTarget(CMakeStaticDependencyTarget):
+class Sdl2MixerTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_mixer'):
         super().__init__(name)
         self.version = '2.6.3'
@@ -288,7 +293,7 @@ class Sdl2MixerTarget(CMakeStaticDependencyTarget):
                            libs='-lSDL2_mixer', cflags='-I${includedir}/SDL2')
 
 
-class Sdl2NetTarget(CMakeStaticDependencyTarget):
+class Sdl2NetTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_net'):
         super().__init__(name)
         self.version = '2.2.0'
@@ -308,7 +313,7 @@ class Sdl2NetTarget(CMakeStaticDependencyTarget):
                            libs='-lSDL2_net', cflags='-I${includedir}/SDL2')
 
 
-class SodiumTarget(ConfigureMakeStaticDependencyTarget):
+class SodiumTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='sodium'):
         super().__init__(name)
 
@@ -321,7 +326,7 @@ class SodiumTarget(ConfigureMakeStaticDependencyTarget):
         return state.has_source_file('libsodium.pc.in')
 
 
-class VulkanHeadersTarget(CMakeStaticDependencyTarget):
+class VulkanHeadersTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='vulkan-headers'):
         super().__init__(name)
 
@@ -332,7 +337,7 @@ class VulkanHeadersTarget(CMakeStaticDependencyTarget):
             '86ef8969b96cf391dc86b9c4e5745b8ecaa12ebdaaefd3d8e38bc98e15f30653')
 
 
-class VulkanLoaderTarget(CMakeStaticDependencyTarget):
+class VulkanLoaderTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='vulkan-loader'):
         super().__init__(name)
 
@@ -354,7 +359,7 @@ class VulkanLoaderTarget(CMakeStaticDependencyTarget):
         return line.replace('\n', ' -framework CoreFoundation\n') if line.startswith('Libs.private:') else line
 
 
-class XmpTarget(ConfigureMakeStaticDependencyTarget):
+class XmpTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='xmp'):
         super().__init__(name)
 

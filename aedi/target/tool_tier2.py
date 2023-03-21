@@ -16,10 +16,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from .base import *
+import subprocess
+
+from ..state import BuildState
+from . import base
 
 
-class GlslangTarget(CMakeStaticDependencyTarget):
+class GlslangTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='glslang'):
         super().__init__(name)
 
@@ -37,7 +40,7 @@ class GlslangTarget(CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class P7ZipTarget(CMakeTarget):
+class P7ZipTarget(base.CMakeTarget):
     def __init__(self, name='p7zip'):
         super().__init__(name)
         self.src_root = 'CPP/7zip/CMAKE/7za'
@@ -55,7 +58,7 @@ class P7ZipTarget(CMakeTarget):
         self.copy_to_bin(state, '7za')
 
 
-class PbzxTarget(SingleExeCTarget):
+class PbzxTarget(base.SingleExeCTarget):
     def __init__(self, name='pbzx'):
         super().__init__(name)
         self.options = ('pbzx.c', '-lxar', '-llzma')
@@ -70,7 +73,7 @@ class PbzxTarget(SingleExeCTarget):
         return state.has_source_file('pbzx.c')
 
 
-class QPakManTarget(CMakeTarget):
+class QPakManTarget(base.CMakeTarget):
     def __init__(self, name='qpakman'):
         super().__init__(name)
 
@@ -83,7 +86,7 @@ class QPakManTarget(CMakeTarget):
         self.copy_to_bin(state)
 
 
-class SeverZipTarget(MakeTarget):
+class SeverZipTarget(base.MakeTarget):
     # Build with --os-version-x64=10.13 command line option
 
     def __init__(self, name='7zip'):
@@ -125,7 +128,7 @@ class SeverZipTarget(MakeTarget):
         return 'x64' if arch == 'x86_64' else arch
 
 
-class UnrarTarget(MakeTarget):
+class UnrarTarget(base.MakeTarget):
     def __init__(self, name='unrar'):
         super().__init__(name)
 
@@ -141,7 +144,7 @@ class UnrarTarget(MakeTarget):
         return state.has_source_file('rar.hpp')
 
 
-class ZipTarget(SingleExeCTarget):
+class ZipTarget(base.SingleExeCTarget):
     def __init__(self, name='zip'):
         super().__init__(name)
         self.options = (

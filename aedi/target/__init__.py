@@ -113,7 +113,7 @@ def targets():
         ZstdTarget(),
 
         # Tools needed to build main targets and libraries (tiers 1 and 2)
-        BuildCMakeTarget(),
+        CMakeTarget(),
         GmakeTarget(),
         MesonTarget(),
         NasmTarget(),
