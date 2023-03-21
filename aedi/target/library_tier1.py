@@ -402,8 +402,8 @@ class Mpg123Target(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.mpg123.de/download/mpg123-1.31.2.tar.bz2',
-            'b17f22905e31f43b6b401dfdf6a71ed11bb7d056f68db449d70b9f9ae839c7de',
+            'https://www.mpg123.de/download/mpg123-1.31.3.tar.bz2',
+            '1ca77d3a69a5ff845b7a0536f783fee554e1041139a6b978f6afe14f5814ad1a',
             patches=('mpg123-arm64-fpu', 'mpg123-no-syn123'))
 
     def configure(self, state: BuildState):
