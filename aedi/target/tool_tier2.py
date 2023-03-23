@@ -140,18 +140,17 @@ class RizinTarget(base.MesonTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('binrz/man/rizin.1')
 
-    # def configure(self, state: BuildState):
-    #     super().configure(state)
-    #
-    #     # Fix absolute paths in r_userconf.h
-    #     search_subpath = str(state.install_path)
-    #     replace_subpath = '/usr/local'
-    #
-    #     def fix_paths(line: str):
-    #         return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
-    #
-    #     self.update_text_file(state.build_path / 'rz_userconf.h', fix_paths)
+    def configure(self, state: BuildState):
+        super().configure(state)
 
+        # Fix absolute paths in r_userconf.h
+        search_subpath = str(state.install_path)
+        replace_subpath = '/usr/local'
+
+        def fix_paths(line: str):
+            return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
+
+        self.update_text_file(state.build_path / 'rz_userconf.h', fix_paths)
 
 
 class SeverZipTarget(base.MakeTarget):
