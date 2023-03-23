@@ -556,7 +556,11 @@ endian = 'little'
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def build(self, state: BuildState):
-        args = ('ninja',)
+        args = ['ninja']
+
+        if state.verbose:
+            args.append('--verbose')
+
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def post_build(self, state: BuildState):
