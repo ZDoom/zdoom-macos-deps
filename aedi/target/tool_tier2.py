@@ -128,6 +128,32 @@ class Radare2Target(base.MesonTarget):
         self.update_text_file(state.build_path / 'r_version.h', fix_commit)
 
 
+class RizinTarget(base.MesonTarget):
+    def __init__(self, name='rizin'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/rizinorg/rizin/releases/download/v0.5.1/rizin-src-v0.5.1.tar.xz',
+            'f7a1338a909de465f56e4a59217669d595153be39ee2de5b86d8466475159859')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('binrz/man/rizin.1')
+
+    # def configure(self, state: BuildState):
+    #     super().configure(state)
+    #
+    #     # Fix absolute paths in r_userconf.h
+    #     search_subpath = str(state.install_path)
+    #     replace_subpath = '/usr/local'
+    #
+    #     def fix_paths(line: str):
+    #         return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
+    #
+    #     self.update_text_file(state.build_path / 'rz_userconf.h', fix_paths)
+
+
+
 class SeverZipTarget(base.MakeTarget):
     # Build with --os-version-x64=10.13 command line option
 
