@@ -7,11 +7,16 @@ import mesonbuild.mesonmain
 #
 sys.argv = [
     '/Volumes/ramdisk/zdoom-macos-deps/deps/meson/bin/meson',
-    '--prefix=/Volumes/ramdisk/zdoom-macos-deps/build/rizin/make/rizin-v0.5.1/install_x86_64',
-    '--buildtype=release',
-    '--default-library=static',
-    '--cross-file=/Volumes/ramdisk/zdoom-macos-deps/build/rizin/make/rizin-v0.5.1/build_x86_64/x86_64.txt',
-    '/Volumes/ramdisk/zdoom-macos-deps/source/rizin/rizin-v0.5.1'
+    # '--prefix=/Volumes/ramdisk/zdoom-macos-deps/build/rizin/make/rizin-v0.5.1/install_x86_64',
+    # '--buildtype=release',
+    # '--default-library=static',
+    # '--cross-file=/Volumes/ramdisk/zdoom-macos-deps/build/rizin/make/rizin-v0.5.1/build_x86_64/x86_64.txt',
+    # '/Volumes/ramdisk/zdoom-macos-deps/source/rizin/rizin-v0.5.1'
+    '--internal',
+    'regenerate',
+    '/Volumes/ramdisk/zdoom-macos-deps/build/rizin/make/rizin-v0.5.1/build_x86_64',
+    '/Volumes/ramdisk/zdoom-macos-deps/source/rizin/rizin-v0.5.1',
+    '--backend=ninja'
 ]
 
 env = {
