@@ -28,8 +28,8 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/glslang/archive/refs/tags/12.0.0.tar.gz',
-            '7cb45842ec1d4b6ea775d624c3d2d8ba9450aa416b0482b0cc7e4fdd399c3d75')
+            'https://github.com/KhronosGroup/glslang/archive/refs/tags/12.1.0.tar.gz',
+            '1515e840881d1128fb6d831308433f731808f818f2103881162f3ffd47b15cd5')
 
     def configure(self, state: BuildState):
         args = ('python3', 'update_glslang_sources.py')
