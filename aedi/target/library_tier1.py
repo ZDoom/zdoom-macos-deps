@@ -148,9 +148,12 @@ class GlibTarget(base.MesonTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('glib.doap')
 
-    def configure(self, state: BuildState):
-        state.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
-        super().configure(state)
+    # def configure(self, state: BuildState):
+    #     environment = state.environment
+    #     assert 'LDFLAGS' not in environment
+    #     environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
+    #
+    #     super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -269,8 +272,8 @@ class MoltenVKTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.2.2.tar.gz',
-            '8065a10c2d70b561f48475dedb118e643176527b162d6e439fa127270c2a07dd',
+            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.2.3.tar.gz',
+            'bb2c2e486284e0247a85e5f585425bfcb364bb13aa167047a16a1330b9a76e58',
             patches='moltenvk-deployment-target')
 
     def initialize(self, state: BuildState):
