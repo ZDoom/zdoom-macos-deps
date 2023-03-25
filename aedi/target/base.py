@@ -509,3 +509,55 @@ class SingleExeCTarget(MakeTarget):
 
     def post_build(self, state: BuildState):
         self.copy_to_bin(state)
+
+
+class MesonTarget(BuildTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+    def configure(self, state: BuildState):
+        super().configure(state)
+
+        c_compiler = state.c_compiler()
+        assert c_compiler
+
+        cxx_compiler = state.cxx_compiler()
+        assert cxx_compiler
+
+        cpu = state.architecture()
+        cpu_family = 'arm' if 'arm64' == cpu else cpu
+
+        cross_file = state.build_path / (state.architecture() + '.txt')
+        with open(cross_file, 'w') as f:
+            f.write(f'''
+[binaries]
+c = '{c_compiler}'
+cpp = '{cxx_compiler}'
+objc = '{c_compiler}'
+objcpp = '{cxx_compiler}'
+pkgconfig = '{state.prefix_path}/bin/pkg-config'
+strip = '/usr/bin/strip'
+
+[host_machine]
+system = 'darwin'
+cpu_family = '{cpu_family}'
+cpu = '{cpu}'
+endian = 'little'
+''')
+
+        args = (
+            state.bin_path / 'meson',
+            f'--prefix={state.install_path}',
+            '--buildtype=release',
+            '--default-library=static',
+            f'--cross-file={cross_file}',
+            state.source
+        )
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
+
+    def build(self, state: BuildState):
+        args = ('ninja',)
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
+
+    def post_build(self, state: BuildState):
+        self.install(state, tool='ninja')
