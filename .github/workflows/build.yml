@@ -19,13 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-#      - name: Build target
-#        run: |
-#          ./build.py --target ${{ matrix.target }}
-
-      - name: Generate Xcode project
+      - name: Build target
         run: |
-          ./build.py --target ${{ matrix.target }} --xcode
+          ./build.py --target ${{ matrix.target }}
+
+#      - name: Generate Xcode project
+#        run: |
+#          ./build.py --target ${{ matrix.target }} --xcode
 
       - name: List Build Directory
         if: always()
