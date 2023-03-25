@@ -101,7 +101,7 @@ class Radare2Target(base.MesonTarget):
 
     def configure(self, state: BuildState):
         option = state.options
-        option['blob'] = 'true'
+        # option['blob'] = 'true'
         option['r2_gittip'] = 'ab809417aa6b676922f95cf77861924eb90e7ef2'
         option['r2_version_commit'] = '1'
 
