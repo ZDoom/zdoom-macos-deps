@@ -150,7 +150,8 @@ class GlibTarget(base.MesonTarget):
 
     def configure(self, state: BuildState):
         environment = state.environment
-        environment['LDFLAGS'] += ' -framework CoreFoundation -framework Foundation'
+        assert 'LDFLAGS' not in environment
+        environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
 
         super().configure(state)
 
