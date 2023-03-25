@@ -529,7 +529,7 @@ class MesonTarget(BuildTarget):
             args.append(f'--prefix={state.install_path}')
 
         if state.xcode:
-            args.append(f'--backend=xcode')
+            args.append('--backend=xcode')
         else:
             cross_file_path = state.build_path / (state.architecture() + '.txt')
             self._write_cross_file(cross_file_path, state)
@@ -545,23 +545,23 @@ class MesonTarget(BuildTarget):
         if state.xcode:
             args = ('open', f'{self.name}.xcodeproj')
             subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
+        else:
+            # args = ['ninja']
+            #
+            # if state.verbose:
+            #     args.append('--verbose')
+            #
+            # subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
-        # args = ['ninja']
-        #
-        # if state.verbose:
-        #     args.append('--verbose')
-        #
-        # subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
+            args = [
+                'compile',
+                f'-C={state.build_path}',
+            ]
 
-        args = [
-            'compile',
-            f'-C={state.build_path}',
-        ]
+            if state.verbose:
+                args.append('--verbose')
 
-        if state.verbose:
-            args.append('--verbose')
-
-        self._run_meson(args, state)
+            self._run_meson(args, state)
 
     def post_build(self, state: BuildState):
         if state.xcode:
