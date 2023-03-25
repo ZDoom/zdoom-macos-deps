@@ -89,6 +89,7 @@ class QPakManTarget(base.CMakeTarget):
 class Radare2Target(base.MesonTarget):
     def __init__(self, name='radare2'):
         super().__init__(name)
+        self.configure_prefix = False
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -99,33 +100,38 @@ class Radare2Target(base.MesonTarget):
         return state.has_source_file('man/radare2.1')
 
     def configure(self, state: BuildState):
+        option = state.options
+        option['blob'] = 'true'
+        option['r2_gittip'] = 'ab809417aa6b676922f95cf77861924eb90e7ef2'
+        option['r2_version_commit'] = '1'
+
         super().configure(state)
 
-        # Fix absolute paths in r_userconf.h
-        search_subpath = str(state.install_path)
-        replace_subpath = '/usr/local'
-
-        def fix_paths(line: str):
-            return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
-
-        self.update_text_file(state.build_path / 'r_userconf.h', fix_paths)
-
-        # Fix commit in r_version.h
-        names_values = (
-            ('R2_GITTIP', '"ab809417aa6b676922f95cf77861924eb90e7ef2"'),
-            ('R2_VERSION_COMMIT', '1'),
-        )
-
-        def fix_commit(line: str):
-            for name, value in names_values:
-                beginning = f'#define {name} '
-
-                if line.startswith(beginning):
-                    return f'{beginning}{value}\n'
-
-            return line
-
-        self.update_text_file(state.build_path / 'r_version.h', fix_commit)
+        # # Fix absolute paths in r_userconf.h
+        # search_subpath = str(state.install_path)
+        # replace_subpath = '/usr/local'
+        #
+        # def fix_paths(line: str):
+        #     return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
+        #
+        # self.update_text_file(state.build_path / 'r_userconf.h', fix_paths)
+        #
+        # # Fix commit in r_version.h
+        # names_values = (
+        #     ('R2_GITTIP', '"ab809417aa6b676922f95cf77861924eb90e7ef2"'),
+        #     ('R2_VERSION_COMMIT', '1'),
+        # )
+        #
+        # def fix_commit(line: str):
+        #     for name, value in names_values:
+        #         beginning = f'#define {name} '
+        #
+        #         if line.startswith(beginning):
+        #             return f'{beginning}{value}\n'
+        #
+        #     return line
+        #
+        # self.update_text_file(state.build_path / 'r_version.h', fix_commit)
 
 
 class RizinTarget(base.MesonTarget):
@@ -143,14 +149,14 @@ class RizinTarget(base.MesonTarget):
     def configure(self, state: BuildState):
         super().configure(state)
 
-        # Fix absolute paths in r_userconf.h
-        search_subpath = str(state.install_path)
-        replace_subpath = '/usr/local'
-
-        def fix_paths(line: str):
-            return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
-
-        self.update_text_file(state.build_path / 'rz_userconf.h', fix_paths)
+        # # Fix absolute paths in r_userconf.h
+        # search_subpath = str(state.install_path)
+        # replace_subpath = '/usr/local'
+        #
+        # def fix_paths(line: str):
+        #     return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
+        #
+        # self.update_text_file(state.build_path / 'rz_userconf.h', fix_paths)
 
 
 class SeverZipTarget(base.MakeTarget):

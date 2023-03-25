@@ -535,6 +535,7 @@ class MesonTarget(BuildTarget):
             self._write_cross_file(cross_file_path, state)
             args.append(f'--cross-file={cross_file_path}')
 
+        args += state.options.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(state.build_path)
         args.append(state.source)
 
@@ -543,7 +544,7 @@ class MesonTarget(BuildTarget):
 
     def build(self, state: BuildState):
         if state.xcode:
-            args = ('open', f'{self.name}.xcodeproj')
+            args = ['open', f'{self.name}.xcodeproj']
             subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
         else:
             # args = ['ninja']
