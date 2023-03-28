@@ -544,7 +544,7 @@ class MesonTarget(BuildTarget):
             args = ['open', f'{self.name}.xcodeproj']
         else:
             args = [state.bin_path / 'meson', 'compile']
-    
+
             if state.verbose:
                 args.append('--verbose')
 
