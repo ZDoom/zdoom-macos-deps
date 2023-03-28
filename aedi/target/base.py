@@ -559,6 +559,10 @@ endian = 'little'
 
     def build(self, state: BuildState):
         args = [state.bin_path / 'meson', 'compile']
+
+        if state.verbose:
+            args.append('--verbose')
+
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def post_build(self, state: BuildState):
