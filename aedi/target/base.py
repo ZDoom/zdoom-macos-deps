@@ -545,7 +545,7 @@ cpu = '{cpu}'
 endian = 'little'
 ''')
 
-        args = (
+        args = [
             state.bin_path / 'meson',
             'setup',
             f'--prefix={state.install_path}',
@@ -554,7 +554,9 @@ endian = 'little'
             f'--cross-file={cross_file}',
             state.build_path,
             state.source
-        )
+        ]
+        args += state.options.to_list(CommandLineOptions.CMAKE_RULES)
+
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def build(self, state: BuildState):
