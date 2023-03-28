@@ -514,19 +514,17 @@ class SingleExeCTarget(MakeTarget):
 class MesonTarget(BuildTarget):
     def __init__(self, name=None):
         super().__init__(name)
-        self.configure_prefix = True
 
     def configure(self, state: BuildState):
         super().configure(state)
 
         args = [
+            state.bin_path / 'meson',
             'setup',
+            f'--prefix={state.install_path}',
             '--buildtype=release',
             '--default-library=static',
         ]
-
-        if self.configure_prefix:
-            args.append(f'--prefix={state.install_path}')
 
         if state.xcode:
             args.append('--backend=xcode')
@@ -539,45 +537,21 @@ class MesonTarget(BuildTarget):
         args.append(state.build_path)
         args.append(state.source)
 
-        # subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
-        self._run_meson(args, state)
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def build(self, state: BuildState):
         if state.xcode:
             args = ['open', f'{self.name}.xcodeproj']
-            subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
         else:
-            # args = ['ninja']
-            #
-            # if state.verbose:
-            #     args.append('--verbose')
-            #
-            # subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
-
-            args = [
-                'compile',
-                f'-C={state.build_path}',
-            ]
-
+            args = [state.bin_path / 'meson', 'compile']
+    
             if state.verbose:
                 args.append('--verbose')
 
-            self._run_meson(args, state)
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def post_build(self, state: BuildState):
-        if state.xcode:
-            return
-
-        # self.install(state, tool='ninja')
-        args = [
-            'install',
-            f'-C={state.build_path}'
-        ]
-
-        if not self.configure_prefix:
-            args.append(f'--destdir={state.install_path}')
-
-        self._run_meson(args, state)
+        self.install(state, tool=state.bin_path / 'meson')
 
     @staticmethod
     def _write_cross_file(path: Path, state: BuildState):
@@ -606,10 +580,3 @@ cpu_family = '{cpu_family}'
 cpu = '{cpu}'
 endian = 'little'
 ''')
-
-    @staticmethod
-    def _run_meson(_args: typing.Sequence[typing.Union[str, Path]], state: BuildState):
-        args = [state.bin_path / 'meson']
-        args.extend(_args)
-
-        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)

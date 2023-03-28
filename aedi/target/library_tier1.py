@@ -148,12 +148,14 @@ class GlibTarget(base.MesonTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('glib.doap')
 
-    # def configure(self, state: BuildState):
-    #     environment = state.environment
-    #     assert 'LDFLAGS' not in environment
-    #     environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
-    #
-    #     super().configure(state)
+    def configure(self, state: BuildState):
+        # Additional frameworks are needed for proper detection of libintl
+        ld_key = 'LDFLAGS'
+        ld_value = '-framework CoreFoundation -framework Foundation'
+        env = state.environment
+        env[ld_key] = (env[ld_key] + ' ' + ld_value) if ld_key in env else ld_value
+
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
