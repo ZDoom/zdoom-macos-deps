@@ -547,17 +547,19 @@ endian = 'little'
 
         args = (
             state.bin_path / 'meson',
+            'setup',
             f'--prefix={state.install_path}',
             '--buildtype=release',
             '--default-library=static',
             f'--cross-file={cross_file}',
+            state.build_path,
             state.source
         )
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def build(self, state: BuildState):
-        args = ('ninja',)
+        args = [state.bin_path / 'meson', 'compile']
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def post_build(self, state: BuildState):
-        self.install(state, tool='ninja')
+        self.install(state, tool=state.bin_path / 'meson')
