@@ -518,6 +518,43 @@ class MesonTarget(BuildTarget):
     def configure(self, state: BuildState):
         super().configure(state)
 
+        args = [
+            state.bin_path / 'meson',
+            'setup',
+            f'--prefix={state.install_path}',
+            '--buildtype=release',
+            '--default-library=static',
+        ]
+
+        if state.xcode:
+            args.append('--backend=xcode')
+        else:
+            cross_file_path = state.build_path / (state.architecture() + '.txt')
+            self._write_cross_file(cross_file_path, state)
+            args.append(f'--cross-file={cross_file_path}')
+
+        args += state.options.to_list(CommandLineOptions.CMAKE_RULES)
+        args.append(state.build_path)
+        args.append(state.source)
+
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
+
+    def build(self, state: BuildState):
+        if state.xcode:
+            args = ['open', f'{self.name}.xcodeproj']
+        else:
+            args = [state.bin_path / 'meson', 'compile']
+
+            if state.verbose:
+                args.append('--verbose')
+
+        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
+
+    def post_build(self, state: BuildState):
+        self.install(state, tool=state.bin_path / 'meson')
+
+    @staticmethod
+    def _write_cross_file(path: Path, state: BuildState):
         c_compiler = state.c_compiler()
         assert c_compiler
 
@@ -527,8 +564,7 @@ class MesonTarget(BuildTarget):
         cpu = state.architecture()
         cpu_family = 'arm' if 'arm64' == cpu else cpu
 
-        cross_file = state.build_path / (state.architecture() + '.txt')
-        with open(cross_file, 'w') as f:
+        with open(path, 'w') as f:
             f.write(f'''
 [binaries]
 c = '{c_compiler}'
@@ -544,28 +580,3 @@ cpu_family = '{cpu_family}'
 cpu = '{cpu}'
 endian = 'little'
 ''')
-
-        args = [
-            state.bin_path / 'meson',
-            'setup',
-            f'--prefix={state.install_path}',
-            '--buildtype=release',
-            '--default-library=static',
-            f'--cross-file={cross_file}',
-            state.build_path,
-            state.source
-        ]
-        args += state.options.to_list(CommandLineOptions.CMAKE_RULES)
-
-        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
-
-    def build(self, state: BuildState):
-        args = [state.bin_path / 'meson', 'compile']
-
-        if state.verbose:
-            args.append('--verbose')
-
-        subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
-
-    def post_build(self, state: BuildState):
-        self.install(state, tool=state.bin_path / 'meson')
