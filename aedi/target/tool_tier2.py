@@ -119,6 +119,28 @@ class Radare2Target(base.MesonTarget):
         os.rename(bin_path / 'r2blob', bin_path / 'radare2')
 
 
+class RizinTarget(base.MesonTarget):
+    def __init__(self, name='rizin'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/rizinorg/rizin/releases/download/v0.5.2/rizin-src-v0.5.2.tar.xz',
+            '71ab80fc3c8ac9c80a10000d838128af28a05d31a0ee183900c2c5c6e350eca3')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('binrz/man/rizin.1')
+
+    def configure(self, state: BuildState):
+        option = state.options
+        option['blob'] = 'true'
+        option['enable_tests'] = 'false'
+        option['enable_rz_test'] = 'false'
+        option['portable'] = 'true'
+
+        super().configure(state)
+
+
 class SeverZipTarget(base.MakeTarget):
     # Build with --os-version-x64=10.13 command line option
 

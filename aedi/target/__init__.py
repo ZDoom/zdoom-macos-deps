@@ -127,6 +127,7 @@ def targets():
         PbzxTarget(),
         QPakManTarget(),
         Radare2Target(),
+        RizinTarget(),
         SeverZipTarget(),
         UnrarTarget(),
         ZipTarget(),
