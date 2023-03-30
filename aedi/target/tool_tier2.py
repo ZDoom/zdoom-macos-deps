@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import os
 import subprocess
 
 from ..state import BuildState
@@ -84,6 +85,38 @@ class QPakManTarget(base.CMakeTarget):
 
     def post_build(self, state: BuildState):
         self.copy_to_bin(state)
+
+
+class Radare2Target(base.MesonTarget):
+    def __init__(self, name='radare2'):
+        super().__init__(name)
+        self.configure_prefix = False
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/radareorg/radare2/archive/refs/tags/5.8.4.tar.gz',
+            '8ea45bd82e5ea37e270ca14ac2a6f947c647a24f9de9e18bf8cebc71c0816dcd',
+            patches='radare2-fix-build')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('man/radare2.1')
+
+    def configure(self, state: BuildState):
+        option = state.options
+        option['blob'] = 'true'
+        option['enable_tests'] = 'false'
+        option['enable_r2r'] = 'false'
+        option['r2_gittip'] = 'ab809417aa6b676922f95cf77861924eb90e7ef2'
+        option['r2_version_commit'] = '1'
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        bin_path = state.install_path / 'bin'
+        os.unlink(bin_path / 'r2blob.static')
+        os.rename(bin_path / 'r2blob', bin_path / 'radare2')
 
 
 class SeverZipTarget(base.MakeTarget):

@@ -1,0 +1,8 @@
+--- a/libr/arch/p/xtensa/plugin.c
++++ b/libr/arch/p/xtensa/plugin.c
+@@ -2106,3 +2106,5 @@
+ 	.version = R2_VERSION
+ };
+ #endif
++
++xtensa_isa xtensa_default_isa;
