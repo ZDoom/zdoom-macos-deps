@@ -215,6 +215,10 @@ class Builder(object):
         return True
 
     def _merge_file(self, src: Path, src_sub_paths: typing.Sequence[Path], dst_path: Path):
+        if src.is_symlink():
+            shutil.copy(src_sub_paths[0], dst_path, follow_symlinks=False)
+            return
+
         with open(src, 'rb') as f:
             header = f.read(8)
 

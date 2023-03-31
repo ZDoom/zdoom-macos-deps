@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import os
 import subprocess
 
 from ..state import BuildState
@@ -102,37 +103,20 @@ class Radare2Target(base.MesonTarget):
 
     def configure(self, state: BuildState):
         option = state.options
-        # option['blob'] = 'true'
+        option['blob'] = 'true'
+        option['enable_tests'] = 'false'
+        option['enable_r2r'] = 'false'
         option['r2_gittip'] = 'ab809417aa6b676922f95cf77861924eb90e7ef2'
         option['r2_version_commit'] = '1'
 
         super().configure(state)
 
-        # # Fix absolute paths in r_userconf.h
-        # search_subpath = str(state.install_path)
-        # replace_subpath = '/usr/local'
-        #
-        # def fix_paths(line: str):
-        #     return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
-        #
-        # self.update_text_file(state.build_path / 'r_userconf.h', fix_paths)
-        #
-        # # Fix commit in r_version.h
-        # names_values = (
-        #     ('R2_GITTIP', '"ab809417aa6b676922f95cf77861924eb90e7ef2"'),
-        #     ('R2_VERSION_COMMIT', '1'),
-        # )
-        #
-        # def fix_commit(line: str):
-        #     for name, value in names_values:
-        #         beginning = f'#define {name} '
-        #
-        #         if line.startswith(beginning):
-        #             return f'{beginning}{value}\n'
-        #
-        #     return line
-        #
-        # self.update_text_file(state.build_path / 'r_version.h', fix_commit)
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        bin_path = state.install_path / 'bin'
+        os.unlink(bin_path / 'r2blob.static')
+        os.rename(bin_path / 'r2blob', bin_path / 'radare2')
 
 
 class RizinTarget(base.MesonTarget):
@@ -141,23 +125,20 @@ class RizinTarget(base.MesonTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/rizinorg/rizin/releases/download/v0.5.1/rizin-src-v0.5.1.tar.xz',
-            'f7a1338a909de465f56e4a59217669d595153be39ee2de5b86d8466475159859')
+            'https://github.com/rizinorg/rizin/releases/download/v0.5.2/rizin-src-v0.5.2.tar.xz',
+            '71ab80fc3c8ac9c80a10000d838128af28a05d31a0ee183900c2c5c6e350eca3')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('binrz/man/rizin.1')
 
     def configure(self, state: BuildState):
-        super().configure(state)
+        option = state.options
+        option['blob'] = 'true'
+        option['enable_tests'] = 'false'
+        option['enable_rz_test'] = 'false'
+        option['portable'] = 'true'
 
-        # # Fix absolute paths in r_userconf.h
-        # search_subpath = str(state.install_path)
-        # replace_subpath = '/usr/local'
-        #
-        # def fix_paths(line: str):
-        #     return line.replace(search_subpath, replace_subpath) if search_subpath in line else line
-        #
-        # self.update_text_file(state.build_path / 'rz_userconf.h', fix_paths)
+        super().configure(state)
 
 
 class SeverZipTarget(base.MakeTarget):
