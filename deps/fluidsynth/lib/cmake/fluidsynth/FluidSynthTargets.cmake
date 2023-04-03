@@ -63,7 +63,7 @@ set_target_properties(FluidSynth::libfluidsynth-OBJ PROPERTIES
 )
 
 # Create imported target FluidSynth::fluidsynth
-add_executable(FluidSynth::fluidsynth IMPORTED)
+#add_executable(FluidSynth::fluidsynth IMPORTED)
 
 # Create imported target FluidSynth::libfluidsynth
 add_library(FluidSynth::libfluidsynth STATIC IMPORTED)
