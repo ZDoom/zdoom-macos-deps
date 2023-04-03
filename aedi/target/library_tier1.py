@@ -113,6 +113,10 @@ class FluidSynthTarget(base.CMakeStaticDependencyTarget):
 
         super().configure(state)
 
+    def post_build(self, state: BuildState):
+        super().prepare_source(state)
+        self.keep_module_target(state, 'FluidSynth::libfluidsynth')
+
 
 class GettextTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='gettext'):
