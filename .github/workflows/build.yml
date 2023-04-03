@@ -23,14 +23,14 @@ jobs:
         run: |
           ./build.py --target ${{ matrix.target }}
 
-     - name: Generate Xcode project
-       run: |
-         ./build.py --target ${{ matrix.target }} --xcode
+      - name: Generate Xcode project
+        run: |
+          ./build.py --target ${{ matrix.target }} --xcode
 
-     - name: List Build Directory
-       if: always()
-       shell: bash
-       run: |
-         git status
-         ls -lR .
+      - name: List Build Directory
+        if: always()
+        shell: bash
+        run: |
+          git status
+          ls -lR .
 ...
