@@ -101,8 +101,8 @@ class FluidSynthTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.1.tar.gz',
-            'd734e4cf488be763cf123e5976f3154f0094815093eecdf71e0e9ae148431883')
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.2.tar.gz',
+            'cd610810f30566e28fb98c36501f00446a06fa6bae3dc562c8cd3868fe1c0fc7')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -553,8 +553,8 @@ class ZMusicTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/ZDoom/ZMusic/archive/refs/tags/1.1.11.tar.gz',
-            '623c3d7edfcdbe1ba4e7a9dc9a4d834fb92a228881621247855ecd57447631dd')
+            'https://github.com/ZDoom/ZMusic/archive/refs/tags/1.1.12.tar.gz',
+            'da818594b395aa9174561a36362332b0ab8e7906d2e556ec47669326e67613d4')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/zmusic.h')

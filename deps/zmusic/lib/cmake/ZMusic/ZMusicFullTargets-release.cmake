@@ -12,8 +12,8 @@ set_target_properties(ZMusic::zmusic PROPERTIES
   IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libzmusic.a"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS ZMusic::zmusic )
-list(APPEND _IMPORT_CHECK_FILES_FOR_ZMusic::zmusic "${_IMPORT_PREFIX}/lib/libzmusic.a" )
+list(APPEND _cmake_import_check_targets ZMusic::zmusic )
+list(APPEND _cmake_import_check_files_for_ZMusic::zmusic "${_IMPORT_PREFIX}/lib/libzmusic.a" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)
