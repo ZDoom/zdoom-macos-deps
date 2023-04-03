@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - radare2
+          - dsda-doom
 
     steps:
       - uses: actions/checkout@v3
@@ -23,9 +23,9 @@ jobs:
         run: |
           ./build.py --target ${{ matrix.target }}
 
-#      - name: Generate Xcode project
-#        run: |
-#          ./build.py --target ${{ matrix.target }} --xcode
+     - name: Generate Xcode project
+       run: |
+         ./build.py --target ${{ matrix.target }} --xcode
 
       - name: List Build Directory
         if: always()
