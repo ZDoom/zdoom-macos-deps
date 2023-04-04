@@ -287,7 +287,11 @@ class Sdl2MixerTarget(base.CMakeStaticDependencyTarget):
         base_url = 'https://github.com/libsdl-org/SDL_mixer/releases/download'
         state.download_source(
             f'{base_url}/release-{self.version}/SDL2_mixer-{self.version}.tar.gz',
-            '7a6ba86a478648ce617e3a5e9277181bc67f7ce9876605eea6affd4a0d6eea8f')
+            '7a6ba86a478648ce617e3a5e9277181bc67f7ce9876605eea6affd4a0d6eea8f',
+            patches='sdl2_mixer-fix-opusfile')
+
+        os.unlink(state.source / 'cmake/Findopusfile.cmake')
+        shutil.copy2(state.patch_path / 'FindOpusFile.cmake', state.source / 'cmake/FindOpusFile.cmake')
 
     def configure(self, state: BuildState):
         opts = state.options

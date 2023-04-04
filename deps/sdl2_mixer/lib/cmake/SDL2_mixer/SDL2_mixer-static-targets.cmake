@@ -60,7 +60,7 @@ add_library(SDL2_mixer::SDL2_mixer-static STATIC IMPORTED)
 
 set_target_properties(SDL2_mixer::SDL2_mixer-static PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include/SDL2"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:>;\$<LINK_ONLY:opusfile::opusfile>;\$<LINK_ONLY:vorbisfile::vorbisfile>;\$<LINK_ONLY:FLAC>;\$<LINK_ONLY:modplug::modplug>;\$<LINK_ONLY:libxmp::libxmp>;\$<LINK_ONLY:MPG123::mpg123>;\$<LINK_ONLY:FluidSynth::FluidSynth>"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:>;\$<LINK_ONLY:OpusFile::opusfile>;\$<LINK_ONLY:vorbisfile::vorbisfile>;\$<LINK_ONLY:FLAC>;\$<LINK_ONLY:modplug::modplug>;\$<LINK_ONLY:libxmp::libxmp>;\$<LINK_ONLY:MPG123::mpg123>;\$<LINK_ONLY:FluidSynth::FluidSynth>"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)

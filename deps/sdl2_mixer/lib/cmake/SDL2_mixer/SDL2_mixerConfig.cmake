@@ -85,6 +85,10 @@ include(CMakeFindDependencyMacro)
         find_dependency(vorbisfile)
     endif()
 
+    if(SDL2MIXER_OPUS AND NOT SDL2MIXER_VENDORED AND NOT TARGET opusfile::opusfile)
+        find_dependency(OpusFile)
+    endif()
+
     if((NOT SDL2MIXER_VENDORED AND SDL2MIXER_MOD_MODPLUG) OR (HAIKU AND SDL2MIXER_MIDI_NATIVE))
         include(CheckLanguage)
         check_language(CXX)
