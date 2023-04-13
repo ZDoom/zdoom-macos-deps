@@ -56,7 +56,6 @@ def targets():
         Bzip2Target(),
         FfiTarget(),
         FlacTarget(),
-        FluidSynthTarget(),
         GlibTarget(),
         IconvTarget(),
         InstPatchTarget(),
@@ -78,6 +77,7 @@ def targets():
 
         # Libraries needed for other targets
         DumbTarget(),
+        FluidSynthTarget(),
         FmtTarget(),
         MadTarget(),
         MikmodTarget(),

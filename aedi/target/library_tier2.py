@@ -48,6 +48,29 @@ class DumbTarget(base.CMakeStaticDependencyTarget):
         return 'Libs: -L${libdir} -ldumb\n' if line.startswith('Libs:') else line
 
 
+class FluidSynthTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='fluidsynth'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.2.tar.gz',
+            'cd610810f30566e28fb98c36501f00446a06fa6bae3dc562c8cd3868fe1c0fc7')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['DEFAULT_SOUNDFONT'] = 'default.sf2'
+        opts['enable-framework'] = 'NO'
+        opts['enable-readline'] = 'NO'
+        opts['enable-sdl2'] = 'NO'
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().prepare_source(state)
+        self.keep_module_target(state, 'FluidSynth::libfluidsynth')
+
+
 class FmtTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='fmt'):
         super().__init__(name)
