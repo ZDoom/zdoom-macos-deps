@@ -164,32 +164,6 @@ class IconvTarget(base.ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class InstPatchTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='instpatch'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://github.com/swami/libinstpatch/archive/v1.1.6.tar.gz',
-            '8e9861b04ede275d712242664dab6ffa9166c7940fea3b017638681d25e10299')
-
-    def configure(self, state: BuildState):
-        state.options['LIB_SUFFIX'] = None
-
-        # Workaround for missing frameworks in dependencies, no clue what's wrong at the moment
-        state.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
-
-        super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        # Remove extra directory from include path
-        include_path = state.install_path / 'include'
-        include_subpath = include_path / 'libinstpatch-2/libinstpatch'
-        shutil.move(str(include_subpath), include_path)
-
-
 class IntlTarget(GettextTarget):
     def __init__(self, name='intl'):
         super().__init__(name)
