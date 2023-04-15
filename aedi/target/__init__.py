@@ -51,6 +51,7 @@ def targets():
         NBloodTarget(),
         QuakespasmTarget(),
         QuakespasmExpTarget(),
+        Q2ProTarget(),
 
         # Libraries needed for GZDoom and Raze
         Bzip2Target(),
