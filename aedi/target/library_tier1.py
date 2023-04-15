@@ -95,29 +95,6 @@ class FlacTarget(base.CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class FluidSynthTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='fluidsynth'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.2.tar.gz',
-            'cd610810f30566e28fb98c36501f00446a06fa6bae3dc562c8cd3868fe1c0fc7')
-
-    def configure(self, state: BuildState):
-        opts = state.options
-        opts['DEFAULT_SOUNDFONT'] = 'default.sf2'
-        opts['enable-framework'] = 'NO'
-        opts['enable-readline'] = 'NO'
-        opts['enable-sdl2'] = 'NO'
-
-        super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().prepare_source(state)
-        self.keep_module_target(state, 'FluidSynth::libfluidsynth')
-
-
 class GettextTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='gettext'):
         super().__init__(name)
@@ -185,32 +162,6 @@ class IconvTarget(base.ConfigureMakeStaticDependencyTarget):
     def configure(self, state: BuildState):
         state.options['--enable-extra-encodings'] = 'yes'
         super().configure(state)
-
-
-class InstPatchTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='instpatch'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://github.com/swami/libinstpatch/archive/v1.1.6.tar.gz',
-            '8e9861b04ede275d712242664dab6ffa9166c7940fea3b017638681d25e10299')
-
-    def configure(self, state: BuildState):
-        state.options['LIB_SUFFIX'] = None
-
-        # Workaround for missing frameworks in dependencies, no clue what's wrong at the moment
-        state.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
-
-        super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        # Remove extra directory from include path
-        include_path = state.install_path / 'include'
-        include_subpath = include_path / 'libinstpatch-2/libinstpatch'
-        shutil.move(str(include_subpath), include_path)
 
 
 class IntlTarget(GettextTarget):
@@ -396,8 +347,8 @@ class OpenALTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://openal-soft.org/openal-releases/openal-soft-1.23.0.tar.bz2',
-            '057dcf96c3cdfcf40159800a93f57740fe79c2956f76247bee10e436b6657183')
+            'https://openal-soft.org/openal-releases/openal-soft-1.23.1.tar.bz2',
+            '796f4b89134c4e57270b7f0d755f0fa3435b90da437b745160a49bd41c845b21')
 
     def configure(self, state: BuildState):
         opts = state.options

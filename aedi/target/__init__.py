@@ -57,10 +57,8 @@ def targets():
         Bzip2Target(),
         FfiTarget(),
         FlacTarget(),
-        FluidSynthTarget(),
         GlibTarget(),
         IconvTarget(),
-        InstPatchTarget(),
         IntlTarget(),
         JpegTurboTarget(),
         LameTarget(),
@@ -79,7 +77,9 @@ def targets():
 
         # Libraries needed for other targets
         DumbTarget(),
+        FluidSynthTarget(),
         FmtTarget(),
+        InstPatchTarget(),
         MadTarget(),
         MikmodTarget(),
         ModPlugTarget(),

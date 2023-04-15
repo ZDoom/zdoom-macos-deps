@@ -48,6 +48,29 @@ class DumbTarget(base.CMakeStaticDependencyTarget):
         return 'Libs: -L${libdir} -ldumb\n' if line.startswith('Libs:') else line
 
 
+class FluidSynthTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='fluidsynth'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.2.tar.gz',
+            'cd610810f30566e28fb98c36501f00446a06fa6bae3dc562c8cd3868fe1c0fc7')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['DEFAULT_SOUNDFONT'] = 'default.sf2'
+        opts['enable-framework'] = 'NO'
+        opts['enable-readline'] = 'NO'
+        opts['enable-sdl2'] = 'NO'
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().prepare_source(state)
+        self.keep_module_target(state, 'FluidSynth::libfluidsynth')
+
+
 class FmtTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='fmt'):
         super().__init__(name)
@@ -63,6 +86,32 @@ class FmtTarget(base.CMakeStaticDependencyTarget):
         opts['FMT_TEST'] = 'NO'
 
         super().configure(state)
+
+
+class InstPatchTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='instpatch'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/swami/libinstpatch/archive/v1.1.6.tar.gz',
+            '8e9861b04ede275d712242664dab6ffa9166c7940fea3b017638681d25e10299')
+
+    def configure(self, state: BuildState):
+        state.options['LIB_SUFFIX'] = None
+
+        # Workaround for missing frameworks in dependencies, no clue what's wrong at the moment
+        state.environment['LDFLAGS'] = '-framework CoreFoundation -framework Foundation'
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        # Remove extra directory from include path
+        include_path = state.install_path / 'include'
+        include_subpath = include_path / 'libinstpatch-2/libinstpatch'
+        shutil.move(str(include_subpath), include_path)
 
 
 class MadTarget(base.ConfigureMakeStaticDependencyTarget):
@@ -238,8 +287,8 @@ class Sdl2Target(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsdl-org/SDL/releases/download/release-2.26.4/SDL2-2.26.4.tar.gz',
-            '1a0f686498fb768ad9f3f80b39037a7d006eac093aad39cb4ebcc832a8887231',
+            'https://github.com/libsdl-org/SDL/releases/download/release-2.26.5/SDL2-2.26.5.tar.gz',
+            'ad8fea3da1be64c83c45b1d363a6b4ba8fd60f5bde3b23ec73855709ec5eabf7',
             patches='sdl2-no-gamecontroller+corehaptic')
 
     def configure(self, state: BuildState):
