@@ -45,6 +45,7 @@ class Builder(object):
 
         state = self._state = BuildState()
         state.xcode = arguments.xcode
+        state.instrument_functions = arguments.instrument_functions
         state.verbose = arguments.verbose
 
         self._platforms: typing.List[TargetPlatform] = []
@@ -336,6 +337,7 @@ class Builder(object):
 
         group = parser.add_argument_group('Configuration options')
         group.add_argument('--xcode', action='store_true', help='generate Xcode project instead of build')
+        group.add_argument('--instrument-functions', action='store_true', help='generate instrumentation calls')
         group.add_argument('--os-version-x64', metavar='version', help='macOS deployment version for x86_64')
         group.add_argument('--os-version-arm', metavar='version', help='macOS deployment version for ARM64')
         group.add_argument('--verbose', action='store_true', help='enable verbose build output')

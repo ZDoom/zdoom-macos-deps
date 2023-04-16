@@ -383,11 +383,18 @@ class CMakeTarget(BuildTarget):
     def configure(self, state: BuildState):
         super().configure(state)
 
+        if state.instrument_functions:
+            build_type = 'RelWithDebInfo'
+            extra_flags = '-finstrument-functions'
+        else:
+            build_type = 'Release'
+            extra_flags = ''
+
         args = [
             'cmake',
-            '-DCMAKE_BUILD_TYPE=Release',
-            f'-DCMAKE_C_FLAGS="-ffile-prefix-map={state.source}/="',
-            f'-DCMAKE_CXX_FLAGS="-ffile-prefix-map={state.source}/="',
+            f'-DCMAKE_BUILD_TYPE={build_type}',
+            f'-DCMAKE_C_FLAGS="-ffile-prefix-map={state.source}/=" {extra_flags}',
+            f'-DCMAKE_CXX_FLAGS="-ffile-prefix-map={state.source}/=" {extra_flags}',
             f'-DCMAKE_INSTALL_PREFIX={state.install_path}',
             f'-DCMAKE_PREFIX_PATH={state.prefix_path}',
         ]

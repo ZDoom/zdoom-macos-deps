@@ -53,6 +53,7 @@ class BuildState:
 
         self.platform = None
         self.xcode = False
+        self.instrument_functions = False
         self.verbose = False
         self.jobs = 1
 
