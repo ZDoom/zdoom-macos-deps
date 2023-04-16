@@ -160,6 +160,23 @@ class PkgConfigTarget(base.ConfigureMakeDependencyTarget):
         self.copy_to_bin(state, new_filename=self.name + '.exe')
 
 
+class TimemoryTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='timemory'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/NERSC/timemory/archive/refs/tags/v3.2.3.tar.gz',
+            'f85f17df6d60ff12745f742b34e7de15a6247123306d29809ba45e9c6fc5b67f')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['BUILD_STATIC_LIBS'] = 'ON'
+        opts['TIMEMORY_BUILD_FORTRAN'] = 'OFF'
+
+        super().configure(state)
+
+
 class YasmTarget(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='yasm'):
         super().__init__(name)

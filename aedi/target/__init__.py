@@ -120,6 +120,7 @@ def targets():
         NasmTarget(),
         NinjaTarget(),
         PkgConfigTarget(),
+        TimemoryTarget(),
         YasmTarget(),
 
         # Tools without binaries stored in the repo, can be outdated
