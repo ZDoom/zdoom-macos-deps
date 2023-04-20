@@ -365,9 +365,8 @@ class OpusTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://ftp.osuosl.org/pub/xiph/releases/opus/opus-1.3.1.tar.gz',
-            '65b58e1e25b2a114157014736a3d9dfeaad8d41be1c8179866f144a2fb44ff9d',
-            patches='opus-fix-cmake')
+            'https://github.com/xiph/opus/releases/download/v1.4/opus-1.4.tar.gz',
+            'c9b32b4253be5ae63d1ff16eea06b94b5f0f2951b7a02aceef58e3a3ce49c51f')
 
     def configure(self, state: BuildState):
         state.options['PC_BUILD'] = 'floating-point'
@@ -375,13 +374,10 @@ class OpusTarget(base.CMakeStaticDependencyTarget):
 
     @staticmethod
     def _process_pkg_config(pcfile: Path, line: str) -> str:
-        version = 'Version:'
         cflags = 'Cflags:'
         libs = 'Libs:'
 
-        if line.startswith(version):
-            return version + ' 1.3.1\n'
-        elif line.startswith(cflags):
+        if line.startswith(cflags):
             return cflags + ' -I${includedir}/opus\n'
         elif line.startswith(libs):
             return libs + ' -L${libdir} -lopus\n'
