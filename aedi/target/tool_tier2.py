@@ -24,18 +24,21 @@ from . import base
 
 
 class GlslangTarget(base.CMakeStaticDependencyTarget):
+    # Build with --os-version-x64=10.15 command line option
+
     def __init__(self, name='glslang'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/glslang/archive/refs/tags/12.1.0.tar.gz',
-            '1515e840881d1128fb6d831308433f731808f818f2103881162f3ffd47b15cd5')
+            'https://github.com/KhronosGroup/glslang/archive/refs/tags/12.2.0.tar.gz',
+            '870d17030fda7308c1521fb2e01a9e93cbe4b130bc8274e90d00e127432ab6f6')
 
     def configure(self, state: BuildState):
         args = ('python3', 'update_glslang_sources.py')
         subprocess.run(args, check=True, cwd=state.source, env=state.environment)
 
+        state.validate_minimum_version('10.15')  # SPIRV-Tools uses <filesystem>
         state.options['ENABLE_CTEST'] = 'NO'
 
         super().configure(state)
