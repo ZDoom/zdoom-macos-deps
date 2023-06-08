@@ -1,9 +1,9 @@
 #ifndef ZLIB_H_
 #define ZLIB_H_
 /* zlib.h -- interface of the 'zlib-ng' compression library
-   Forked from and compatible with zlib 1.2.11
+   Forked from and compatible with zlib 1.2.13
 
-  Copyright (C) 1995-2016 Jean-loup Gailly and Mark Adler
+  Copyright (C) 1995-2022 Jean-loup Gailly and Mark Adler
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -34,6 +34,7 @@
 #  error Include zlib-ng.h for zlib-ng API or zlib.h for zlib-compat API but not both
 #endif
 
+#ifndef RC_INVOKED
 #include <stdint.h>
 #include <stdarg.h>
 
@@ -42,23 +43,25 @@
 #ifndef ZCONF_H
 #  error Missing zconf.h add binary output directory to include directories
 #endif
+#endif  /* RC_INVOKED */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define ZLIBNG_VERSION "2.0.7"
-#define ZLIBNG_VERNUM 0x2070
+#define ZLIBNG_VERSION "2.1.2"
+#define ZLIBNG_VERNUM 0x020102F0L   /* MMNNRRSM: major minor revision status modified */
 #define ZLIBNG_VER_MAJOR 2
-#define ZLIBNG_VER_MINOR 0
-#define ZLIBNG_VER_REVISION 7
-#define ZLIBNG_VER_SUBREVISION 0
+#define ZLIBNG_VER_MINOR 1
+#define ZLIBNG_VER_REVISION 2
+#define ZLIBNG_VER_STATUS F         /* 0=devel, 1-E=beta, F=Release */
+#define ZLIBNG_VER_MODIFIED 0       /* non-zero if modified externally from zlib-ng */
 
-#define ZLIB_VERSION "1.2.11.zlib-ng"
-#define ZLIB_VERNUM 0x12bf
+#define ZLIB_VERSION "1.2.13.zlib-ng"
+#define ZLIB_VERNUM 0x12df
 #define ZLIB_VER_MAJOR 1
 #define ZLIB_VER_MINOR 2
-#define ZLIB_VER_REVISION 11
+#define ZLIB_VER_REVISION 13
 #define ZLIB_VER_SUBREVISION 15    /* 15=fork (0xf) */
 
 /*
@@ -1729,19 +1732,18 @@ Z_EXTERN unsigned long Z_EXPORT crc32_combine(unsigned long crc1, unsigned long 
 */
 
 /*
-Z_EXTERN void Z_EXPORT crc32_combine_gen(uint32_t op[32], z_off_t len2);
+Z_EXTERN unsigned long Z_EXPORT crc32_combine_gen(z_off_t len2);
 
-     Generate the operator op corresponding to length len2, to be used with
-   crc32_combine_op(). op must have room for 32 z_crc_t values. (32 is the
-   number of bits in the CRC.)
+     Return the operator corresponding to length len2, to be used with
+   crc32_combine_op().
 */
 
-Z_EXTERN uint32_t Z_EXPORT crc32_combine_op(uint32_t crc1, uint32_t crc2,
-                                          const uint32_t *op);
+Z_EXTERN unsigned long Z_EXPORT crc32_combine_op(unsigned long crc1, unsigned long crc2,
+                                                 const unsigned long op);
 /*
      Give the same result as crc32_combine(), using op in place of len2. op is
    is generated from len2 by crc32_combine_gen(). This will be faster than
-   crc32_combine() if the generated op is used many times.
+   crc32_combine() if the generated op is used more than once.
 */
 
 
@@ -1796,7 +1798,7 @@ Z_EXTERN int Z_EXPORT gzgetc_(gzFile file);  /* backward compatibility */
    Z_EXTERN z_off64_t Z_EXPORT gzoffset64(gzFile);
    Z_EXTERN unsigned long Z_EXPORT adler32_combine64(unsigned long, unsigned long, z_off64_t);
    Z_EXTERN unsigned long Z_EXPORT crc32_combine64(unsigned long, unsigned long, z_off64_t);
-   Z_EXTERN void Z_EXPORT crc32_combine_gen64(uint32_t *op, z_off64_t);
+   Z_EXTERN unsigned long Z_EXPORT crc32_combine_gen64(z_off64_t);
 #endif
 #endif
 
@@ -1815,7 +1817,7 @@ Z_EXTERN int Z_EXPORT gzgetc_(gzFile file);  /* backward compatibility */
      Z_EXTERN z_off_t Z_EXPORT gzoffset64(gzFile);
      Z_EXTERN unsigned long Z_EXPORT adler32_combine64(unsigned long, unsigned long, z_off_t);
      Z_EXTERN unsigned long Z_EXPORT crc32_combine64(unsigned long, unsigned long, z_off_t);
-     Z_EXTERN void Z_EXPORT crc32_combine_gen64(uint32_t *op, z_off64_t);
+     Z_EXTERN unsigned long Z_EXPORT crc32_combine_gen64(z_off64_t);
 #  endif
 #else
 #  ifndef Z_SOLO
@@ -1823,10 +1825,10 @@ Z_EXTERN int Z_EXPORT gzgetc_(gzFile file);  /* backward compatibility */
    Z_EXTERN z_off_t Z_EXPORT gzseek(gzFile, z_off_t, int);
    Z_EXTERN z_off_t Z_EXPORT gztell(gzFile);
    Z_EXTERN z_off_t Z_EXPORT gzoffset(gzFile);
-#  endif   
+#  endif
    Z_EXTERN unsigned long Z_EXPORT adler32_combine(unsigned long, unsigned long, z_off_t);
    Z_EXTERN unsigned long Z_EXPORT crc32_combine(unsigned long, unsigned long, z_off_t);
-   Z_EXTERN void Z_EXPORT crc32_combine_gen(uint32_t *op, z_off_t);
+   Z_EXTERN unsigned long Z_EXPORT crc32_combine_gen(z_off_t);
 #endif
 
 /* undocumented functions */
