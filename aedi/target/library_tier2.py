@@ -67,7 +67,7 @@ class FluidSynthTarget(base.CMakeStaticDependencyTarget):
         super().configure(state)
 
     def post_build(self, state: BuildState):
-        super().prepare_source(state)
+        super().post_build(state)
         self.keep_module_target(state, 'FluidSynth::libfluidsynth')
 
 
