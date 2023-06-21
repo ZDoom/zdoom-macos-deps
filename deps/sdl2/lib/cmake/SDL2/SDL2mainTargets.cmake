@@ -59,7 +59,9 @@ endif()
 add_library(SDL2::SDL2main STATIC IMPORTED)
 
 set_target_properties(SDL2::SDL2main PROPERTIES
+  COMPATIBLE_INTERFACE_STRING "SDL_VERSION"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include/SDL2"
+  INTERFACE_SDL_VERSION "SDL2"
 )
 
 # Load information for each installed configuration.
