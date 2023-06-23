@@ -12,8 +12,8 @@ set_target_properties(FLAC::FLAC PROPERTIES
   IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libFLAC.a"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS FLAC::FLAC )
-list(APPEND _IMPORT_CHECK_FILES_FOR_FLAC::FLAC "${_IMPORT_PREFIX}/lib/libFLAC.a" )
+list(APPEND _cmake_import_check_targets FLAC::FLAC )
+list(APPEND _cmake_import_check_files_for_FLAC::FLAC "${_IMPORT_PREFIX}/lib/libFLAC.a" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)
