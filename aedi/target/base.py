@@ -462,8 +462,8 @@ class CMakeStaticDependencyTarget(CMakeTarget):
 
     def keep_module_target(self, state: BuildState, target: str):
         import_patterns = (
-            r'list\s*\(APPEND\s+_cmake_import_check_targets\s+(?P<target>\w+::[\w-]+)[\s)]',
-            r'list\s*\(APPEND\s+_cmake_import_check_files_for_(?P<target>\w+::[\w-]+)\s',
+            r'list\s*\(APPEND\s+_cmake_import_check_targets\s+(?P<target>[\w:-]+)[\s)]',
+            r'list\s*\(APPEND\s+_cmake_import_check_files_for_(?P<target>[\w:-]+)\s',
         )
         import_regexes = [re.compile(regex, re.IGNORECASE) for regex in import_patterns]
 
