@@ -460,7 +460,7 @@ class CMakeStaticDependencyTarget(CMakeTarget):
     def post_build(self, state: BuildState):
         self.install(state)
 
-    def keep_module_target(self, state: BuildState, target: str):
+    def keep_module_target(self, state: BuildState, target: str, module_paths: typing.Sequence[Path] = ()):
         import_patterns = (
             r'list\s*\(APPEND\s+_cmake_import_check_targets\s+(?P<target>[\w:-]+)[\s)]',
             r'list\s*\(APPEND\s+_cmake_import_check_files_for_(?P<target>[\w:-]+)\s',
@@ -476,12 +476,19 @@ class CMakeStaticDependencyTarget(CMakeTarget):
 
             return line
 
-        module = 'targets-release.cmake'
+        probe_modules = False
 
-        for probe_module in (module, self.name + module):
-            module_path = state.install_path / 'lib' / 'cmake' / self.name / probe_module
+        if not module_paths:
+            default_modules_path = state.install_path / 'lib' / 'cmake' / self.name
+            default_module_name = 'targets-release.cmake'
+            module_paths = (
+                default_modules_path / default_module_name,
+                default_modules_path / (self.name + default_module_name)
+            )
+            probe_modules = True
 
-            if module_path.exists():
+        for module_path in module_paths:
+            if not probe_modules or module_path.exists():
                 self.update_text_file(module_path, _keep_target)
 
 
