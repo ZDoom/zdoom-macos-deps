@@ -43,6 +43,22 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
 
         super().configure(state)
 
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        # Remove shared library
+        lib_path = state.install_path / 'lib'
+        os.unlink(lib_path / 'libSPIRV-Tools-shared.dylib')
+
+        lib_cmake_path = lib_path / 'cmake'
+        spirv_tools_module = lib_cmake_path / 'SPIRV-Tools/SPIRV-ToolsTarget-release.cmake'
+        self.keep_module_target(state, 'SPIRV-Tools-static', (spirv_tools_module,))
+
+        # Remove deprecated files with absolute paths in them
+        for entry in os.listdir(lib_cmake_path):
+            if entry.endswith('.cmake'):
+                os.unlink(lib_cmake_path / entry)
+
 
 class P7ZipTarget(base.CMakeTarget):
     def __init__(self, name='p7zip'):
