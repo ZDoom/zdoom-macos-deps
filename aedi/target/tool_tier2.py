@@ -169,8 +169,8 @@ class SeverZipTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.7-zip.org/a/7z2201-src.tar.xz',
-            '393098730c70042392af808917e765945dc2437dee7aae3cfcc4966eb920fbc5',
+            'https://7-zip.org/a/7z2301-src.tar.xz',
+            '356071007360e5a1824d9904993e8b2480b51b570e8c9faf7c0f58ebe4bf9f74',
             patches='7zip-fix-errors')
 
     def detect(self, state: BuildState) -> bool:
