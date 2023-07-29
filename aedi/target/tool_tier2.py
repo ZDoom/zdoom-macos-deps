@@ -77,6 +77,21 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
                 os.unlink(lib_cmake_path / entry)
 
 
+class GraphvizTarget(base.CMakeTarget):
+    def __init__(self, name='graphviz'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://gitlab.com/graphviz/graphviz/-/archive/8.1.0/graphviz-8.1.0.tar.bz2',
+            'ce8911695752aa2c3929147e3dee016e58aa624d81d7c18dd16f895ae79460de')
+
+    def configure(self, state: BuildState):
+        # state.options['ENABLE_CTEST'] = 'NO'
+
+        super().configure(state)
+
+
 class P7ZipTarget(base.CMakeTarget):
     def __init__(self, name='p7zip'):
         super().__init__(name)
