@@ -332,6 +332,7 @@
 /* #undef SDL_INPUT_LINUXEV */
 /* #undef SDL_INPUT_LINUXKD */
 /* #undef SDL_INPUT_FBSDKBIO */
+/* #undef SDL_INPUT_WSCONS */
 /* #undef SDL_JOYSTICK_ANDROID */
 /* #undef SDL_JOYSTICK_HAIKU */
 /* #undef SDL_JOYSTICK_WGI */
@@ -359,6 +360,7 @@
 /* #undef SDL_HAPTIC_XINPUT */
 /* #undef SDL_HAPTIC_ANDROID */
 /* #undef SDL_LIBUSB_DYNAMIC */
+/* #undef SDL_UDEV_DYNAMIC */
 
 /* Enable various sensor drivers */
 /* #undef SDL_SENSOR_ANDROID */
@@ -538,6 +540,8 @@
 /* #undef SDL_VIDEO_VITA_PIB */
 /* #undef SDL_VIDEO_VITA_PVR */
 /* #undef SDL_VIDEO_VITA_PVR_OGL */
+
+/* #undef SDL_HAVE_LIBDECOR_GET_MIN_MAX */
 
 #if !defined(HAVE_STDINT_H) && !defined(_STDINT_H_)
 /* Most everything except Visual Studio 2008 and earlier has stdint.h now */

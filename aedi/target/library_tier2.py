@@ -54,8 +54,8 @@ class FluidSynthTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.2.tar.gz',
-            'cd610810f30566e28fb98c36501f00446a06fa6bae3dc562c8cd3868fe1c0fc7')
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.3.tar.gz',
+            '321f7d3f72206b2522f30a1cb8ad1936fd4533ffc4d29dd335b1953c9fb371e6')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -67,7 +67,7 @@ class FluidSynthTarget(base.CMakeStaticDependencyTarget):
         super().configure(state)
 
     def post_build(self, state: BuildState):
-        super().prepare_source(state)
+        super().post_build(state)
         self.keep_module_target(state, 'FluidSynth::libfluidsynth')
 
 
@@ -287,8 +287,8 @@ class Sdl2Target(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsdl-org/SDL/releases/download/release-2.26.5/SDL2-2.26.5.tar.gz',
-            'ad8fea3da1be64c83c45b1d363a6b4ba8fd60f5bde3b23ec73855709ec5eabf7',
+            'https://github.com/libsdl-org/SDL/releases/download/release-2.28.1/SDL2-2.28.1.tar.gz',
+            '4977ceba5c0054dbe6c2f114641aced43ce3bf2b41ea64b6a372d6ba129cb15d',
             patches='sdl2-no-gamecontroller+corehaptic')
 
     def configure(self, state: BuildState):

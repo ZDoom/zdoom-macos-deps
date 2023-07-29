@@ -124,7 +124,9 @@ def targets():
         YasmTarget(),
 
         # Tools without binaries stored in the repo, can be outdated
+        BisonTarget(),
         GlslangTarget(),
+        GraphvizTarget(),
         P7ZipTarget(),
         PbzxTarget(),
         QPakManTarget(),

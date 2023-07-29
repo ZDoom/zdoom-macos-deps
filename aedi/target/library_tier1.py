@@ -83,8 +83,8 @@ class FlacTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/xiph/flac/releases/download/1.4.2/flac-1.4.2.tar.xz',
-            'e322d58a1f48d23d9dd38f432672865f6f79e73a6f9cc5a5f57fcaa83eb5a8e4')
+            'https://github.com/xiph/flac/releases/download/1.4.3/flac-1.4.3.tar.xz',
+            '6c58e69cd22348f441b861092b825e591d0b822e106de6eb0ee4d05d27205b70')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -197,8 +197,8 @@ class JpegTurboTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.sourceforge.net/project/libjpeg-turbo/2.1.5.1/libjpeg-turbo-2.1.5.1.tar.gz',
-            '2fdc3feb6e9deb17adec9bafa3321419aa19f8f4e5dea7bf8486844ca22207bf')
+            'https://downloads.sourceforge.net/project/libjpeg-turbo/3.0.0/libjpeg-turbo-3.0.0.tar.gz',
+            'c77c65fcce3d33417b2e90432e7a0eb05f59a7fff884022a9d931775d583bfaa')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -485,16 +485,19 @@ class ZlibNgTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/zlib-ng/zlib-ng/archive/2.0.7.tar.gz',
-            '6c0853bb27738b811f2b4d4af095323c3d5ce36ceed6b50e5f773204fb8f7200')
+            'https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.1.3.tar.gz',
+            'd20e55f89d71991c59f1c5ad1ef944815e5850526c0d9cd8e504eaed5b24491a')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('zlib-ng.h')
 
     def configure(self, state: BuildState):
         opts = state.options
+        opts['WITH_GTEST'] = 'NO'
+        opts['WITH_SANITIZER'] = 'NO'
         opts['ZLIB_COMPAT'] = 'YES'
         opts['ZLIB_ENABLE_TESTS'] = 'NO'
+        opts['ZLIBNG_ENABLE_TESTS'] = 'NO'
 
         super().configure(state)
 

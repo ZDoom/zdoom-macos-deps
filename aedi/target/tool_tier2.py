@@ -23,6 +23,23 @@ from ..state import BuildState
 from . import base
 
 
+class BisonTarget(base.ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='bison'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://ftp.gnu.org/gnu/bison/bison-3.8.2.tar.xz',
+            '9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('doc/bison.1')
+
+    def configure(self, state: BuildState):
+        state.options['--enable-relocatable'] = None
+        super().configure(state)
+
+
 class GlslangTarget(base.CMakeStaticDependencyTarget):
     # Build with --os-version-x64=10.15 command line option
 
@@ -31,8 +48,8 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/glslang/archive/refs/tags/12.2.0.tar.gz',
-            '870d17030fda7308c1521fb2e01a9e93cbe4b130bc8274e90d00e127432ab6f6')
+            'https://github.com/KhronosGroup/glslang/archive/refs/tags/12.3.1.tar.gz',
+            'a57836a583b3044087ac51bb0d5d2d803ff84591d55f89087fc29ace42a8b9a8')
 
     def configure(self, state: BuildState):
         args = ('python3', 'update_glslang_sources.py')
@@ -40,6 +57,37 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
 
         state.validate_minimum_version('10.15')  # SPIRV-Tools uses <filesystem>
         state.options['ENABLE_CTEST'] = 'NO'
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        # Remove shared library
+        lib_path = state.install_path / 'lib'
+        os.unlink(lib_path / 'libSPIRV-Tools-shared.dylib')
+
+        lib_cmake_path = lib_path / 'cmake'
+        spirv_tools_module = lib_cmake_path / 'SPIRV-Tools/SPIRV-ToolsTarget-release.cmake'
+        self.keep_module_target(state, 'SPIRV-Tools-static', (spirv_tools_module,))
+
+        # Remove deprecated files with absolute paths in them
+        for entry in os.listdir(lib_cmake_path):
+            if entry.endswith('.cmake'):
+                os.unlink(lib_cmake_path / entry)
+
+
+class GraphvizTarget(base.CMakeTarget):
+    def __init__(self, name='graphviz'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://gitlab.com/graphviz/graphviz/-/archive/8.1.0/graphviz-8.1.0.tar.bz2',
+            'ce8911695752aa2c3929147e3dee016e58aa624d81d7c18dd16f895ae79460de')
+
+    def configure(self, state: BuildState):
+        # state.options['ENABLE_CTEST'] = 'NO'
 
         super().configure(state)
 
@@ -153,8 +201,8 @@ class SeverZipTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.7-zip.org/a/7z2201-src.tar.xz',
-            '393098730c70042392af808917e765945dc2437dee7aae3cfcc4966eb920fbc5',
+            'https://7-zip.org/a/7z2301-src.tar.xz',
+            '356071007360e5a1824d9904993e8b2480b51b570e8c9faf7c0f58ebe4bf9f74',
             patches='7zip-fix-errors')
 
     def detect(self, state: BuildState) -> bool:
