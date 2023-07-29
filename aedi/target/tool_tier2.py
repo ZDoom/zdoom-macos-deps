@@ -77,7 +77,7 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
                 os.unlink(lib_cmake_path / entry)
 
 
-class GraphvizTarget(base.CMakeTarget):
+class GraphvizTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='graphviz'):
         super().__init__(name)
 
@@ -87,7 +87,9 @@ class GraphvizTarget(base.CMakeTarget):
             'ce8911695752aa2c3929147e3dee016e58aa624d81d7c18dd16f895ae79460de')
 
     def configure(self, state: BuildState):
-        # state.options['ENABLE_CTEST'] = 'NO'
+        opts = state.options
+        opts['enable_ltdl'] = 'NO'
+        opts['with_gvedit'] = 'NO'
 
         super().configure(state)
 
