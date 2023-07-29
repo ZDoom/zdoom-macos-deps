@@ -23,6 +23,23 @@ from ..state import BuildState
 from . import base
 
 
+class BisonTarget(base.ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='bison'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://ftp.gnu.org/gnu/bison/bison-3.8.2.tar.xz',
+            '9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('doc/bison.1')
+
+    def configure(self, state: BuildState):
+        state.options['--enable-relocatable'] = None
+        super().configure(state)
+
+
 class GlslangTarget(base.CMakeStaticDependencyTarget):
     # Build with --os-version-x64=10.15 command line option
 
