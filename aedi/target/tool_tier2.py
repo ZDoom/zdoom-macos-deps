@@ -23,6 +23,16 @@ from ..state import BuildState
 from . import base
 
 
+class DzipTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='dzip'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/kugelrund/dzip/archive/refs/tags/v3.1.tar.gz',
+            '9f057e35ef5ddda1a0911b8f877a41b2934669377cb053b45364ddb72716b520')
+
+
 class GlslangTarget(base.CMakeStaticDependencyTarget):
     # Build with --os-version-x64=10.15 command line option
 

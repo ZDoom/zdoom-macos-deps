@@ -122,6 +122,7 @@ def targets():
         YasmTarget(),
 
         # Tools without binaries stored in the repo, can be outdated
+        DzipTarget(),
         GlslangTarget(),
         P7ZipTarget(),
         PbzxTarget(),
