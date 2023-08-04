@@ -238,8 +238,8 @@ class LuaTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.lua.org/ftp/lua-5.4.3.tar.gz',
-            'f8612276169e3bfcbcfb8f226195bfc6e466fe13042f1076cbde92b7ec96bbfb')
+            'https://www.lua.org/ftp/lua-5.4.6.tar.gz',
+            '7d5ea1b9cb6aa0b59ca3dde1c6adcb57ef83a1ba8e5432c0ecd06bf439b3ad88')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('src/lua.h')
