@@ -125,6 +125,7 @@ def targets():
 
         # Tools without binaries stored in the repo, can be outdated
         BisonTarget(),
+        DzipTarget(),
         GlslangTarget(),
         GraphvizTarget(),
         P7ZipTarget(),
