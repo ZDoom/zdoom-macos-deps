@@ -467,7 +467,7 @@ class QuakespasmTarget(MakeMainTarget):
 class QuakespasmExpTarget(CMakeMainTarget):
     def __init__(self, name='quakespasm-exp'):
         super().__init__(name)
-        self.outputs = (self.name, 'quakespasm.pak')
+        self.outputs = (self.name, 'quakespasm-exp.pak')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/alexey-lysiuk/quakespasm-exp.git')
@@ -477,5 +477,8 @@ class QuakespasmExpTarget(CMakeMainTarget):
         opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'ogg', 'SDL2')
         opts['QUAKE_MACOS_BUNDLE'] = 'OFF'
         opts['QUAKE_MACOS_MOUSE_ACCELERATION'] = 'ON'
+
+        if state.architecture() != machine():
+            opts['MakeQuakePak_DIR'] = state.native_build_path
 
         super().configure(state)
