@@ -45,7 +45,7 @@ extern "C" {
  */
 #define MVK_VERSION_MAJOR   1
 #define MVK_VERSION_MINOR   2
-#define MVK_VERSION_PATCH   4
+#define MVK_VERSION_PATCH   5
 
 #define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
 #define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
@@ -912,6 +912,16 @@ typedef struct {
 	 * and MoltenVK will not compress the MSL source code after compilation into a MTLLibrary.
 	 */
 	MVKConfigCompressionAlgorithm shaderSourceCompressionAlgorithm;
+
+	/**
+	 * Maximize the concurrent executing compilation tasks.
+	 *
+	 * The initial value or this parameter is set by the
+	 * MVK_CONFIG_SHOULD_MAXIMIZE_CONCURRENT_COMPILATION
+	 * runtime environment variable or MoltenVK compile-time build setting.
+	 * This setting requires macOS 13.3 & is disabled by default.
+	 */
+	VkBool32 shouldMaximizeConcurrentCompilation;
 
 } MVKConfiguration;
 
