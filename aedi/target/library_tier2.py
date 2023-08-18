@@ -404,8 +404,8 @@ class VulkanHeadersTarget(base.CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
-            'https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.3.250.tar.gz',
-            'c4c5a706a1f8f4d329fec2909b8c3fef4a4be043f393dbde5ce1439daa1194ab')
+            'https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.3.261.tar.gz',
+            '0c67b2b76a7d6534c0f98085dbbcd4a1ac945b15b269bc81ee7dbe6cf28d53bb')
 
 
 class VulkanLoaderTarget(base.CMakeStaticDependencyTarget):
@@ -415,13 +415,14 @@ class VulkanLoaderTarget(base.CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
-            'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v1.3.250.tar.gz',
-            '4e4bf5bb93a43686d36218309804d21be6070d344ccd0c73cf695cb66a1e352b')
+            'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v1.3.261.tar.gz',
+            '85d13004c81b032baf7cc4c2de0b2cb57072a86855d7ca7fc9a813621da275ba')
 
     def configure(self, state: BuildState):
         opts = state.options
         opts['BUILD_STATIC_LOADER'] = 'YES'
         opts['CMAKE_INSTALL_SYSCONFDIR'] = '/usr/local/etc'
+        opts['USE_GAS'] = 'OFF'  # cross-compilation fails otherwise
 
         super().configure(state)
 

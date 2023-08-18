@@ -166,6 +166,7 @@ class GeneratorOptions:
                  reparentEnums=True,
                  sortProcedure=regSortFeatures,
                  requireCommandAliases=False,
+                 requireDepends=True,
                 ):
         """Constructor.
 
@@ -208,6 +209,11 @@ class GeneratorOptions:
         or <extension> being complete. Defaults to True.
         - sortProcedure - takes a list of FeatureInfo objects and sorts
         them in place to a preferred order in the generated output.
+        - requireCommandAliases - if True, treat command aliases
+        as required dependencies.
+        - requireDepends - whether to follow API dependencies when emitting
+        APIs.
+
         Default is
           - core API versions
           - Khronos (ARB/KHR/OES) extensions
@@ -294,6 +300,9 @@ class GeneratorOptions:
         self.requireCommandAliases = requireCommandAliases
         """True if alias= attributes of <command> tags are transitively
         required."""
+
+        self.requireDepends = requireDepends
+        """True if dependencies of API tags are transitively required."""
 
     def emptyRegex(self, pat):
         """Substitute a regular expression which matches no version
@@ -1017,6 +1026,30 @@ class OutputGenerator:
         """Generate interface for a format element.
 
         - formatinfo - FormatInfo
+
+        Extend to generate as desired in your derived class."""
+        return
+
+    def genSyncStage(self, stageinfo):
+        """Generate interface for a sync stage element.
+
+        - stageinfo - SyncStageInfo
+
+        Extend to generate as desired in your derived class."""
+        return
+
+    def genSyncAccess(self, accessinfo):
+        """Generate interface for a sync stage element.
+
+        - accessinfo - AccessInfo
+
+        Extend to generate as desired in your derived class."""
+        return
+
+    def genSyncPipeline(self, pipelineinfo):
+        """Generate interface for a sync stage element.
+
+        - pipelineinfo - SyncPipelineInfo
 
         Extend to generate as desired in your derived class."""
         return
