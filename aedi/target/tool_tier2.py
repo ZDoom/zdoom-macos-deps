@@ -154,8 +154,8 @@ class RizinTarget(base.MesonTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/rizinorg/rizin/releases/download/v0.5.2/rizin-src-v0.5.2.tar.xz',
-            '71ab80fc3c8ac9c80a10000d838128af28a05d31a0ee183900c2c5c6e350eca3')
+            'https://github.com/rizinorg/rizin/releases/download/v0.6.0/rizin-src-v0.6.0.tar.xz',
+            '6a924906efdf547ac50462767f5add53902436e7a4862d2c0e24ca91b7761508')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('binrz/man/rizin.1')
@@ -165,6 +165,7 @@ class RizinTarget(base.MesonTarget):
         option['blob'] = 'true'
         option['enable_tests'] = 'false'
         option['enable_rz_test'] = 'false'
+        option['local'] = 'enabled'
         option['portable'] = 'true'
 
         super().configure(state)
