@@ -58,6 +58,7 @@ def targets():
         FfiTarget(),
         FlacTarget(),
         GlibTarget(),
+        HighwayTarget(),
         IconvTarget(),
         IntlTarget(),
         JpegTurboTarget(),
