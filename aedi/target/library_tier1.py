@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import glob
 import os
 import shutil
 import subprocess
@@ -23,6 +24,33 @@ from pathlib import Path
 
 from ..state import BuildState
 from . import base
+
+
+class BrotliTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='brotli'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/google/brotli/archive/refs/tags/v1.0.9.tar.gz',
+            'f9e8d81d0405ba66d181529af42a3354f838c939095ff99930da6aa9cdf6fe46')
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        dylib_pattern = str(state.install_path / 'lib/*.dylib')
+        for dylib in glob.iglob(dylib_pattern):
+            os.unlink(dylib)
+
+        archive_suffix = '-static.a'
+        archive_pattern = str(state.install_path / f'lib/*{archive_suffix}')
+        for archive in glob.iglob(archive_pattern):
+            no_suffix_name = archive.replace(archive_suffix, '.a')
+            os.rename(archive, no_suffix_name)
+
+    @staticmethod
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
+        return line.replace('-R${libdir} ', '') if line.startswith('Libs:') else line
 
 
 class Bzip2Target(base.MakeTarget):

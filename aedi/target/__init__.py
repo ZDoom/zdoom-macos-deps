@@ -53,6 +53,7 @@ def targets():
         QuakespasmExpTarget(),
 
         # Libraries needed for GZDoom and Raze
+        BrotliTarget(),
         Bzip2Target(),
         FfiTarget(),
         FlacTarget(),
@@ -97,7 +98,6 @@ def targets():
         XmpTarget(),
 
         # Obsolete libraries without binaries
-        BrotliTarget(),
         ExpatTarget(),
         FreeImageTarget(),
         FreeTypeTarget(),
