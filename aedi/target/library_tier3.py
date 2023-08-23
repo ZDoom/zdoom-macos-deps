@@ -354,33 +354,6 @@ class TiffTarget(base.CMakeStaticDependencyTarget):
         return line
 
 
-class WebpTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='webp'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.2.2.tar.gz',
-            '7656532f837af5f4cec3ff6bafe552c044dc39bf453587bd5b77450802f4aee6',
-            patches='webp-fix-cmake')
-
-    def configure(self, state: BuildState):
-        option_suffices = (
-            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'LIBWEBPMUX', 'VWEBP', 'WEBPINFO',
-        )
-
-        for suffix in option_suffices:
-            state.options[f'WEBP_BUILD_{suffix}'] = 'NO'
-
-        super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        shutil.copytree(state.install_path / 'share/WebP/cmake', state.install_path / 'lib/cmake/WebP')
-        self.keep_module_target(state, 'WebP::webp')
-
-
 class WxWidgetsTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='wxwidgets'):
         super().__init__(name)

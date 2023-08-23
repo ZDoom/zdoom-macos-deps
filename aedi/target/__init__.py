@@ -71,6 +71,7 @@ def targets():
         SndFileTarget(),
         VorbisTarget(),
         VpxTarget(),
+        WebpTarget(),
         ZlibNgTarget(),
         ZMusicTarget(),
 
@@ -108,7 +109,6 @@ def targets():
         Sdl2TtfTarget(),
         SfmlTarget(),
         TiffTarget(),
-        WebpTarget(),
         WxWidgetsTarget(),
         ZstdTarget(),
 
