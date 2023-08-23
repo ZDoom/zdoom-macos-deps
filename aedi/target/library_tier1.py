@@ -489,7 +489,7 @@ class WebpTarget(base.CMakeStaticDependencyTarget):
 
     def configure(self, state: BuildState):
         option_suffices = (
-            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'LIBWEBPMUX', 'VWEBP', 'WEBPINFO',
+            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'VWEBP', 'WEBPINFO', 'WEBPMUX',
         )
 
         for suffix in option_suffices:
@@ -501,7 +501,6 @@ class WebpTarget(base.CMakeStaticDependencyTarget):
         super().post_build(state)
 
         shutil.copytree(state.install_path / 'share/WebP/cmake', state.install_path / 'lib/cmake/WebP')
-        self.keep_module_target(state, 'WebP::webp')
 
 
 class ZlibNgTarget(base.CMakeStaticDependencyTarget):

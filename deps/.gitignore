@@ -45,9 +45,6 @@
 /sdl2/include/SDL2/SDL_config_*.h
 /sdl2/include/SDL2/SDL_copying.h
 /sdl2/include/SDL2/SDL_test*.h
-/webp/include/webp/demux.h
-/webp/**/libwebpdecoder.*
-/webp/**/libwebpdemux.*
 !/vulkan-headers/share
 /vulkan-loader/loader/
 
