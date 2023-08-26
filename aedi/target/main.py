@@ -478,7 +478,9 @@ class QuakespasmExpTarget(CMakeMainTarget):
         opts['QUAKE_MACOS_BUNDLE'] = 'OFF'
         opts['QUAKE_MACOS_MOUSE_ACCELERATION'] = 'ON'
 
-        if state.architecture() != machine():
+        if state.xcode:
+            opts['QUAKE_BUILD_ENGINE_PAK'] = 'OFF'
+        elif state.architecture() != machine():
             opts['MakeQuakePak_DIR'] = state.native_build_path
 
         super().configure(state)
