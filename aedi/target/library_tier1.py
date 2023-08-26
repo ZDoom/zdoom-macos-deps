@@ -175,24 +175,6 @@ class GlibTarget(base.MesonTarget):
         return 'exec_prefix=${prefix}\n' + line if line.startswith('libdir=') else line
 
 
-class HighwayTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='highway'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://github.com/google/highway/archive/refs/tags/1.0.6.tar.gz',
-            'd89664a045a41d822146e787bceeefbf648cc228ce354f347b18f2b419e57207')
-
-    def configure(self, state: BuildState):
-        opts = state.options
-        opts['HWY_ENABLE_CONTRIB'] = 'NO'
-        opts['HWY_ENABLE_EXAMPLES'] = 'NO'
-        opts['HWY_ENABLE_TESTS'] = 'NO'
-
-        super().configure(state)
-
-
 class IconvTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='iconv'):
         super().__init__(name)

@@ -204,6 +204,24 @@ class HarfBuzzTarget(base.CMakeStaticDependencyTarget):
                            libs_private='-lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText')
 
 
+class HighwayTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='highway'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/google/highway/archive/refs/tags/1.0.6.tar.gz',
+            'd89664a045a41d822146e787bceeefbf648cc228ce354f347b18f2b419e57207')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['HWY_ENABLE_CONTRIB'] = 'NO'
+        opts['HWY_ENABLE_EXAMPLES'] = 'NO'
+        opts['HWY_ENABLE_TESTS'] = 'NO'
+
+        super().configure(state)
+
+
 class LuaTarget(base.MakeTarget):
     def __init__(self, name='lua'):
         super().__init__(name)
