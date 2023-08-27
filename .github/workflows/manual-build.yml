@@ -1,0 +1,85 @@
+---
+name: Manual Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target to build'
+        required: true
+        type: string
+      skip-arch:
+        description: 'Skip architecture'
+        default: None
+        type: choice
+        options:
+          - None
+          - Intel
+          - ARM
+      min-os-ver-intel:
+        description: 'macOS deployment version for Intel'
+        type: string
+      min-os-ver-arm:
+        description: 'macOS deployment version for ARM'
+        type: string
+      hack-static-moltenvk:
+        description: 'Link with static MoltenVK library'
+        type: boolean
+      hack-quasi-glib:
+        description: 'Link with QuasiGlib library'
+        type: boolean
+
+jobs:
+  build:
+    name: ${{ inputs.target }}
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build target
+        run: |
+          BUILD_CMDLINE="./build.py --target=${{ inputs.target }}"
+
+          if [ "${{ inputs.skip-arch }}" == 'Intel' ]; then
+          	BUILD_CMDLINE+=' --disable-x64'
+          elif [ "${{ inputs.skip-arch }}" == 'ARM' ]; then
+          	BUILD_CMDLINE+=' --disable-arm'
+          fi
+
+          if [ -n "${{ inputs.min-os-ver-intel }}" ]; then
+          	BUILD_CMDLINE+=" --os-version-x64=${{ inputs.min-os-ver-intel }}"
+          fi
+
+          if [ -n "${{ inputs.min-os-ver-arm }}" ]; then
+          	BUILD_CMDLINE+=" --os-version-arm=${{ inputs.min-os-ver-arm }}"
+          fi
+
+          if [ "${{ inputs.hack-static-moltenvk }}" == 'true' ]; then
+          	BUILD_CMDLINE+=' --static-moltenvk'
+          fi
+
+          if [ "${{ inputs.hack-quasi-glib }}" == 'true' ]; then
+          	BUILD_CMDLINE+=' --quasi-glib'
+          fi
+
+          echo "Build command line:"
+          echo "> ${BUILD_CMDLINE}"
+
+          ${BUILD_CMDLINE}
+
+      - name: Upload Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.target }}
+          path: |
+            deps/${{ inputs.target }}
+            output/${{ inputs.target }}
+          if-no-files-found: ignore
+
+      - name: List Build Directory
+        if: always()
+        shell: bash
+        run: |
+          git status
+          ls -lR .
+...
