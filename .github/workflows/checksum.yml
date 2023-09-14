@@ -34,5 +34,5 @@ jobs:
             ${{ inputs.link4 }} \
             ${{ inputs.link5 }}
           ls -l
-          shasum -a 256 *
+          shasum -a 256 ./*
 ...
