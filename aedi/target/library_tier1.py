@@ -484,8 +484,8 @@ class WebpTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.3.1.tar.gz',
-            'b3779627c2dfd31e3d8c4485962c2efe17785ef975e2be5c8c0c9e6cd3c4ef66')
+            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.3.2.tar.gz',
+            '2a499607df669e40258e53d0ade8035ba4ec0175244869d1025d460562aa09b4')
 
     def configure(self, state: BuildState):
         option_suffices = (
