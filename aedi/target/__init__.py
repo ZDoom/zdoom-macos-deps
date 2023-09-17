@@ -29,6 +29,7 @@ def targets():
     return (
         GZDoomTarget(),
         QZDoomTarget(),
+        VkDoomTarget(),
         LZDoomTarget(),
         RazeTarget(),
         HandsOfNecromancyTarget(),

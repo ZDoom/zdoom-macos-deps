@@ -194,6 +194,14 @@ class QZDoomTarget(ZDoomVulkanBaseTarget):
         state.checkout_git('https://github.com/ZDoom/qzdoom.git')
 
 
+class VkDoomTarget(ZDoomVulkanBaseTarget):
+    def __init__(self, name='vkdoom'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.checkout_git('https://github.com/dpjudas/VkDoom.git')
+
+
 class LZDoomTarget(ZDoomBaseTarget):
     def __init__(self, name='lzdoom'):
         super().__init__(name)
