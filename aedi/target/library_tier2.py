@@ -114,6 +114,23 @@ class InstPatchTarget(base.CMakeStaticDependencyTarget):
         shutil.move(str(include_subpath), include_path)
 
 
+class JpegTurboTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='jpeg-turbo'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://downloads.sourceforge.net/project/libjpeg-turbo/3.0.0/libjpeg-turbo-3.0.0.tar.gz',
+            'c77c65fcce3d33417b2e90432e7a0eb05f59a7fff884022a9d931775d583bfaa')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['ENABLE_SHARED'] = 'NO'
+        opts['WITH_TURBOJPEG'] = 'NO'
+
+        super().configure(state)
+
+
 class MadTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='mad'):
         super().__init__(name)
