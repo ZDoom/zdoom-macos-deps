@@ -488,7 +488,10 @@ class QuakespasmExpTarget(CMakeMainTarget):
 
         if state.xcode:
             opts['QUAKE_BUILD_ENGINE_PAK'] = 'OFF'
-        elif state.architecture() != machine():
-            opts['MakeQuakePak_DIR'] = state.native_build_path
+        else:
+            opts['QUAKE_LTO'] = 'ON'
+
+            if state.architecture() != machine():
+                opts['MakeQuakePak_DIR'] = state.native_build_path
 
         super().configure(state)
