@@ -298,7 +298,7 @@ class PrBoomPlusTarget(CMakeMainTarget):
     def configure(self, state: BuildState):
         opts = state.options
         opts['CMAKE_C_FLAGS'] = '-D_FILE_OFFSET_BITS=64'
-        opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_image')
+        opts['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_image')
         opts['CMAKE_POLICY_DEFAULT_CMP0056'] = 'NEW'
 
         self._force_cross_compilation(state)
@@ -319,7 +319,7 @@ class ChocolateDoomBaseTarget(CMakeMainTarget):
         super().__init__(name)
 
     def configure(self, state: BuildState):
-        state.options['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2_mixer')
+        state.options['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'SDL2_mixer')
         super().configure(state)
 
     def _fill_outputs(self, exe_prefix: str):
@@ -393,7 +393,7 @@ class Doom64EXTarget(CMakeMainTarget):
     def configure(self, state: BuildState):
         opts = state.options
         opts['ENABLE_SYSTEM_FLUIDSYNTH'] = 'YES'
-        opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2', 'fluidsynth')
+        opts['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'SDL2', 'fluidsynth')
 
         super().configure(state)
 
@@ -406,7 +406,7 @@ class DevilutionXTarget(CMakeMainTarget):
         state.checkout_git('https://github.com/diasurgical/devilutionX.git')
 
     def configure(self, state: BuildState):
-        state.options['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_ttf')
+        state.options['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'SDL2_mixer', 'SDL2_ttf')
         super().configure(state)
 
         # Remove version file that is included erroneously because of case-insensitive file system
@@ -482,7 +482,7 @@ class QuakespasmExpTarget(CMakeMainTarget):
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['CMAKE_EXE_LINKER_FLAGS'] = state.run_pkg_config('--libs', 'ogg', 'SDL2')
+        opts['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'ogg', 'SDL2')
         opts['QUAKE_MACOS_BUNDLE'] = 'OFF'
         opts['QUAKE_MACOS_MOUSE_ACCELERATION'] = 'ON'
 

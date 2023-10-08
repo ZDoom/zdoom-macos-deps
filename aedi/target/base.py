@@ -411,15 +411,18 @@ class CMakeTarget(BuildTarget):
         args = [
             'cmake',
             '-DCMAKE_BUILD_TYPE=Release',
-            f'-DCMAKE_C_FLAGS="-ffile-prefix-map={state.source}/="',
-            f'-DCMAKE_CXX_FLAGS="-ffile-prefix-map={state.source}/="',
             f'-DCMAKE_INSTALL_PREFIX={state.install_path}',
             f'-DCMAKE_PREFIX_PATH={state.prefix_path}',
         ]
 
+        prefix_map = f'-ffile-prefix-map={state.source}/='
+        opts = state.options
+        opts['CMAKE_C_FLAGS'] += prefix_map
+        opts['CMAKE_CXX_FLAGS'] += prefix_map
+
         if ldflags := self.extra_linker_flags():
-            args.append(f'-DCMAKE_EXE_LINKER_FLAGS={ldflags}')
-            args.append(f'-DCMAKE_SHARED_LINKER_FLAGS={ldflags}')
+            opts['CMAKE_EXE_LINKER_FLAGS'] += ldflags
+            opts['CMAKE_SHARED_LINKER_FLAGS'] += ldflags
 
         if state.xcode:
             args.append('-GXcode')
@@ -444,7 +447,7 @@ class CMakeTarget(BuildTarget):
         if os_version:
             args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + str(os_version))
 
-        args += state.options.to_list(CommandLineOptions.CMAKE_RULES)
+        args += opts.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(state.source / self.src_root)
 
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
