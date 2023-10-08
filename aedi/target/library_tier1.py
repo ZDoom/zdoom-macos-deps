@@ -271,7 +271,7 @@ class MoltenVKTarget(base.MakeTarget):
         dynamic_lib_time = os.stat(dynamic_lib_path).st_mtime if os.path.exists(dynamic_lib_path) else 0
 
         if static_lib_time != dynamic_lib_time:
-            args = (
+            args = [
                 'clang++',
                 '-stdlib=libc++',
                 '-dynamiclib',
@@ -290,7 +290,11 @@ class MoltenVKTarget(base.MakeTarget):
                 '-framework', 'Foundation',
                 '-o', dynamic_lib_path,
                 '-force_load', static_lib_path
-            )
+            ]
+
+            if ldflags := self.extra_linker_flags():
+                args.append(ldflags)
+
             subprocess.run(args, check=True, env=state.environment)
             os.utime(dynamic_lib_path, (static_lib_time, static_lib_time))
 

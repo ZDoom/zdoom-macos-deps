@@ -96,7 +96,8 @@ class BuildTarget(Target):
         for prefix in ('C', 'CPP', 'CXX', 'OBJC', 'OBJCXX'):
             state.update_flags_environment_variable(f'{prefix}FLAGS', f'-I{state.include_path}')
 
-        state.update_flags_environment_variable('LDFLAGS', f'-L{state.lib_path}')
+        ldflags = f'-L{state.lib_path} {self.extra_linker_flags()}'
+        state.update_flags_environment_variable('LDFLAGS', ldflags)
 
         # Avoid timestamp only differences in static libraries
         env['ZERO_AR_DATE'] = '1'
@@ -259,6 +260,30 @@ Cflags: -I${{includedir}} {cflags}
         dst_path = bin_path / new_filename
         shutil.copy(src_path, dst_path)
 
+    @staticmethod
+    def extra_linker_flags():
+        # Fix for Xcode 15.0 known issue with the new linker
+        # https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Known-Issues
+        # Binaries using symbols with a weak definition crash at runtime on iOS 14/macOS 12 or older.
+        # This impacts primarily C++ projects due to their extensive use of weak symbols. (114813650) (FB13097713)
+        # Workaround: Bump the minimum deployment target to iOS 15, macOS 12, watchOS 8 or tvOS 15,
+        # or add -Wl,-ld_classic to the OTHER_LDFLAGS build setting.
+
+        this = BuildTarget.extra_linker_flags
+
+        if not hasattr(this, "flags"):
+            ld_classic_arg = '-Wl,-ld_classic'
+            check_args = ('clang', '-xc++', ld_classic_arg, '-')
+            check_code = b'int main() {}'
+
+            if subprocess.run(check_args, input=check_code).returncode == 0:
+                this.flags = ld_classic_arg
+                os.unlink('a.out')
+            else:
+                this.flags = ''
+
+        return this.flags
+
 
 class MakeTarget(BuildTarget):
     def __init__(self, name=None):
@@ -391,6 +416,10 @@ class CMakeTarget(BuildTarget):
             f'-DCMAKE_INSTALL_PREFIX={state.install_path}',
             f'-DCMAKE_PREFIX_PATH={state.prefix_path}',
         ]
+
+        if ldflags := self.extra_linker_flags():
+            args.append(f'-DCMAKE_EXE_LINKER_FLAGS={ldflags}')
+            args.append(f'-DCMAKE_SHARED_LINKER_FLAGS={ldflags}')
 
         if state.xcode:
             args.append('-GXcode')
