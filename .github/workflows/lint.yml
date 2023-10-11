@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Super-Linter
-        uses: github/super-linter/slim@v4
+        uses: super-linter/super-linter/slim@v5
         env:
           FILTER_REGEX_INCLUDE: .*(\.py|\.md|\.yml)$
           FILTER_REGEX_EXCLUDE: .*/deps/.*
