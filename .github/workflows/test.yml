@@ -2,8 +2,14 @@
 name: Test Libraries
 
 on:
-  - push
-  - pull_request
+  push:
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
 
 jobs:
   test:
