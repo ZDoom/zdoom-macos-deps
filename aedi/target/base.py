@@ -276,7 +276,7 @@ Cflags: -I${{includedir}} {cflags}
             check_args = ('clang', '-xc++', ld_classic_arg, '-')
             check_code = b'int main() {}'
 
-            if subprocess.run(check_args, input=check_code).returncode == 0:
+            if subprocess.run(check_args, capture_output=True, input=check_code).returncode == 0:
                 this.flags = ld_classic_arg
                 os.unlink('a.out')
             else:
