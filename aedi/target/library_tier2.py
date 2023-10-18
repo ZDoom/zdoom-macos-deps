@@ -389,24 +389,29 @@ class VulkanHeadersTarget(base.CMakeStaticDependencyTarget):
 class VulkanLoaderTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='vulkan-loader'):
         super().__init__(name)
+        self.version = '1.3.268'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
-            'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v1.3.261.tar.gz',
-            '85d13004c81b032baf7cc4c2de0b2cb57072a86855d7ca7fc9a813621da275ba')
+            f'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v{self.version}.tar.gz',
+            'bddabbf8ebbbd38bdb58dfb50fbd94dbd84b8c39c34045e13c9ad46bd3cae167')
 
     def configure(self, state: BuildState):
         opts = state.options
         opts['BUILD_STATIC_LOADER'] = 'YES'
         opts['CMAKE_INSTALL_SYSCONFDIR'] = '/usr/local/etc'
-        opts['USE_GAS'] = 'OFF'  # cross-compilation fails otherwise
 
         super().configure(state)
 
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        return line.replace('\n', ' -framework CoreFoundation\n') if line.startswith('Libs.private:') else line
+    def post_build(self, state: BuildState):
+        lib_path = state.install_path / 'lib'
+        os.makedirs(lib_path, exist_ok=True)
+        shutil.copy(state.build_path / 'loader/libvulkan.a', lib_path)
+
+        self.write_pc_file(state, filename='vulkan.pc',
+                           name='Vulkan-Loader', description='Vulkan Loader', version=self.version,
+                           libs='-lvulkan', libs_private='-lc++ -framework CoreFoundation')
 
 
 class XmpTarget(base.ConfigureMakeStaticDependencyTarget):
