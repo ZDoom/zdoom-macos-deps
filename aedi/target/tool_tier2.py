@@ -123,9 +123,8 @@ class Radare2Target(base.MesonTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/radareorg/radare2/archive/refs/tags/5.8.4.tar.gz',
-            '8ea45bd82e5ea37e270ca14ac2a6f947c647a24f9de9e18bf8cebc71c0816dcd',
-            patches='radare2-fix-build')
+            'https://github.com/radareorg/radare2/releases/download/5.8.8/radare2-5.8.8.tar.xz',
+            '070dbc353e8e0d09fb985a73bfee2783690abbd58d4fbbecc3a50480eab9d537')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('man/radare2.1')
@@ -135,7 +134,7 @@ class Radare2Target(base.MesonTarget):
         option['blob'] = 'true'
         option['enable_tests'] = 'false'
         option['enable_r2r'] = 'false'
-        option['r2_gittip'] = 'ab809417aa6b676922f95cf77861924eb90e7ef2'
+        option['r2_gittip'] = 'ea7f0356519884715cf1d5fba16042bac72b2df5'
         option['r2_version_commit'] = '1'
 
         super().configure(state)
