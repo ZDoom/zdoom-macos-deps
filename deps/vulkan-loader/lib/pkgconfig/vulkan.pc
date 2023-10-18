@@ -5,7 +5,9 @@ includedir=${prefix}/include
 
 Name: Vulkan-Loader
 Description: Vulkan Loader
-Version: 1.3.261
+Version: 1.3.268
+Requires: 
+Requires.private: 
 Libs: -L${libdir} -lvulkan
 Libs.private: -lc++ -framework CoreFoundation
-Cflags: -I${includedir}
+Cflags: -I${includedir} 
