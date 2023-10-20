@@ -7,7 +7,7 @@ includedir=${prefix}/include
 
 Name: zlib
 Description: zlib-ng compression library
-Version: 1.2.13.zlib-ng
+Version: 1.3.0.zlib-ng
 
 Requires:
 Libs: -L${libdir} -L${sharedlibdir} -lz
