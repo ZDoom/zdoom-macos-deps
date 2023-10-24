@@ -24,7 +24,7 @@ from distutils.version import StrictVersion
 from pathlib import Path
 
 # Minimum OS versions
-OS_VERSION_X86_64 = StrictVersion('10.12')
+OS_VERSION_X86_64 = StrictVersion('10.13')
 OS_VERSION_ARM64 = StrictVersion('11.0')
 
 
