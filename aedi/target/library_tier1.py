@@ -446,7 +446,7 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
 
     def configure(self, state: BuildState):
         hosts = {
-            'x86_64': 'x86_64-darwin16-gcc',
+            'x86_64': 'x86_64-darwin17-gcc',
             'arm64': 'arm64-darwin20-gcc',
         }
 
