@@ -276,7 +276,7 @@ class MoltenVKTarget(base.MakeTarget):
                 '-dynamiclib',
                 '-arch', 'arm64',
                 '-arch', 'x86_64',
-                '-mmacosx-version-min=10.12',
+                '-mmacosx-version-min=10.13',
                 '-compatibility_version', '1.0.0',
                 '-current_version', '1.0.0',
                 '-install_name', '@rpath/libMoltenVK.dylib',
