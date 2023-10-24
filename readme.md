@@ -41,8 +41,3 @@ Xcode 12.2 or newer is required in order to build universal binaries. Launch Xco
 * `sdk` directory can contain macOS SDKs that will be picked if match with macOS deployment versions
 * `source` directory stores targets source code, customizable with `--source-path` command line option
 * `temp` directory stores temporary files, customizable with `--temp-path` command line option
-
-## Common information
-
-Libraries were built using 10.12 SDK (Intel x86_64) and 11.0 SDK (ARM64).  
-macOS 10.12 SDK was obtained from Xcode 8.3.3. macOS 11.0 SDK was obtained from Xcode 12.2.
