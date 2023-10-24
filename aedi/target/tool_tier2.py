@@ -171,8 +171,6 @@ class RizinTarget(base.MesonTarget):
 
 
 class SeverZipTarget(base.MakeTarget):
-    # Build with --os-version-x64=10.13 command line option
-
     def __init__(self, name='7zip'):
         super().__init__(name)
         self.src_root = 'CPP/7zip/Bundles/Alone2'
