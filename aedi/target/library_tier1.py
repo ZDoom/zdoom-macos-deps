@@ -17,6 +17,7 @@
 #
 
 import os
+import shlex
 import shutil
 import subprocess
 from pathlib import Path
@@ -290,9 +291,7 @@ class MoltenVKTarget(base.MakeTarget):
                 '-o', dynamic_lib_path,
                 '-force_load', static_lib_path
             ]
-
-            if ldflags := self.extra_linker_flags():
-                args.append(ldflags)
+            args += shlex.split(state.linker_flags())
 
             subprocess.run(args, check=True, env=state.environment)
             os.utime(dynamic_lib_path, (static_lib_time, static_lib_time))
