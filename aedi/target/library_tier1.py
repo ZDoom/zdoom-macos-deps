@@ -154,8 +154,8 @@ class IconvTarget(base.ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://ftp.gnu.org/gnu/libiconv/libiconv-1.16.tar.gz',
-            'e6a1b1b589654277ee790cce3734f07876ac4ccfaecbee8afa0b649cf529cc04')
+            'https://ftp.gnu.org/gnu/libiconv/libiconv-1.17.tar.gz',
+            '8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/iconv.h.in')
