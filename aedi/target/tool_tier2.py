@@ -184,10 +184,6 @@ class SeverZipTarget(base.MakeTarget):
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('CPP/7zip/cmpl_mac_arm64.mak')
 
-    def configure(self, state: BuildState):
-        state.validate_minimum_version('10.13')
-        super().configure(state)
-
     def build(self, state: BuildState):
         environment = state.environment
         mak_suffix = self._arch_suffix(state)
