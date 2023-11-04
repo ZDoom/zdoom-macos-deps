@@ -23,9 +23,9 @@ import shutil
 import subprocess
 import typing
 import urllib.request
-from distutils.version import StrictVersion
 from pathlib import Path
 
+from .packaging.version import Version as StrictVersion
 from .utility import CommandLineOptions
 
 

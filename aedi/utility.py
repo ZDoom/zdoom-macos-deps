@@ -20,8 +20,9 @@ import collections.abc
 import os
 import shutil
 import typing
-from distutils.version import StrictVersion
 from pathlib import Path
+
+from .packaging.version import Version as StrictVersion
 
 # Minimum OS versions
 OS_VERSION_X86_64 = StrictVersion('10.13')
