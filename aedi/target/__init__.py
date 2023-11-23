@@ -107,7 +107,6 @@ def targets():
         HighwayTarget(),
         JpegTurboTarget(),
         LuaTarget(),
-        LzmaTarget(),
         Sdl2TtfTarget(),
         SfmlTarget(),
         TiffTarget(),
@@ -133,6 +132,7 @@ def targets():
         RizinTarget(),
         SeverZipTarget(),
         UnrarTarget(),
+        XzTarget(),
         ZipTarget(),
 
         # Special

@@ -222,6 +222,27 @@ class UnrarTarget(base.MakeTarget):
         return state.has_source_file('rar.hpp')
 
 
+class XzTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='xz'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://tukaani.org/xz/xz-5.2.5.tar.gz',
+            'f6f4910fd033078738bd82bfba4f49219d03b17eb0794eb91efbae419f4aba10',
+            patches='lzma-add-cmake')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('src/liblzma/liblzma.pc.in')
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        self.write_pc_file(state, 'liblzma.pc', name='liblzma',
+                           description='General purpose data compression library',
+                           version='5.2.5', libs='-llzma')
+
+
 class ZipTarget(base.SingleExeCTarget):
     def __init__(self, name='zip'):
         super().__init__(name)
