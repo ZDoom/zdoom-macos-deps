@@ -74,8 +74,8 @@ class GmakeTarget(base.ConfigureMakeDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://ftp.gnu.org/gnu/make/make-4.4.tar.lz',
-            '48d0fc0b2a04bb50f2911c16da65723285f7f4804c74fc5a2124a3df6c5f78c4')
+            'https://ftp.gnu.org/gnu/make/make-4.4.1.tar.lz',
+            '8814ba072182b605d156d7589c19a43b89fc58ea479b9355146160946f8cf6e9')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('doc/make.1')
