@@ -228,19 +228,8 @@ class XzTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://tukaani.org/xz/xz-5.2.5.tar.gz',
-            'f6f4910fd033078738bd82bfba4f49219d03b17eb0794eb91efbae419f4aba10',
-            patches='lzma-add-cmake')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('src/liblzma/liblzma.pc.in')
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        self.write_pc_file(state, 'liblzma.pc', name='liblzma',
-                           description='General purpose data compression library',
-                           version='5.2.5', libs='-llzma')
+            'https://tukaani.org/xz/xz-5.4.5.tar.gz',
+            '135c90b934aee8fbc0d467de87a05cb70d627da36abe518c357a873709e5b7d6')
 
 
 class ZipTarget(base.SingleExeCTarget):
