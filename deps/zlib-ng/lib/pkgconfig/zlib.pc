@@ -11,4 +11,4 @@ Version: 1.3.0.zlib-ng
 
 Requires:
 Libs: -L${libdir} -L${sharedlibdir} -lz
-Cflags: -I${includedir}
+Cflags: -I${includedir} -DWITH_GZFILEOP
