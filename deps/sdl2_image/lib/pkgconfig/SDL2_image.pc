@@ -5,9 +5,10 @@ includedir=${prefix}/include
 
 Name: SDL2_image
 Description: image loading library for Simple DirectMedia Layer
-Version: 2.6.3
+Version: 2.8.0
 Requires: sdl2 >= 2.0.9
-Requires.private: 
 Libs: -L${libdir} -lSDL2_image
+Requires.private: libwebpdemux
 Libs.private: 
-Cflags: -I${includedir} -I${includedir}/SDL2
+Cflags: -I${includedir}/SDL2
+

@@ -289,6 +289,18 @@ class Sdl2ImageTarget(base.CMakeStaticDependencyTarget):
             'https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.0/SDL2_image-2.8.0.tar.gz',
             '76ba035fd032c12987e4a0d39aa1f2e79989a51cea72f79d18ab084a24adc9cc')
 
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['SDL2IMAGE_WEBP'] = 'YES'
+        opts['SDL2IMAGE_WEBP_SHARED'] = 'NO'
+
+        super().configure(state)
+
+    @staticmethod
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
+        # Link with webpdemux library instead of webp
+        return line.replace('\n', 'demux\n') if line.startswith('Requires.private:') else line
+
 
 class Sdl2MixerTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_mixer'):
