@@ -283,29 +283,11 @@ class Sdl2Target(base.CMakeStaticDependencyTarget):
 class Sdl2ImageTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_image'):
         super().__init__(name)
-        self.version = '2.6.3'
 
     def prepare_source(self, state: BuildState):
-        base_url = 'https://github.com/libsdl-org/SDL_image/releases/download'
         state.download_source(
-            f'{base_url}/release-{self.version}/SDL2_image-{self.version}.tar.gz',
-            '931c9be5bf1d7c8fae9b7dc157828b7eee874e23c7f24b44ba7eff6b4836312c')
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        self.write_pc_file(state, filename='SDL2_image.pc', name='SDL2_image',
-                           description='image loading library for Simple DirectMedia Layer',
-                           version=self.version, requires='sdl2 >= 2.0.9',
-                           libs='-lSDL2_image', cflags='-I${includedir}/SDL2')
-
-        bad_cmake_files_path = state.install_path / 'SDL2_image.framework/Resources'
-        good_cmake_files_path = state.install_path / 'lib/cmake'
-
-        if good_cmake_files_path.exists():
-            shutil.rmtree(bad_cmake_files_path)
-
-        shutil.move(str(bad_cmake_files_path), str(good_cmake_files_path))
+            'https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.0/SDL2_image-2.8.0.tar.gz',
+            '76ba035fd032c12987e4a0d39aa1f2e79989a51cea72f79d18ab084a24adc9cc')
 
 
 class Sdl2MixerTarget(base.CMakeStaticDependencyTarget):
