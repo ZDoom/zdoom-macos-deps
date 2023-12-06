@@ -50,6 +50,7 @@ unset(_cmake_expected_targets)
 get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
 get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
 get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
 if(_IMPORT_PREFIX STREQUAL "/")
   set(_IMPORT_PREFIX "")
 endif()
@@ -58,8 +59,8 @@ endif()
 add_library(SDL2_image::SDL2_image-static STATIC IMPORTED)
 
 set_target_properties(SDL2_image::SDL2_image-static PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include/SDL2"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:SDL2::SDL2-static>;\$<LINK_ONLY:objc>"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include/SDL2"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:>;-Wl,-framework,ApplicationServices;\$<LINK_ONLY:objc>;\$<LINK_ONLY:WebP::webp>;\$<LINK_ONLY:WebP::webpdemux>"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
