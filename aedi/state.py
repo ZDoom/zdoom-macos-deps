@@ -107,13 +107,12 @@ class BuildState:
             # Workaround: Bump the minimum deployment target to iOS 15, macOS 12, watchOS 8 or tvOS 15,
             # or add -Wl,-ld_classic to the OTHER_LDFLAGS build setting.
 
-            ld_classic_arg = '-Wl,-ld_classic'
-            check_args = ('clang', '-xc++', ld_classic_arg, '-')
-            check_code = b'int main() {}'
+            version_output = subprocess.run(('clang', '--version'), check=True, capture_output=True)
+            version_match = re.search(r'\(clang-([\d.]+)\)', version_output.stdout.decode('ascii'))
+            version = StrictVersion(version_match.group(1))
 
-            if subprocess.run(check_args, capture_output=True, input=check_code).returncode == 0:
-                self._linker_flags += f' {ld_classic_arg}'
-                os.unlink('a.out')
+            if version.major == 1500 and version.minor == 0:
+                self._linker_flags += ' -Wl,-ld_classic'
 
         return self._linker_flags
 
