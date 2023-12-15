@@ -109,10 +109,12 @@ class BuildState:
 
             version_output = subprocess.run(('clang', '--version'), check=True, capture_output=True)
             version_match = re.search(r'\(clang-([\d.]+)\)', version_output.stdout.decode('ascii'))
-            version = StrictVersion(version_match.group(1))
 
-            if version.major == 1500 and version.minor == 0:
-                self._linker_flags += ' -Wl,-ld_classic'
+            if version_match:
+                version = StrictVersion(version_match.group(1))
+
+                if version.major == 1500 and version.minor == 0:
+                    self._linker_flags += ' -Wl,-ld_classic'
 
         return self._linker_flags
 
