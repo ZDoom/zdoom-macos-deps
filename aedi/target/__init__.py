@@ -125,6 +125,7 @@ def targets():
         # Tools without binaries stored in the repo, can be outdated
         DzipTarget(),
         GlslangTarget(),
+        M4Target(),
         P7ZipTarget(),
         PbzxTarget(),
         QPakManTarget(),

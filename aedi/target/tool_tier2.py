@@ -70,6 +70,16 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
                 os.unlink(lib_cmake_path / entry)
 
 
+class M4Target(base.ConfigureMakeDependencyTarget):
+    def __init__(self, name='m4'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.xz',
+            '63aede5c6d33b6d9b13511cd0be2cac046f2e70fd0a07aa9573a04a82783af96')
+
+
 class P7ZipTarget(base.CMakeTarget):
     def __init__(self, name='p7zip'):
         super().__init__(name)
