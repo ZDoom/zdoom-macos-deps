@@ -52,6 +52,11 @@
 !/autoconf/share/
 /autoconf/share/info/
 /autoconf/share/man/
+!/automake/share/
+/automake/share/aclocal
+/automake/share/doc
+/automake/share/info
+/automake/share/man
 /cmake/bin/*
 !/cmake/bin/cmake
 /cmake/doc/

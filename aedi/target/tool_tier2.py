@@ -35,6 +35,18 @@ class AutoconfTarget(base.ConfigureMakeDependencyTarget):
             'ba885c1319578d6c94d46e9b0dceb4014caafe2490e437a0dbca3f270a223f5a')
 
 
+class AutomakeTarget(base.ConfigureMakeDependencyTarget):
+    # TODO: fix absolute paths in bin/* and share/automake-1.16/Automake/Config.pm
+    def __init__(self, name='automake'):
+        super().__init__(name)
+        self.multi_platform = False
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.xz',
+            'f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469')
+
+
 class DzipTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='dzip'):
         super().__init__(name)
