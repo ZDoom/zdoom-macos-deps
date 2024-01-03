@@ -23,6 +23,18 @@ from ..state import BuildState
 from . import base
 
 
+class AutoconfTarget(base.ConfigureMakeDependencyTarget):
+    # TODO: fix absolute paths in bin/* and share/autoconf/autom4te.cfg
+    def __init__(self, name='autoconf'):
+        super().__init__(name)
+        self.multi_platform = False
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz',
+            'ba885c1319578d6c94d46e9b0dceb4014caafe2490e437a0dbca3f270a223f5a')
+
+
 class DzipTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='dzip'):
         super().__init__(name)

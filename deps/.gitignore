@@ -49,6 +49,9 @@
 /vulkan-loader/loader/
 
 # Tools
+!/autoconf/share/
+/autoconf/share/info/
+/autoconf/share/man/
 /cmake/bin/*
 !/cmake/bin/cmake
 /cmake/doc/
