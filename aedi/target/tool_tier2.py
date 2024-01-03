@@ -262,6 +262,32 @@ class UnrarTarget(base.MakeTarget):
         return state.has_source_file('rar.hpp')
 
 
+class XdeltaTarget(base.ConfigureMakeDependencyTarget):
+    # Depends on autoconf, automake, and (optionally) xz
+    def __init__(self, name='xdelta'):
+        super().__init__(name)
+        self.src_root = 'xdelta3'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/jmacd/xdelta/archive/refs/tags/v3.1.0.tar.gz',
+            '7515cf5378fca287a57f4e2fee1094aabc79569cfe60d91e06021a8fd7bae29d')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('xdelta3/xdelta3.h')
+
+    def configure(self, state: BuildState):
+        # Invoke MakeTarget.configure() explicitly to create symlinks needed for autoconf
+        base.MakeTarget.configure(self, state)
+
+        # Generate configure script with autoconf
+        work_path = state.build_path / self.src_root
+        subprocess.run(('autoreconf', '--install'), check=True, cwd=work_path, env=state.environment)
+
+        # Run generated configure script
+        super().configure(state)
+
+
 class XzTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='xz'):
         super().__init__(name)

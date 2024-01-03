@@ -135,6 +135,7 @@ def targets():
         RizinTarget(),
         SeverZipTarget(),
         UnrarTarget(),
+        XdeltaTarget(),
         XzTarget(),
         ZipTarget(),
 
