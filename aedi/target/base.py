@@ -441,6 +441,7 @@ class ConfigureMakeDependencyTarget(ConfigureMakeTarget):
         super().__init__(name)
 
     def post_build(self, state: BuildState):
+        state.build_path /= self.src_root
         self.install(state)
 
 
