@@ -126,6 +126,7 @@ def targets():
         AutoconfTarget(),
         AutomakeTarget(),
         DzipTarget(),
+        EricWToolsTarget(),
         GlslangTarget(),
         M4Target(),
         P7ZipTarget(),

@@ -57,6 +57,17 @@ class DzipTarget(base.CMakeStaticDependencyTarget):
             '9f057e35ef5ddda1a0911b8f877a41b2934669377cb053b45364ddb72716b520')
 
 
+class EricWToolsTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='ericw-tools'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/ericwa/ericw-tools/archive/refs/tags/v0.18.1.tar.gz',
+            '97790e742d4c06f2e4285d96ada597bb3c95a2623b8c5e67a14753d9735d4564',
+            patches='ericw-tools-hardcode-version')
+
+
 class GlslangTarget(base.CMakeStaticDependencyTarget):
     # Build with --os-version-x64=10.15 command line option
 
