@@ -371,6 +371,7 @@ class SodiumTarget(base.ConfigureMakeStaticDependencyTarget):
 class VulkanHeadersTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='vulkan-headers'):
         super().__init__(name)
+        self.multi_platform = False
 
     def prepare_source(self, state: BuildState):
         state.download_source(
