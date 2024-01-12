@@ -383,17 +383,17 @@ class VulkanHeadersTarget(base.CMakeStaticDependencyTarget):
 class VulkanLoaderTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='vulkan-loader'):
         super().__init__(name)
-        self.version = '1.3.268'
+        self.version = '1.3.275'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
             f'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v{self.version}.tar.gz',
-            'bddabbf8ebbbd38bdb58dfb50fbd94dbd84b8c39c34045e13c9ad46bd3cae167')
+            '96dee7d8ccb08f2518e2b82f7a8ce84ffee511c96b16c83259fff87b6ee45232')
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['BUILD_STATIC_LOADER'] = 'YES'
+        opts['APPLE_STATIC_LOADER'] = 'YES'
         opts['CMAKE_INSTALL_SYSCONFDIR'] = '/usr/local/etc'
 
         super().configure(state)
