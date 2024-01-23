@@ -94,6 +94,7 @@ def targets():
         SodiumTarget(),
         VulkanHeadersTarget(),
         VulkanLoaderTarget(),
+        WavPackTarget(),
         XmpTarget(),
 
         # Obsolete libraries without binaries

@@ -408,6 +408,26 @@ class VulkanLoaderTarget(base.CMakeStaticDependencyTarget):
                            libs='-lvulkan', libs_private='-lc++ -framework CoreFoundation')
 
 
+class WavPackTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='wavpack'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/dbry/WavPack/releases/download/5.6.0/wavpack-5.6.0.tar.xz',
+            'af8035f457509c3d338b895875228a9b81de276c88c79bb2d3e31d9b605da9a9')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['BUILD_TESTING'] = 'NO'
+        opts['WAVPACK_BUILD_DOCS'] = 'NO'
+        opts['WAVPACK_BUILD_PROGRAMS'] = 'NO'
+        opts['WAVPACK_ENABLE_LIBCRYPTO'] = 'NO'
+        opts['WAVPACK_INSTALL_DOCS'] = 'NO'
+
+        super().configure(state)
+
+
 class XmpTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='xmp'):
         super().__init__(name)
