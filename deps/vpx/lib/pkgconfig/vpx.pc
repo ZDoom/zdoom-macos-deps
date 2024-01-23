@@ -1,4 +1,4 @@
-# pkg-config file from libvpx v1.13.1
+# pkg-config file from libvpx v1.14.0
 prefix=
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
@@ -6,7 +6,7 @@ includedir=${prefix}/include
 
 Name: vpx
 Description: WebM Project VPx codec implementation
-Version: 1.13.1
+Version: 1.14.0
 Requires:
 Conflicts:
 Libs: -L${libdir} -lvpx -lm
