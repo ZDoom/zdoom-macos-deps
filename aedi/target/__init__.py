@@ -79,6 +79,7 @@ def targets():
         DumbTarget(),
         FluidSynthTarget(),
         FmtTarget(),
+        GmeTarget(),
         InstPatchTarget(),
         MadTarget(),
         MikmodTarget(),

@@ -88,6 +88,20 @@ class FmtTarget(base.CMakeStaticDependencyTarget):
         super().configure(state)
 
 
+class GmeTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='gme'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/libgme/game-music-emu/archive/refs/tags/0.6.3.tar.gz',
+            '4c5a7614acaea44e5cb1423817d2889deb82674ddbc4e3e1291614304b86fca0',
+            patches='gme-no-ubsan')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('gme.txt')
+
+
 class InstPatchTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='instpatch'):
         super().__init__(name)
