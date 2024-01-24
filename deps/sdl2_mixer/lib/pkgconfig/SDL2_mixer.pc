@@ -5,9 +5,9 @@ includedir=${prefix}/include
 
 Name: SDL2_mixer
 Description: mixer library for Simple DirectMedia Layer
-Version: 2.6.3
+Version: 2.8.0
 Requires: sdl2 >= 2.0.9
-Requires.private: flac fluidsynth libmodplug libmpg123 libxmp opusfile vorbisfile
 Libs: -L${libdir} -lSDL2_mixer
+Cflags: -I${includedir}/SDL2
+Requires.private: opusfile vorbisfile flac libgme libmodplug libxmp libmpg123 fluidsynth wavpack
 Libs.private: 
-Cflags: -I${includedir} -I${includedir}/SDL2
