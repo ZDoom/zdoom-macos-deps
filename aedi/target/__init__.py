@@ -127,6 +127,7 @@ def targets():
         # Tools without binaries stored in the repo, can be outdated
         AutoconfTarget(),
         AutomakeTarget(),
+        DosBoxXTarget(),
         DzipTarget(),
         EricWToolsTarget(),
         GlslangTarget(),

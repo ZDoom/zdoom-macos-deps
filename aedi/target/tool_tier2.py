@@ -47,6 +47,34 @@ class AutomakeTarget(base.ConfigureMakeDependencyTarget):
             'f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469')
 
 
+class DosBoxXTarget(base.ConfigureMakeDependencyTarget):
+    # Depends on autoconf, automake, freetype
+    # TODO: fix absolute paths in bin/* and share/autoconf/autom4te.cfg
+    def __init__(self, name='dosbox-x'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/joncampbell123/dosbox-x/archive/refs/tags/dosbox-x-v2023.10.06.tar.gz',
+            '65f756e29f9c9b898fdbd22b0cb9b3b24c6e3becb5dcda588aa20a3fde9539a5')
+
+    def configure(self, state: BuildState):
+        # Invoke MakeTarget.configure() explicitly to create symlinks needed for autoconf
+        base.MakeTarget.configure(self, state)
+
+        # Generate configure script with autoconf
+        work_path = state.build_path / self.src_root
+        subprocess.run(('./autogen.sh',), check=True, cwd=work_path, env=state.environment)
+
+        opts = state.options
+        opts['--disable-libfluidsynth'] = None  # TODO: Resolve conflict with internal FLAC codec
+        opts['--disable-libslirp'] = None  # TODO: Add slirp target
+        opts['--enable-sdl2'] = None
+
+        # Run generated configure script
+        super().configure(state)
+
+
 class DzipTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='dzip'):
         super().__init__(name)
