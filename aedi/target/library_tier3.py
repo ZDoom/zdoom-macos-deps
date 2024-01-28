@@ -116,8 +116,8 @@ class FreeTypeTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.sourceforge.net/project/freetype/freetype2/2.11.0/freetype-2.11.0.tar.xz',
-            '8bee39bd3968c4804b70614a0a3ad597299ad0e824bc8aad5ce8aaf48067bde7')
+            'https://downloads.sourceforge.net/project/freetype/freetype2/2.13.2/freetype-2.13.2.tar.xz',
+            '12991c4e55c506dd7f9b765933e62fd2be2e06d421505d7950a132e4f1bb484d')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -127,8 +127,7 @@ class FreeTypeTarget(base.CMakeStaticDependencyTarget):
         shutil.copy(state.patch_path / 'freetype-config', bin_path)
 
         def update_linker_flags(line: str):
-            link_flags = '-lbrotlicommon -lbrotlidec -lbz2 -lfreetype -lharfbuzz -lpng16 -lz ' \
-                         '-lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText'
+            link_flags = '-lbz2 -lpng16 -lz'
             link_var = '  INTERFACE_LINK_LIBRARIES '
 
             return f'{link_var}"{link_flags}"\n' if line.startswith(link_var) else line

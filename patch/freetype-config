@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright (C) 2000-2021 by
+# Copyright (C) 2000-2023 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -41,11 +41,11 @@ else
   includedir=${prefix}/include
   libdir=${exec_prefix}/lib
 
-  version=24.0.18
+  version=26.1.20
 
   cflags="-I${SYSROOT}$includedir/freetype2"
   dynamic_libs="-lfreetype"
-  static_libs="-lfreetype -lz -lbz2 -lpng16 -lharfbuzz -lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText -lbrotlidec -lbrotlicommon"
+  static_libs="-lfreetype -lz -lbz2 -lpng16"
   if test "${SYSROOT}$libdir" != "/usr/lib"   &&
      test "${SYSROOT}$libdir" != "/usr/lib64" ; then
     libs_L="-L${SYSROOT}$libdir"
