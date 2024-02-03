@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -49,7 +49,7 @@
 
 /* Comment this if you want to build without any C library requirements */
 #define HAVE_LIBC 1
-#if HAVE_LIBC
+#ifdef HAVE_LIBC
 
 /* Useful headers */
 #define STDC_HEADERS 1
@@ -74,7 +74,7 @@
 #define HAVE_WCHAR_H 1
 /* #undef HAVE_LINUX_INPUT_H */
 /* #undef HAVE_PTHREAD_NP_H */
-#define HAVE_LIBUNWIND_H 1
+/* #undef HAVE_LIBUNWIND_H */
 
 /* C library functions */
 #define HAVE_DLOPEN 1
@@ -199,7 +199,8 @@
 /* #undef HAVE_CLOCK_GETTIME */
 /* #undef HAVE_GETPAGESIZE */
 #define HAVE_MPROTECT 1
-/* #undef HAVE_ICONV */
+#define HAVE_ICONV 1
+#define SDL_USE_LIBICONV 1
 #define HAVE_PTHREAD_SETNAME_NP 1
 /* #undef HAVE_PTHREAD_SET_NAME_NP */
 /* #undef HAVE_SEM_TIMEDWAIT */
@@ -258,9 +259,6 @@
 /* #undef HAVE_SENSORSAPI_H */
 /* #undef HAVE_ROAPI_H */
 /* #undef HAVE_SHELLSCALINGAPI_H */
-
-/* #undef HAVE_XINPUT_GAMEPAD_EX */
-/* #undef HAVE_XINPUT_STATE_EX */
 
 /* #undef USE_POSIX_SPAWN */
 
@@ -527,7 +525,7 @@
 /* #undef SDL_ARM_NEON_BLITTERS */
 
 /* Whether SDL_DYNAMIC_API needs dlopen */
-#define DYNAPI_NEEDS_DLOPEN  1
+#define DYNAPI_NEEDS_DLOPEN 1
 
 /* Enable dynamic libsamplerate support */
 /* #undef SDL_LIBSAMPLERATE_DYNAMIC */

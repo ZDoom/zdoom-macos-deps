@@ -43,7 +43,7 @@ while test $# -gt 0; do
       echo $exec_prefix
       ;;
     --version)
-      echo 2.28.5
+      echo 2.30.0
       ;;
     --cflags)
       echo -I${prefix}/include/SDL2  -D_THREAD_SAFE
@@ -53,7 +53,7 @@ while test $# -gt 0; do
 #      ;;
 #    --static-libs)
     --libs|--static-libs)
-      sdl_static_libs=$(echo " -lSDL2   -lSDL2 -Wl,-framework,CoreVideo -Wl,-framework,Cocoa -Wl,-framework,IOKit -Wl,-framework,ForceFeedback -Wl,-framework,Carbon -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AVFoundation -Wl,-framework,Foundation -Wl,-weak_framework,GameController -Wl,-weak_framework,Metal -Wl,-weak_framework,QuartzCore -Wl,-weak_framework,CoreHaptics  -lm" | sed -E "s#-lSDL2[ $]#$libdir/libSDL2.a #g")
+      sdl_static_libs=$(echo " -lSDL2   -lSDL2 -Wl,-framework,CoreVideo -Wl,-framework,Cocoa -Wl,-framework,IOKit -Wl,-framework,ForceFeedback -Wl,-framework,Carbon -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AVFoundation -Wl,-framework,Foundation -Wl,-weak_framework,GameController -Wl,-weak_framework,Metal -Wl,-weak_framework,QuartzCore -Wl,-weak_framework,CoreHaptics  -lm -liconv" | sed -E "s#-lSDL2[ $]#$libdir/libSDL2.a #g")
       echo -L${exec_prefix}/lib $sdl_static_libs
       ;;
     *)
