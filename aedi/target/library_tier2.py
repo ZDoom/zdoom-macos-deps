@@ -1,6 +1,6 @@
 #
 #    Helper module to build macOS version of various source ports
-#    Copyright (C) 2020-2023 Alexey Lysiuk
+#    Copyright (C) 2020-2024 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -54,8 +54,8 @@ class FluidSynthTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.3.tar.gz',
-            '321f7d3f72206b2522f30a1cb8ad1936fd4533ffc4d29dd335b1953c9fb371e6')
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.4.tar.gz',
+            '1529ef5bc3b9ef3adc2a7964505912f7305103e269e50cc0316f500b22053ac9')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -86,6 +86,20 @@ class FmtTarget(base.CMakeStaticDependencyTarget):
         opts['FMT_TEST'] = 'NO'
 
         super().configure(state)
+
+
+class GmeTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='gme'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/libgme/game-music-emu/archive/refs/tags/0.6.3.tar.gz',
+            '4c5a7614acaea44e5cb1423817d2889deb82674ddbc4e3e1291614304b86fca0',
+            patches='gme-no-ubsan')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('gme.txt')
 
 
 class InstPatchTarget(base.CMakeStaticDependencyTarget):
@@ -287,9 +301,8 @@ class Sdl2Target(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsdl-org/SDL/releases/download/release-2.28.2/SDL2-2.28.2.tar.gz',
-            '64b1102fa22093515b02ef33dd8739dee1ba57e9dbba6a092942b8bbed1a1c5e',
-            patches='sdl2-no-gamecontroller+corehaptic')
+            'https://github.com/libsdl-org/SDL/releases/download/release-2.30.0/SDL2-2.30.0.tar.gz',
+            '36e2e41557e0fa4a1519315c0f5958a87ccb27e25c51776beb6f1239526447b0')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -302,66 +315,45 @@ class Sdl2Target(base.CMakeStaticDependencyTarget):
 class Sdl2ImageTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_image'):
         super().__init__(name)
-        self.version = '2.6.3'
 
     def prepare_source(self, state: BuildState):
-        base_url = 'https://github.com/libsdl-org/SDL_image/releases/download'
         state.download_source(
-            f'{base_url}/release-{self.version}/SDL2_image-{self.version}.tar.gz',
-            '931c9be5bf1d7c8fae9b7dc157828b7eee874e23c7f24b44ba7eff6b4836312c')
+            'https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.2/SDL2_image-2.8.2.tar.gz',
+            '8f486bbfbcf8464dd58c9e5d93394ab0255ce68b51c5a966a918244820a76ddc')
 
-    def post_build(self, state: BuildState):
-        super().post_build(state)
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['SDL2IMAGE_WEBP'] = 'YES'
+        opts['SDL2IMAGE_WEBP_SHARED'] = 'NO'
 
-        self.write_pc_file(state, filename='SDL2_image.pc', name='SDL2_image',
-                           description='image loading library for Simple DirectMedia Layer',
-                           version=self.version, requires='sdl2 >= 2.0.9',
-                           libs='-lSDL2_image', cflags='-I${includedir}/SDL2')
+        super().configure(state)
 
-        bad_cmake_files_path = state.install_path / 'SDL2_image.framework/Resources'
-        good_cmake_files_path = state.install_path / 'lib/cmake'
-
-        if good_cmake_files_path.exists():
-            shutil.rmtree(bad_cmake_files_path)
-
-        shutil.move(str(bad_cmake_files_path), str(good_cmake_files_path))
+    @staticmethod
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
+        # Link with webpdemux library instead of webp
+        return line.replace('\n', 'demux\n') if line.startswith('Requires.private:') else line
 
 
 class Sdl2MixerTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='sdl2_mixer'):
         super().__init__(name)
-        self.version = '2.6.3'
 
     def prepare_source(self, state: BuildState):
-        base_url = 'https://github.com/libsdl-org/SDL_mixer/releases/download'
         state.download_source(
-            f'{base_url}/release-{self.version}/SDL2_mixer-{self.version}.tar.gz',
-            '7a6ba86a478648ce617e3a5e9277181bc67f7ce9876605eea6affd4a0d6eea8f',
-            patches='sdl2_mixer-fix-opusfile')
-
-        os.unlink(state.source / 'cmake/Findopusfile.cmake')
-        shutil.copy2(state.patch_path / 'FindOpusFile.cmake', state.source / 'cmake/FindOpusFile.cmake')
+            'https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.8.0/SDL2_mixer-2.8.0.tar.gz',
+            '1cfb34c87b26dbdbc7afd68c4f545c0116ab5f90bbfecc5aebe2a9cb4bb31549')
 
     def configure(self, state: BuildState):
         opts = state.options
         opts['SDL2MIXER_DEPS_SHARED'] = 'NO'
-        opts['SDL2MIXER_MOD_XMP'] = 'YES'
+        opts['SDL2MIXER_FLAC_LIBFLAC'] = 'YES'
+        opts['SDL2MIXER_GME'] = 'YES'
+        opts['SDL2MIXER_MOD_MODPLUG'] = 'YES'
         opts['SDL2MIXER_MP3_MPG123'] = 'YES'
-        opts['SDL2MIXER_OPUS_SHARED'] = 'NO'
         opts['SDL2MIXER_SAMPLES'] = 'NO'
         opts['SDL2MIXER_VORBIS'] = 'VORBISFILE'
-        opts['SDL2MIXER_VORBIS_VORBISFILE_SHARED'] = 'NO'
 
         super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        self.write_pc_file(state, filename='SDL2_mixer.pc', name='SDL2_mixer',
-                           description='mixer library for Simple DirectMedia Layer',
-                           version=self.version, requires='sdl2 >= 2.0.9',
-                           requires_private='flac fluidsynth libmodplug libmpg123 libxmp opusfile vorbisfile',
-                           libs='-lSDL2_mixer', cflags='-I${includedir}/SDL2')
 
 
 class Sdl2NetTarget(base.CMakeStaticDependencyTarget):
@@ -400,35 +392,61 @@ class SodiumTarget(base.ConfigureMakeStaticDependencyTarget):
 class VulkanHeadersTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='vulkan-headers'):
         super().__init__(name)
+        self.multi_platform = False
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
-            'https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.3.261.tar.gz',
-            '0c67b2b76a7d6534c0f98085dbbcd4a1ac945b15b269bc81ee7dbe6cf28d53bb')
+            'https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.3.275.tar.gz',
+            '7161da645dbd33fd4ea61eec08e0d77389a640010acbf4afc00234f84df9b314')
 
 
 class VulkanLoaderTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='vulkan-loader'):
         super().__init__(name)
+        self.version = '1.3.275'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
-            'https://github.com/charles-lunarg/Vulkan-Loader/archive/refs/heads/support_apple_clang_compiler.zip',
-            'e88b2b0012108fa0ee9927767539eefc088c273533a91711a3d87ec26c57692d')
+            f'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v{self.version}.tar.gz',
+            '96dee7d8ccb08f2518e2b82f7a8ce84ffee511c96b16c83259fff87b6ee45232')
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['BUILD_STATIC_LOADER'] = 'YES'
+        opts['APPLE_STATIC_LOADER'] = 'YES'
         opts['CMAKE_INSTALL_SYSCONFDIR'] = '/usr/local/etc'
-        # opts['USE_GAS'] = 'OFF'  # cross-compilation fails otherwise
 
         super().configure(state)
 
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        return line.replace('\n', ' -framework CoreFoundation\n') if line.startswith('Libs.private:') else line
+    def post_build(self, state: BuildState):
+        lib_path = state.install_path / 'lib'
+        os.makedirs(lib_path, exist_ok=True)
+        shutil.copy(state.build_path / 'loader/libvulkan.a', lib_path)
+
+        self.write_pc_file(state, filename='vulkan.pc',
+                           name='Vulkan-Loader', description='Vulkan Loader', version=self.version,
+                           libs='-lvulkan', libs_private='-lc++ -framework CoreFoundation')
+
+
+class WavPackTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='wavpack'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/dbry/WavPack/releases/download/5.6.0/wavpack-5.6.0.tar.xz',
+            'af8035f457509c3d338b895875228a9b81de276c88c79bb2d3e31d9b605da9a9')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['BUILD_TESTING'] = 'NO'
+        opts['WAVPACK_BUILD_DOCS'] = 'NO'
+        opts['WAVPACK_BUILD_PROGRAMS'] = 'NO'
+        opts['WAVPACK_ENABLE_LIBCRYPTO'] = 'NO'
+        opts['WAVPACK_INSTALL_DOCS'] = 'NO'
+
+        super().configure(state)
 
 
 class XmpTarget(base.ConfigureMakeStaticDependencyTarget):

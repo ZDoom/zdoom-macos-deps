@@ -1,6 +1,6 @@
 #
 #    Helper module to build macOS version of various source ports
-#    Copyright (C) 2020-2023 Alexey Lysiuk
+#    Copyright (C) 2020-2024 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 #
 
 import os
+import shlex
 import shutil
 import subprocess
 from pathlib import Path
@@ -154,8 +155,8 @@ class IconvTarget(base.ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://ftp.gnu.org/gnu/libiconv/libiconv-1.16.tar.gz',
-            'e6a1b1b589654277ee790cce3734f07876ac4ccfaecbee8afa0b649cf529cc04')
+            'https://ftp.gnu.org/gnu/libiconv/libiconv-1.17.tar.gz',
+            '8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/iconv.h.in')
@@ -191,23 +192,6 @@ class IntlTarget(GettextTarget):
         self.install(state, state.options)
 
 
-class JpegTurboTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='jpeg-turbo'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://downloads.sourceforge.net/project/libjpeg-turbo/3.0.0/libjpeg-turbo-3.0.0.tar.gz',
-            'c77c65fcce3d33417b2e90432e7a0eb05f59a7fff884022a9d931775d583bfaa')
-
-    def configure(self, state: BuildState):
-        opts = state.options
-        opts['ENABLE_SHARED'] = 'NO'
-        opts['WITH_TURBOJPEG'] = 'NO'
-
-        super().configure(state)
-
-
 class LameTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='lame'):
         super().__init__(name)
@@ -230,9 +214,8 @@ class MoltenVKTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.2.4.tar.gz',
-            '80a33cc9a9f83df3623e2ed9e21ac6226746d37021423a9722c7dde1668898f4',
-            patches='moltenvk-deployment-target')
+            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.2.7.tar.gz',
+            '3166edcfdca886b4be1a24a3c140f11f9a9e8e49878ea999e3580dfbf9fe4bec')
 
     def initialize(self, state: BuildState):
         super().initialize(state)
@@ -289,13 +272,13 @@ class MoltenVKTarget(base.MakeTarget):
         dynamic_lib_time = os.stat(dynamic_lib_path).st_mtime if os.path.exists(dynamic_lib_path) else 0
 
         if static_lib_time != dynamic_lib_time:
-            args = (
+            args = [
                 'clang++',
                 '-stdlib=libc++',
                 '-dynamiclib',
                 '-arch', 'arm64',
                 '-arch', 'x86_64',
-                '-mmacosx-version-min=10.12',
+                '-mmacosx-version-min=10.13',
                 '-compatibility_version', '1.0.0',
                 '-current_version', '1.0.0',
                 '-install_name', '@rpath/libMoltenVK.dylib',
@@ -308,7 +291,9 @@ class MoltenVKTarget(base.MakeTarget):
                 '-framework', 'Foundation',
                 '-o', dynamic_lib_path,
                 '-force_load', static_lib_path
-            )
+            ]
+            args += shlex.split(state.linker_flags())
+
             subprocess.run(args, check=True, env=state.environment)
             os.utime(dynamic_lib_path, (static_lib_time, static_lib_time))
 
@@ -320,8 +305,8 @@ class Mpg123Target(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.mpg123.de/download/mpg123-1.31.3.tar.bz2',
-            '1ca77d3a69a5ff845b7a0536f783fee554e1041139a6b978f6afe14f5814ad1a',
+            'https://www.mpg123.de/download/mpg123-1.32.5.tar.bz2',
+            'af908cdf6cdb6544b97bc706a799f79894e69468af5881bf454a0ebb9171ed63',
             patches=('mpg123-arm64-fpu', 'mpg123-no-syn123'))
 
     def configure(self, state: BuildState):
@@ -453,15 +438,15 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/webmproject/libvpx/archive/refs/tags/v1.13.0.tar.gz',
-            'cb2a393c9c1fae7aba76b950bb0ad393ba105409fe1a147ccd61b0aaa1501066')
+            'https://github.com/webmproject/libvpx/archive/refs/tags/v1.14.0.tar.gz',
+            '5f21d2db27071c8a46f1725928a10227ae45c5cd1cad3727e4aafbe476e321fa')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('vpxstats.h')
 
     def configure(self, state: BuildState):
         hosts = {
-            'x86_64': 'x86_64-darwin16-gcc',
+            'x86_64': 'x86_64-darwin17-gcc',
             'arm64': 'arm64-darwin20-gcc',
         }
 
@@ -479,14 +464,39 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
         self.update_text_file(state.build_path / 'vpx_config.c', clean_build_config)
 
 
+class WebpTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='webp'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.3.2.tar.gz',
+            '2a499607df669e40258e53d0ade8035ba4ec0175244869d1025d460562aa09b4')
+
+    def configure(self, state: BuildState):
+        option_suffices = (
+            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'VWEBP', 'WEBPINFO', 'WEBPMUX',
+        )
+
+        for suffix in option_suffices:
+            state.options[f'WEBP_BUILD_{suffix}'] = 'NO'
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        shutil.copytree(state.install_path / 'share/WebP/cmake', state.install_path / 'lib/cmake/WebP')
+
+
 class ZlibNgTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='zlib-ng'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.1.3.tar.gz',
-            'd20e55f89d71991c59f1c5ad1ef944815e5850526c0d9cd8e504eaed5b24491a')
+            'https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.1.6.tar.gz',
+            'a5d504c0d52e2e2721e7e7d86988dec2e290d723ced2307145dedd06aeb6fef2')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('zlib-ng.h')

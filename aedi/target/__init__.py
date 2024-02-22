@@ -1,6 +1,6 @@
 #
 #    Helper module to build macOS version of various source ports
-#    Copyright (C) 2020-2023 Alexey Lysiuk
+#    Copyright (C) 2020-2024 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ def targets():
     return (
         GZDoomTarget(),
         QZDoomTarget(),
+        VkDoomTarget(),
         LZDoomTarget(),
         RazeTarget(),
         HandsOfNecromancyTarget(),
@@ -60,7 +61,6 @@ def targets():
         GlibTarget(),
         IconvTarget(),
         IntlTarget(),
-        JpegTurboTarget(),
         LameTarget(),
         MoltenVKTarget(),
         Mpg123Target(),
@@ -72,6 +72,7 @@ def targets():
         SndFileTarget(),
         VorbisTarget(),
         VpxTarget(),
+        WebpTarget(),
         ZlibNgTarget(),
         ZMusicTarget(),
 
@@ -79,6 +80,7 @@ def targets():
         DumbTarget(),
         FluidSynthTarget(),
         FmtTarget(),
+        GmeTarget(),
         InstPatchTarget(),
         MadTarget(),
         MikmodTarget(),
@@ -94,6 +96,7 @@ def targets():
         SodiumTarget(),
         VulkanHeadersTarget(),
         VulkanLoaderTarget(),
+        WavPackTarget(),
         XmpTarget(),
 
         # Obsolete libraries without binaries
@@ -104,12 +107,12 @@ def targets():
         FtglTarget(),
         GlewTarget(),
         HarfBuzzTarget(),
+        HighwayTarget(),
+        JpegTurboTarget(),
         LuaTarget(),
-        LzmaTarget(),
         Sdl2TtfTarget(),
         SfmlTarget(),
         TiffTarget(),
-        WebpTarget(),
         WxWidgetsTarget(),
         ZstdTarget(),
 
@@ -124,10 +127,15 @@ def targets():
         YasmTarget(),
 
         # Tools without binaries stored in the repo, can be outdated
+        AutoconfTarget(),
+        AutomakeTarget(),
         BisonTarget(),
+        DosBoxXTarget(),
         DzipTarget(),
+        EricWToolsTarget(),
         GlslangTarget(),
         GraphvizTarget(),
+        M4Target(),
         P7ZipTarget(),
         PbzxTarget(),
         QPakManTarget(),
@@ -135,6 +143,8 @@ def targets():
         RizinTarget(),
         SeverZipTarget(),
         UnrarTarget(),
+        XdeltaTarget(),
+        XzTarget(),
         ZipTarget(),
 
         # Special

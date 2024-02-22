@@ -1,6 +1,6 @@
 #
 #    Helper module to build macOS version of various source ports
-#    Copyright (C) 2020-2023 Alexey Lysiuk
+#    Copyright (C) 2020-2024 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -94,9 +94,9 @@ class BuildTarget(Target):
             env['CXX'] = str(cxx_compiler)
 
         for prefix in ('C', 'CPP', 'CXX', 'OBJC', 'OBJCXX'):
-            state.update_flags_environment_variable(f'{prefix}FLAGS', f'-I{state.include_path}')
+            state.update_flags_environment_variable(f'{prefix}FLAGS', state.compiler_flags())
 
-        state.update_flags_environment_variable('LDFLAGS', f'-L{state.lib_path}')
+        state.update_flags_environment_variable('LDFLAGS', state.linker_flags())
 
         # Avoid timestamp only differences in static libraries
         env['ZERO_AR_DATE'] = '1'
@@ -399,6 +399,12 @@ class CMakeTarget(BuildTarget):
             f'-DCMAKE_PREFIX_PATH={state.prefix_path}',
         ]
 
+        opts = state.options
+        opts['CMAKE_C_FLAGS'] += state.compiler_flags()
+        opts['CMAKE_CXX_FLAGS'] += state.compiler_flags()
+        opts['CMAKE_EXE_LINKER_FLAGS'] += state.linker_flags()
+        opts['CMAKE_SHARED_LINKER_FLAGS'] += state.linker_flags()
+
         if state.xcode:
             args.append('-GXcode')
         else:
@@ -422,7 +428,7 @@ class CMakeTarget(BuildTarget):
         if os_version:
             args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + str(os_version))
 
-        args += state.options.to_list(CommandLineOptions.CMAKE_RULES)
+        args += opts.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(state.source / self.src_root)
 
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
@@ -444,6 +450,7 @@ class ConfigureMakeDependencyTarget(ConfigureMakeTarget):
         super().__init__(name)
 
     def post_build(self, state: BuildState):
+        state.build_path /= self.src_root
         self.install(state)
 
 

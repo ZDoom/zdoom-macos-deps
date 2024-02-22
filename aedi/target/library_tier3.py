@@ -1,6 +1,6 @@
 #
 #    Helper module to build macOS version of various source ports
-#    Copyright (C) 2020-2023 Alexey Lysiuk
+#    Copyright (C) 2020-2024 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -116,8 +116,8 @@ class FreeTypeTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.sourceforge.net/project/freetype/freetype2/2.11.0/freetype-2.11.0.tar.xz',
-            '8bee39bd3968c4804b70614a0a3ad597299ad0e824bc8aad5ce8aaf48067bde7')
+            'https://downloads.sourceforge.net/project/freetype/freetype2/2.13.2/freetype-2.13.2.tar.xz',
+            '12991c4e55c506dd7f9b765933e62fd2be2e06d421505d7950a132e4f1bb484d')
 
     def post_build(self, state: BuildState):
         super().post_build(state)
@@ -127,8 +127,7 @@ class FreeTypeTarget(base.CMakeStaticDependencyTarget):
         shutil.copy(state.patch_path / 'freetype-config', bin_path)
 
         def update_linker_flags(line: str):
-            link_flags = '-lbrotlicommon -lbrotlidec -lbz2 -lfreetype -lharfbuzz -lpng16 -lz ' \
-                         '-lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText'
+            link_flags = '-lbz2 -lpng16 -lz'
             link_var = '  INTERFACE_LINK_LIBRARIES '
 
             return f'{link_var}"{link_flags}"\n' if line.startswith(link_var) else line
@@ -232,6 +231,41 @@ class HarfBuzzTarget(base.CMakeStaticDependencyTarget):
                            libs_private='-lc++ -framework CoreFoundation -framework CoreGraphics -framework CoreText')
 
 
+class HighwayTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='highway'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/google/highway/archive/refs/tags/1.0.6.tar.gz',
+            'd89664a045a41d822146e787bceeefbf648cc228ce354f347b18f2b419e57207')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['HWY_ENABLE_CONTRIB'] = 'NO'
+        opts['HWY_ENABLE_EXAMPLES'] = 'NO'
+        opts['HWY_ENABLE_TESTS'] = 'NO'
+
+        super().configure(state)
+
+
+class JpegTurboTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='jpeg-turbo'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://downloads.sourceforge.net/project/libjpeg-turbo/3.0.1/libjpeg-turbo-3.0.1.tar.gz',
+            '22429507714ae147b3acacd299e82099fce5d9f456882fc28e252e4579ba2a75')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['ENABLE_SHARED'] = 'NO'
+        opts['WITH_TURBOJPEG'] = 'NO'
+
+        super().configure(state)
+
+
 class LuaTarget(base.MakeTarget):
     def __init__(self, name='lua'):
         super().__init__(name)
@@ -250,27 +284,6 @@ class LuaTarget(base.MakeTarget):
         opts['INSTALL_TOP'] = state.install_path
 
         self.install(state, state.options)
-
-
-class LzmaTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='lzma'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://tukaani.org/xz/xz-5.2.5.tar.gz',
-            'f6f4910fd033078738bd82bfba4f49219d03b17eb0794eb91efbae419f4aba10',
-            patches='lzma-add-cmake')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('src/liblzma/liblzma.pc.in')
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        self.write_pc_file(state, 'liblzma.pc', name='liblzma',
-                           description='General purpose data compression library',
-                           version='5.2.5', libs='-llzma')
 
 
 class Sdl2TtfTarget(base.CMakeStaticDependencyTarget):
@@ -352,33 +365,6 @@ class TiffTarget(base.CMakeStaticDependencyTarget):
             return libs + ' -L${libdir} -ltiff\n'
 
         return line
-
-
-class WebpTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='webp'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.2.2.tar.gz',
-            '7656532f837af5f4cec3ff6bafe552c044dc39bf453587bd5b77450802f4aee6',
-            patches='webp-fix-cmake')
-
-    def configure(self, state: BuildState):
-        option_suffices = (
-            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'LIBWEBPMUX', 'VWEBP', 'WEBPINFO',
-        )
-
-        for suffix in option_suffices:
-            state.options[f'WEBP_BUILD_{suffix}'] = 'NO'
-
-        super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        shutil.copytree(state.install_path / 'share/WebP/cmake', state.install_path / 'lib/cmake/WebP')
-        self.keep_module_target(state, 'WebP::webp')
 
 
 class WxWidgetsTarget(base.CMakeStaticDependencyTarget):

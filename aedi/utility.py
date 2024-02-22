@@ -1,6 +1,6 @@
 #
 #    Helper module to build macOS version of various source ports
-#    Copyright (C) 2020-2023 Alexey Lysiuk
+#    Copyright (C) 2020-2024 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,11 +20,12 @@ import collections.abc
 import os
 import shutil
 import typing
-from distutils.version import StrictVersion
 from pathlib import Path
 
+from .packaging.version import Version as StrictVersion
+
 # Minimum OS versions
-OS_VERSION_X86_64 = StrictVersion('10.12')
+OS_VERSION_X86_64 = StrictVersion('10.13')
 OS_VERSION_ARM64 = StrictVersion('11.0')
 
 

@@ -1,6 +1,6 @@
 #
 #    Helper module to build macOS version of various source ports
-#    Copyright (C) 2020-2023 Alexey Lysiuk
+#    Copyright (C) 2020-2024 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@ import shutil
 import subprocess
 import typing
 import urllib.request
-from distutils.version import StrictVersion
 from pathlib import Path
 
+from .packaging.version import Version as StrictVersion
 from .utility import CommandLineOptions
 
 
@@ -50,6 +50,9 @@ class BuildState:
 
         self.output_path = None
         self.install_path = None
+
+        self._compiler_flags = None
+        self._linker_flags = None
 
         self.platform = None
         self.xcode = False
@@ -87,6 +90,34 @@ class BuildState:
 
     def cxx_compiler(self) -> Path:
         return self.platform.cxx_compiler if self.platform else None
+
+    def compiler_flags(self) -> str:
+        if not self._compiler_flags:
+            self._compiler_flags = f'-I{self.include_path} -ffile-prefix-map={self.source}/='
+
+        return self._compiler_flags
+
+    def linker_flags(self) -> str:
+        if not self._linker_flags:
+            self._linker_flags = f'-L{self.lib_path}'
+
+            # Fix for Xcode 15.0 known issue with the new linker
+            # https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Known-Issues
+            # Binaries using symbols with a weak definition crash at runtime on iOS 14/macOS 12 or older.
+            # This impacts primarily C++ projects due to their extensive use of weak symbols. (114813650) (FB13097713)
+            # Workaround: Bump the minimum deployment target to iOS 15, macOS 12, watchOS 8 or tvOS 15,
+            # or add -Wl,-ld_classic to the OTHER_LDFLAGS build setting.
+
+            version_output = subprocess.run(('clang', '--version'), check=True, capture_output=True)
+            version_match = re.search(r'\(clang-([\d.]+)\)', version_output.stdout.decode('ascii'))
+
+            if version_match:
+                version = StrictVersion(version_match.group(1))
+
+                if version.major == 1500 and version.minor == 0:
+                    self._linker_flags += ' -Wl,-ld_classic'
+
+        return self._linker_flags
 
     def checkout_git(self, url: str, branch: typing.Optional[str] = None):
         if self.source.exists():

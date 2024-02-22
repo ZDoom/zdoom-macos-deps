@@ -1,6 +1,6 @@
 #
 #    Helper module to build macOS version of various source ports
-#    Copyright (C) 2020-2023 Alexey Lysiuk
+#    Copyright (C) 2020-2024 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -74,8 +74,8 @@ class GmakeTarget(base.ConfigureMakeDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://ftp.gnu.org/gnu/make/make-4.4.tar.lz',
-            '48d0fc0b2a04bb50f2911c16da65723285f7f4804c74fc5a2124a3df6c5f78c4')
+            'https://ftp.gnu.org/gnu/make/make-4.4.1.tar.lz',
+            '8814ba072182b605d156d7589c19a43b89fc58ea479b9355146160946f8cf6e9')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('doc/make.1')
@@ -99,8 +99,8 @@ class MesonTarget(base.BuildTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/mesonbuild/meson/releases/download/1.0.1/meson-1.0.1.tar.gz',
-            'd926b730de6f518728cc7c57bc5e701667bae0c3522f9e369427b2cc7839d3c1')
+            'https://github.com/mesonbuild/meson/releases/download/1.3.0/meson-1.3.0.tar.gz',
+            '4ba253ef60e454e23234696119cbafa082a0aead0bd3bbf6991295054795f5dc')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('meson.py')

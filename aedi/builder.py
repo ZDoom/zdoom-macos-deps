@@ -1,6 +1,6 @@
 #
 #    Helper module to build macOS version of various source ports
-#    Copyright (C) 2020-2023 Alexey Lysiuk
+#    Copyright (C) 2020-2024 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import typing
 from pathlib import Path
 from platform import machine
 
+from .packaging.version import Version
 from .state import BuildState
 from .target import targets
 from .target.base import Target
@@ -112,14 +113,14 @@ class Builder(object):
             return sdk_probe_path if sdk_probe_path.exists() else None
 
         if not arguments.disable_x64:
-            os_version = arguments.os_version_x64 if arguments.os_version_x64 else OS_VERSION_X86_64
+            os_version = Version(arguments.os_version_x64) if arguments.os_version_x64 else OS_VERSION_X86_64
             assert os_version >= OS_VERSION_X86_64, f'macOS {os_version} is not supported'
             sdk_path = adjust_sdk_path(arguments.sdk_path_x64)
             platform = TargetPlatform('x86_64', 'x86_64-apple-darwin', os_version, sdk_path, state.prefix_path)
             self._platforms.append(platform)
 
         if not arguments.disable_arm:
-            os_version = arguments.os_version_arm if arguments.os_version_arm else OS_VERSION_ARM64
+            os_version = Version(arguments.os_version_arm) if arguments.os_version_arm else OS_VERSION_ARM64
             assert os_version >= OS_VERSION_ARM64, f'macOS {os_version} is not supported'
             sdk_path = adjust_sdk_path(arguments.sdk_path_arm)
             platform = TargetPlatform('arm64', 'aarch64-apple-darwin', os_version, sdk_path, state.prefix_path)
