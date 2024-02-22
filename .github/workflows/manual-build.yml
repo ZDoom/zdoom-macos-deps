@@ -16,6 +16,15 @@ on:
           - None
           - Intel
           - ARM
+      runner-os:
+        description: 'Runner macOS version'
+        default: macos-13
+        type: choice
+        options:
+          - macos-11
+          - macos-12
+          - macos-13
+          - macos-14
       min-os-ver-intel:
         description: 'macOS deployment version for Intel'
         type: string
@@ -32,7 +41,7 @@ on:
 jobs:
   build:
     name: ${{ inputs.target }}
-    runs-on: macos-13
+    runs-on: ${{ inputs.runner-os }}
     steps:
       - uses: actions/checkout@v4
 
