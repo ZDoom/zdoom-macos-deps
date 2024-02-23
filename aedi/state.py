@@ -100,20 +100,23 @@ class BuildState:
         if not self._linker_flags:
             self._linker_flags = f'-L{self.lib_path}'
 
-            # Fix for Xcode 15.0 known issue with the new linker
-            # https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Known-Issues
-            # Binaries using symbols with a weak definition crash at runtime on iOS 14/macOS 12 or older.
-            # This impacts primarily C++ projects due to their extensive use of weak symbols. (114813650) (FB13097713)
-            # Workaround: Bump the minimum deployment target to iOS 15, macOS 12, watchOS 8 or tvOS 15,
-            # or add -Wl,-ld_classic to the OTHER_LDFLAGS build setting.
-
             version_output = subprocess.run(('clang', '--version'), check=True, capture_output=True)
             version_match = re.search(r'\(clang-([\d.]+)\)', version_output.stdout.decode('ascii'))
 
             if version_match:
                 version = StrictVersion(version_match.group(1))
 
+                if version.major >= 1500:
+                    # Silence ld: warning: ignoring duplicate libraries: '...'
+                    self._linker_flags += ' -Wl,-no_warn_duplicate_libraries'
+
                 if version.major == 1500 and version.minor == 0:
+                    # Fix for Xcode 15.0 known issue with the new linker
+                    # https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Known-Issues
+                    # Binaries using symbols with a weak definition crash at runtime on iOS 14/macOS 12 or older.
+                    # This impacts primarily C++ projects due to their extensive use of weak symbols. (114813650) (FB13097713)
+                    # Workaround: Bump the minimum deployment target to iOS 15, macOS 12, watchOS 8 or tvOS 15,
+                    # or add -Wl,-ld_classic to the OTHER_LDFLAGS build setting.
                     self._linker_flags += ' -Wl,-ld_classic'
 
         return self._linker_flags
