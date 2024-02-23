@@ -77,7 +77,7 @@ jobs:
           ${BUILD_CMDLINE}
 
       - name: Upload Package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.target }}
           path: |
