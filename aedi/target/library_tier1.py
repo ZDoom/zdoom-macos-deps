@@ -271,6 +271,8 @@ class MoltenVKTarget(base.MakeTarget):
         dynamic_lib_time = os.stat(dynamic_lib_path).st_mtime if os.path.exists(dynamic_lib_path) else 0
 
         if static_lib_time != dynamic_lib_time:
+            os.makedirs(state.lib_path, exist_ok=True)
+
             args = [
                 'clang++',
                 '-stdlib=libc++',
