@@ -107,6 +107,7 @@ class TestDepsTarget(base.BuildTarget):
                 entry,
             ]
             build_args += shlex.split(pkg_config_output)
+            build_args += shlex.split(state.linker_flags())
 
             if state.verbose:
                 print(' '.join(str(arg) for arg in build_args))
