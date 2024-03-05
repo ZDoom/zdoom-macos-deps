@@ -352,10 +352,13 @@ class OpusTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/xiph/opus/releases/download/v1.4/opus-1.4.tar.gz',
-            'c9b32b4253be5ae63d1ff16eea06b94b5f0f2951b7a02aceef58e3a3ce49c51f')
+            'https://github.com/xiph/opus/archive/refs/tags/v1.5.1.tar.gz',
+            '7ce44ef3d335a3268f26be7d53bb3bed7205b34eaf80bf92a99e69d490afe9d9')
 
     def configure(self, state: BuildState):
+        with open(state.source / 'package_version', 'w') as f:
+            f.write('PACKAGE_VERSION="1.5.1"\n')
+
         state.options['PC_BUILD'] = 'floating-point'
         super().configure(state)
 
