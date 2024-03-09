@@ -121,8 +121,8 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/glslang/archive/refs/tags/14.0.0.tar.gz',
-            '80bbb916a23e94ea9cbfb1acb5d1a44a7e0c9613bcf5b5947c03f2273bdc92b0')
+            'https://github.com/KhronosGroup/glslang/archive/refs/tags/14.1.0.tar.gz',
+            'b5e4c36d60eda7613f36cfee3489c6f507156829c707e1ecd7f48ca45b435322')
 
     def configure(self, state: BuildState):
         args = ('python3', 'update_glslang_sources.py')
@@ -267,8 +267,8 @@ class RizinTarget(base.MesonTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/rizinorg/rizin/releases/download/v0.6.3/rizin-src-v0.6.3.tar.xz',
-            '95f64c6ab9e6daa9e9fa5634398eb8f6cdb4ebf2e814da2e4cb969d31f4509c2')
+            'https://github.com/rizinorg/rizin/releases/download/v0.7.2/rizin-src-v0.7.2.tar.xz',
+            'fcff3fb45ae2b75e3f604bc7a08076e322e6e14def79098186378065ccb3582a')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('binrz/man/rizin.1')
