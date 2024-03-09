@@ -352,6 +352,7 @@ class OpusTarget(base.CMakeStaticDependencyTarget):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
+        print('https://downloads.xiph.org/releases/opus/opus-1.5.1.tar.gz')
         state.download_source(
             'https://downloads.xiph.org/releases/opus/opus-1.5.1.tar.gz',
             'b84610959b8d417b611aa12a22565e0a3732097c6389d19098d844543e340f85')
