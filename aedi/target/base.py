@@ -431,6 +431,7 @@ class CMakeTarget(BuildTarget):
         args += opts.to_list(CommandLineOptions.CMAKE_RULES)
         args.append(state.source / self.src_root)
 
+        print(args)
         subprocess.run(args, check=True, cwd=state.build_path, env=state.environment)
 
     def build(self, state: BuildState):
