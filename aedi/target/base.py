@@ -409,7 +409,7 @@ class CMakeTarget(BuildTarget):
             architecture = state.architecture()
             if architecture != machine():
                 args.append('-DCMAKE_SYSTEM_NAME=Darwin')
-                args.append('-DCMAKE_SYSTEM_PROCESSOR=' + 'aarch64' if architecture == 'arm64' else architecture)
+                args.append('-DCMAKE_SYSTEM_PROCESSOR=' + ('aarch64' if architecture == 'arm64' else architecture))
 
             sdk_path = state.sdk_path()
             if sdk_path:
