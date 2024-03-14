@@ -44,7 +44,7 @@ typedef unsigned long MTLArgumentBuffersTier;
  */
 
 
-#define MVK_PRIVATE_API_VERSION   39
+#define MVK_PRIVATE_API_VERSION   40
 
 
 #pragma mark -
@@ -64,11 +64,14 @@ typedef unsigned long MTLArgumentBuffersTier;
  */
 #define MVK_VERSION_MAJOR   1
 #define MVK_VERSION_MINOR   2
-#define MVK_VERSION_PATCH   7
+#define MVK_VERSION_PATCH   8
 
-#define MVK_MAKE_VERSION(major, minor, patch)    (((major) * 10000) + ((minor) * 100) + (patch))
-#define MVK_VERSION     MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
+#define MVK_MAKE_VERSION(major, minor, patch)  (((major) * 10000) + ((minor) * 100) + (patch))
+#define MVK_VERSION                            MVK_MAKE_VERSION(MVK_VERSION_MAJOR, MVK_VERSION_MINOR, MVK_VERSION_PATCH)
 
+#define MVK_STRINGIFY_IMPL(val)	 #val
+#define MVK_STRINGIFY(val)       MVK_STRINGIFY_IMPL(val)
+#define MVK_VERSION_STRING       (MVK_STRINGIFY(MVK_VERSION_MAJOR) "." MVK_STRINGIFY(MVK_VERSION_MINOR) "." MVK_STRINGIFY(MVK_VERSION_PATCH))
 
 #pragma mark -
 #pragma mark MoltenVK configuration
@@ -240,6 +243,8 @@ typedef struct {
 	MVKConfigCompressionAlgorithm shaderSourceCompressionAlgorithm;            /**< MVK_CONFIG_SHADER_COMPRESSION_ALGORITHM */
 	VkBool32 shouldMaximizeConcurrentCompilation;                              /**< MVK_CONFIG_SHOULD_MAXIMIZE_CONCURRENT_COMPILATION */
 	float timestampPeriodLowPassAlpha;                                         /**< MVK_CONFIG_TIMESTAMP_PERIOD_LOWPASS_ALPHA */
+	VkBool32 useMetalPrivateAPI;                                               /**< MVK_CONFIG_USE_METAL_PRIVATE_API */
+	uint32_t _unused_struct_padding;
 } MVKConfiguration;
 
 // Legacy support for renamed struct elements.
@@ -344,7 +349,7 @@ typedef struct {
 	VkBool32 simdPermute;							/**< If true, SIMD-group permutation functions (vote, ballot, shuffle) are supported in shaders. */
 	VkBool32 simdReduction;							/**< If true, SIMD-group reduction functions (arithmetic) are supported in shaders. */
     uint32_t minSubgroupSize;			        	/**< The minimum number of threads in a SIMD-group. */
-    VkBool32 textureBarriers;                   	/**< If true, texture barriers are supported within Metal render passes. */
+    VkBool32 textureBarriers;                   	/**< If true, texture barriers are supported within Metal render passes. Deprecated. Will always be false on all platforms. */
     VkBool32 tileBasedDeferredRendering;        	/**< If true, this device uses tile-based deferred rendering. */
 	VkBool32 argumentBuffers;						/**< If true, Metal argument buffers are supported. */
 	VkBool32 descriptorSetArgumentBuffers;			/**< If true, a Metal argument buffer can be assigned to a descriptor set, and used on any pipeline and pipeline stage. If false, a different Metal argument buffer must be used for each pipeline-stage/descriptor-set combination. */
@@ -357,6 +362,7 @@ typedef struct {
 	VkDeviceSize hostMemoryPageSize;				/**< The size of a page of host memory on this platform. */
 	VkBool32 dynamicVertexStride;					/**< If true, VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE is supported. */
 	VkBool32 needsCubeGradWorkaround;				/**< If true, sampling from cube textures with explicit gradients is broken and needs a workaround. */
+	VkBool32 nativeTextureAtomics;                  /**< If true, atomic operations on textures are supported natively. */
 } MVKPhysicalDeviceMetalFeatures;
 
 
