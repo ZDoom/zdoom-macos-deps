@@ -97,8 +97,6 @@ class EricWToolsTarget(base.CMakeStaticDependencyTarget):
 
 
 class GlslangTarget(base.CMakeStaticDependencyTarget):
-    # Build with --os-version-x64=10.15 command line option
-
     def __init__(self, name='glslang'):
         super().__init__(name)
 
@@ -111,9 +109,7 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
         args = ('python3', 'update_glslang_sources.py')
         subprocess.run(args, check=True, cwd=state.source, env=state.environment)
 
-        state.validate_minimum_version('10.15')  # SPIRV-Tools uses <filesystem>
         state.options['ENABLE_CTEST'] = 'NO'
-
         super().configure(state)
 
     def post_build(self, state: BuildState):
