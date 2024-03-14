@@ -25,7 +25,7 @@ from pathlib import Path
 from .packaging.version import Version as StrictVersion
 
 # Minimum OS versions
-OS_VERSION_X86_64 = StrictVersion('10.13')
+OS_VERSION_X86_64 = StrictVersion('10.15')
 OS_VERSION_ARM64 = StrictVersion('11.0')
 
 

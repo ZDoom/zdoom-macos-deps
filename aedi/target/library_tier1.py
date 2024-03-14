@@ -279,7 +279,7 @@ class MoltenVKTarget(base.MakeTarget):
                 '-dynamiclib',
                 '-arch', 'arm64',
                 '-arch', 'x86_64',
-                '-mmacosx-version-min=10.13',
+                '-mmacosx-version-min=10.15',
                 '-compatibility_version', '1.0.0',
                 '-current_version', '1.0.0',
                 '-install_name', '@rpath/libMoltenVK.dylib',
@@ -454,7 +454,7 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
 
     def configure(self, state: BuildState):
         hosts = {
-            'x86_64': 'x86_64-darwin17-gcc',
+            'x86_64': 'x86_64-darwin19-gcc',
             'arm64': 'arm64-darwin20-gcc',
         }
 
