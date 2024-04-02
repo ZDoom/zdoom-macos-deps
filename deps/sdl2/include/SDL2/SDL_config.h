@@ -190,6 +190,8 @@
 /* #undef HAVE_FOPEN64 */
 #define HAVE_FSEEKO 1
 /* #undef HAVE_FSEEKO64 */
+/* #undef HAVE_MEMFD_CREATE */
+/* #undef HAVE_POSIX_FALLOCATE */
 #define HAVE_SIGACTION 1
 #define HAVE_SA_SIGACTION 1
 #define HAVE_SETJMP 1
