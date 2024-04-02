@@ -192,8 +192,8 @@ class Radare2Target(base.MesonTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/radareorg/radare2/releases/download/5.8.8/radare2-5.8.8.tar.xz',
-            '070dbc353e8e0d09fb985a73bfee2783690abbd58d4fbbecc3a50480eab9d537')
+            'https://github.com/radareorg/radare2/releases/download/5.9.0/radare2-5.9.0.tar.xz',
+            '5fe634049c655deacfda24a2779ed4633433c152117b425a12707548b72b3f42')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('man/radare2.1')
