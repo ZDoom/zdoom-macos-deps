@@ -203,8 +203,10 @@ class Radare2Target(base.MesonTarget):
         option['blob'] = 'true'
         option['enable_tests'] = 'false'
         option['enable_r2r'] = 'false'
+        option['local'] = 'true'
         option['r2_gittip'] = 'ea7f0356519884715cf1d5fba16042bac72b2df5'
         option['r2_version_commit'] = '1'
+        option['static_runtime'] = 'true'
 
         super().configure(state)
 
