@@ -359,8 +359,8 @@ class OpusTarget(base.CMakeStaticDependencyTarget):
         # LibreSSL 2.8.3 False
         # TODO: remove this workaround when TLSv1.3 will be available in Python shipped with Xcode
         state.download_source(
-            'https://ftp.osuosl.org/pub/xiph/releases/opus/opus-1.5.1.tar.gz',
-            'b84610959b8d417b611aa12a22565e0a3732097c6389d19098d844543e340f85')
+            'https://ftp.osuosl.org/pub/xiph/releases/opus/opus-1.5.2.tar.gz',
+            '65c1d2f78b9f2fb20082c38cbe47c951ad5839345876e46941612ee87f9a7ce1')
 
     def configure(self, state: BuildState):
         state.options['PC_BUILD'] = 'floating-point'
