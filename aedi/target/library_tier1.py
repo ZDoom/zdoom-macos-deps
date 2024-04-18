@@ -472,31 +472,6 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
         self.update_text_file(state.build_path / 'vpx_config.c', clean_build_config)
 
 
-class WebpTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='webp'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.4.0.tar.gz',
-            '61f873ec69e3be1b99535634340d5bde750b2e4447caa1db9f61be3fd49ab1e5')
-
-    def configure(self, state: BuildState):
-        option_suffices = (
-            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'VWEBP', 'WEBPINFO', 'WEBPMUX',
-        )
-
-        for suffix in option_suffices:
-            state.options[f'WEBP_BUILD_{suffix}'] = 'NO'
-
-        super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        shutil.copytree(state.install_path / 'share/WebP/cmake', state.install_path / 'lib/cmake/WebP')
-
-
 class ZlibNgTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='zlib-ng'):
         super().__init__(name)

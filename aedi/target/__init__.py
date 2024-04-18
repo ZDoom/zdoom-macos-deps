@@ -71,7 +71,6 @@ def targets():
         SndFileTarget(),
         VorbisTarget(),
         VpxTarget(),
-        WebpTarget(),
         ZlibNgTarget(),
         ZMusicTarget(),
 
@@ -96,6 +95,7 @@ def targets():
         VulkanHeadersTarget(),
         VulkanLoaderTarget(),
         WavPackTarget(),
+        WebpTarget(),
         XmpTarget(),
 
         # Obsolete libraries without binaries
