@@ -71,7 +71,6 @@ def targets():
         SndFileTarget(),
         VorbisTarget(),
         VpxTarget(),
-        ZlibNgTarget(),
         ZMusicTarget(),
 
         # Libraries needed for other targets
@@ -97,6 +96,7 @@ def targets():
         WavPackTarget(),
         WebpTarget(),
         XmpTarget(),
+        ZlibNgTarget(),
 
         # Obsolete libraries without binaries
         BrotliTarget(),
