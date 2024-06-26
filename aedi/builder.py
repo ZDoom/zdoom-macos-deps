@@ -156,7 +156,8 @@ class Builder(object):
         self._create_prefix_directory()
 
         if version := state.source_version():
-            print(f'Building {version}')
+            action = 'Generating' if state.xcode else 'Building'
+            print(f'{action} {version}')
 
         if target.multi_platform and not state.xcode:
             self._build_multiple_platforms(target)
