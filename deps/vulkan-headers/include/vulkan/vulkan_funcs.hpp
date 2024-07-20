@@ -19114,17 +19114,20 @@ namespace VULKAN_HPP_NAMESPACE
 #endif /* VULKAN_HPP_DISABLE_ENHANCED_MODE */
 
   template <typename Dispatch>
-  VULKAN_HPP_INLINE void CommandBuffer::setRenderingInputAttachmentIndicesKHR( const VULKAN_HPP_NAMESPACE::RenderingInputAttachmentIndexInfoKHR * pLocationInfo,
-                                                                               Dispatch const & d ) const VULKAN_HPP_NOEXCEPT
+  VULKAN_HPP_INLINE void
+    CommandBuffer::setRenderingInputAttachmentIndicesKHR( const VULKAN_HPP_NAMESPACE::RenderingInputAttachmentIndexInfoKHR * pInputAttachmentIndexInfo,
+                                                          Dispatch const &                                                   d ) const VULKAN_HPP_NOEXCEPT
   {
     VULKAN_HPP_ASSERT( d.getVkHeaderVersion() == VK_HEADER_VERSION );
-    d.vkCmdSetRenderingInputAttachmentIndicesKHR( m_commandBuffer, reinterpret_cast<const VkRenderingInputAttachmentIndexInfoKHR *>( pLocationInfo ) );
+    d.vkCmdSetRenderingInputAttachmentIndicesKHR( m_commandBuffer,
+                                                  reinterpret_cast<const VkRenderingInputAttachmentIndexInfoKHR *>( pInputAttachmentIndexInfo ) );
   }
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   template <typename Dispatch>
-  VULKAN_HPP_INLINE void CommandBuffer::setRenderingInputAttachmentIndicesKHR( const VULKAN_HPP_NAMESPACE::RenderingInputAttachmentIndexInfoKHR & locationInfo,
-                                                                               Dispatch const & d ) const VULKAN_HPP_NOEXCEPT
+  VULKAN_HPP_INLINE void
+    CommandBuffer::setRenderingInputAttachmentIndicesKHR( const VULKAN_HPP_NAMESPACE::RenderingInputAttachmentIndexInfoKHR & inputAttachmentIndexInfo,
+                                                          Dispatch const &                                                   d ) const VULKAN_HPP_NOEXCEPT
   {
     VULKAN_HPP_ASSERT( d.getVkHeaderVersion() == VK_HEADER_VERSION );
 #  if ( VULKAN_HPP_DISPATCH_LOADER_DYNAMIC == 1 )
@@ -19132,7 +19135,8 @@ namespace VULKAN_HPP_NAMESPACE
                        "Function <vkCmdSetRenderingInputAttachmentIndicesKHR> requires <VK_KHR_dynamic_rendering_local_read>" );
 #  endif
 
-    d.vkCmdSetRenderingInputAttachmentIndicesKHR( m_commandBuffer, reinterpret_cast<const VkRenderingInputAttachmentIndexInfoKHR *>( &locationInfo ) );
+    d.vkCmdSetRenderingInputAttachmentIndicesKHR( m_commandBuffer,
+                                                  reinterpret_cast<const VkRenderingInputAttachmentIndexInfoKHR *>( &inputAttachmentIndexInfo ) );
   }
 #endif /* VULKAN_HPP_DISABLE_ENHANCED_MODE */
 
@@ -25904,19 +25908,48 @@ namespace VULKAN_HPP_NAMESPACE
   }
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
-  template <typename Dispatch>
-  VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::GetLatencyMarkerInfoNV
-    Device::getLatencyTimingsNV( VULKAN_HPP_NAMESPACE::SwapchainKHR swapchain, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT
+  template <typename LatencyTimingsFrameReportNVAllocator, typename Dispatch>
+  VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE std::vector<VULKAN_HPP_NAMESPACE::LatencyTimingsFrameReportNV, LatencyTimingsFrameReportNVAllocator>
+                                         Device::getLatencyTimingsNV( VULKAN_HPP_NAMESPACE::SwapchainKHR swapchain, Dispatch const & d ) const
   {
     VULKAN_HPP_ASSERT( d.getVkHeaderVersion() == VK_HEADER_VERSION );
 #  if ( VULKAN_HPP_DISPATCH_LOADER_DYNAMIC == 1 )
     VULKAN_HPP_ASSERT( d.vkGetLatencyTimingsNV && "Function <vkGetLatencyTimingsNV> requires <VK_NV_low_latency2>" );
 #  endif
 
-    VULKAN_HPP_NAMESPACE::GetLatencyMarkerInfoNV latencyMarkerInfo;
+    std::vector<VULKAN_HPP_NAMESPACE::LatencyTimingsFrameReportNV, LatencyTimingsFrameReportNVAllocator> timings;
+    VULKAN_HPP_NAMESPACE::GetLatencyMarkerInfoNV                                                         latencyMarkerInfo;
+    d.vkGetLatencyTimingsNV( m_device, static_cast<VkSwapchainKHR>( swapchain ), reinterpret_cast<VkGetLatencyMarkerInfoNV *>( &latencyMarkerInfo ) );
+    timings.resize( latencyMarkerInfo.timingCount );
+    latencyMarkerInfo.pTimings = timings.data();
     d.vkGetLatencyTimingsNV( m_device, static_cast<VkSwapchainKHR>( swapchain ), reinterpret_cast<VkGetLatencyMarkerInfoNV *>( &latencyMarkerInfo ) );
 
-    return latencyMarkerInfo;
+    return timings;
+  }
+
+  template <
+    typename LatencyTimingsFrameReportNVAllocator,
+    typename Dispatch,
+    typename std::enable_if<std::is_same<typename LatencyTimingsFrameReportNVAllocator::value_type, VULKAN_HPP_NAMESPACE::LatencyTimingsFrameReportNV>::value,
+                            int>::type>
+  VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE std::vector<VULKAN_HPP_NAMESPACE::LatencyTimingsFrameReportNV, LatencyTimingsFrameReportNVAllocator>
+                                         Device::getLatencyTimingsNV( VULKAN_HPP_NAMESPACE::SwapchainKHR     swapchain,
+                                 LatencyTimingsFrameReportNVAllocator & latencyTimingsFrameReportNVAllocator,
+                                 Dispatch const &                       d ) const
+  {
+    VULKAN_HPP_ASSERT( d.getVkHeaderVersion() == VK_HEADER_VERSION );
+#  if ( VULKAN_HPP_DISPATCH_LOADER_DYNAMIC == 1 )
+    VULKAN_HPP_ASSERT( d.vkGetLatencyTimingsNV && "Function <vkGetLatencyTimingsNV> requires <VK_NV_low_latency2>" );
+#  endif
+
+    std::vector<VULKAN_HPP_NAMESPACE::LatencyTimingsFrameReportNV, LatencyTimingsFrameReportNVAllocator> timings( latencyTimingsFrameReportNVAllocator );
+    VULKAN_HPP_NAMESPACE::GetLatencyMarkerInfoNV                                                         latencyMarkerInfo;
+    d.vkGetLatencyTimingsNV( m_device, static_cast<VkSwapchainKHR>( swapchain ), reinterpret_cast<VkGetLatencyMarkerInfoNV *>( &latencyMarkerInfo ) );
+    timings.resize( latencyMarkerInfo.timingCount );
+    latencyMarkerInfo.pTimings = timings.data();
+    d.vkGetLatencyTimingsNV( m_device, static_cast<VkSwapchainKHR>( swapchain ), reinterpret_cast<VkGetLatencyMarkerInfoNV *>( &latencyMarkerInfo ) );
+
+    return timings;
   }
 #endif /* VULKAN_HPP_DISABLE_ENHANCED_MODE */
 

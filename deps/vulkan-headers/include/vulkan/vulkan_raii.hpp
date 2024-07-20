@@ -6036,7 +6036,8 @@ namespace VULKAN_HPP_NAMESPACE
 
       void setRenderingAttachmentLocationsKHR( const VULKAN_HPP_NAMESPACE::RenderingAttachmentLocationInfoKHR & locationInfo ) const VULKAN_HPP_NOEXCEPT;
 
-      void setRenderingInputAttachmentIndicesKHR( const VULKAN_HPP_NAMESPACE::RenderingInputAttachmentIndexInfoKHR & locationInfo ) const VULKAN_HPP_NOEXCEPT;
+      void setRenderingInputAttachmentIndicesKHR( const VULKAN_HPP_NAMESPACE::RenderingInputAttachmentIndexInfoKHR & inputAttachmentIndexInfo ) const
+        VULKAN_HPP_NOEXCEPT;
 
       //=== VK_EXT_line_rasterization ===
 
@@ -11500,7 +11501,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       void setLatencyMarkerNV( const VULKAN_HPP_NAMESPACE::SetLatencyMarkerInfoNV & latencyMarkerInfo ) const VULKAN_HPP_NOEXCEPT;
 
-      VULKAN_HPP_NODISCARD VULKAN_HPP_NAMESPACE::GetLatencyMarkerInfoNV getLatencyTimingsNV() const VULKAN_HPP_NOEXCEPT;
+      VULKAN_HPP_NODISCARD std::vector<VULKAN_HPP_NAMESPACE::LatencyTimingsFrameReportNV> getLatencyTimingsNV() const;
 
     private:
       VULKAN_HPP_NAMESPACE::Device                                              m_device     = {};
@@ -12904,7 +12905,7 @@ namespace VULKAN_HPP_NAMESPACE
 #  endif
       }
 
-      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator );
+      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator, result );
     }
 
     VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE
@@ -12964,7 +12965,7 @@ namespace VULKAN_HPP_NAMESPACE
 #  endif
       }
 
-      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator );
+      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator, result );
     }
 
     VULKAN_HPP_NODISCARD
@@ -17844,7 +17845,7 @@ namespace VULKAN_HPP_NAMESPACE
 #    endif
       }
 
-      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator );
+      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator, result );
     }
 
     VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::ExecutionGraphPipelineScratchSizeAMDX Pipeline::getExecutionGraphScratchSizeAMDX() const
@@ -18436,7 +18437,7 @@ namespace VULKAN_HPP_NAMESPACE
 #  endif
       }
 
-      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator );
+      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator, result );
     }
 
     template <typename DataType>
@@ -18927,7 +18928,7 @@ namespace VULKAN_HPP_NAMESPACE
 #  endif
       }
 
-      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator );
+      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Pipeline( *this, *reinterpret_cast<VkPipeline *>( &pipeline ), allocator, result );
     }
 
     template <typename DataType>
@@ -19554,13 +19555,13 @@ namespace VULKAN_HPP_NAMESPACE
     }
 
     VULKAN_HPP_INLINE void CommandBuffer::setRenderingInputAttachmentIndicesKHR(
-      const VULKAN_HPP_NAMESPACE::RenderingInputAttachmentIndexInfoKHR & locationInfo ) const VULKAN_HPP_NOEXCEPT
+      const VULKAN_HPP_NAMESPACE::RenderingInputAttachmentIndexInfoKHR & inputAttachmentIndexInfo ) const VULKAN_HPP_NOEXCEPT
     {
       VULKAN_HPP_ASSERT( getDispatcher()->vkCmdSetRenderingInputAttachmentIndicesKHR &&
                          "Function <vkCmdSetRenderingInputAttachmentIndicesKHR> requires <VK_KHR_dynamic_rendering_local_read>" );
 
-      getDispatcher()->vkCmdSetRenderingInputAttachmentIndicesKHR( static_cast<VkCommandBuffer>( m_commandBuffer ),
-                                                                   reinterpret_cast<const VkRenderingInputAttachmentIndexInfoKHR *>( &locationInfo ) );
+      getDispatcher()->vkCmdSetRenderingInputAttachmentIndicesKHR(
+        static_cast<VkCommandBuffer>( m_commandBuffer ), reinterpret_cast<const VkRenderingInputAttachmentIndexInfoKHR *>( &inputAttachmentIndexInfo ) );
     }
 
     //=== VK_EXT_buffer_device_address ===
@@ -22574,7 +22575,7 @@ namespace VULKAN_HPP_NAMESPACE
 #  endif
       }
 
-      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::ShaderEXT( *this, *reinterpret_cast<VkShaderEXT *>( &shader ), allocator );
+      return VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::ShaderEXT( *this, *reinterpret_cast<VkShaderEXT *>( &shader ), allocator, result );
     }
 
     VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE std::vector<uint8_t> ShaderEXT::getBinaryData() const
@@ -22698,15 +22699,20 @@ namespace VULKAN_HPP_NAMESPACE
                                              reinterpret_cast<const VkSetLatencyMarkerInfoNV *>( &latencyMarkerInfo ) );
     }
 
-    VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::GetLatencyMarkerInfoNV SwapchainKHR::getLatencyTimingsNV() const VULKAN_HPP_NOEXCEPT
+    VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE std::vector<VULKAN_HPP_NAMESPACE::LatencyTimingsFrameReportNV> SwapchainKHR::getLatencyTimingsNV() const
     {
       VULKAN_HPP_ASSERT( getDispatcher()->vkGetLatencyTimingsNV && "Function <vkGetLatencyTimingsNV> requires <VK_NV_low_latency2>" );
 
-      VULKAN_HPP_NAMESPACE::GetLatencyMarkerInfoNV latencyMarkerInfo;
+      std::vector<VULKAN_HPP_NAMESPACE::LatencyTimingsFrameReportNV> timings;
+      VULKAN_HPP_NAMESPACE::GetLatencyMarkerInfoNV                   latencyMarkerInfo;
+      getDispatcher()->vkGetLatencyTimingsNV(
+        static_cast<VkDevice>( m_device ), static_cast<VkSwapchainKHR>( m_swapchain ), reinterpret_cast<VkGetLatencyMarkerInfoNV *>( &latencyMarkerInfo ) );
+      timings.resize( latencyMarkerInfo.timingCount );
+      latencyMarkerInfo.pTimings = timings.data();
       getDispatcher()->vkGetLatencyTimingsNV(
         static_cast<VkDevice>( m_device ), static_cast<VkSwapchainKHR>( m_swapchain ), reinterpret_cast<VkGetLatencyMarkerInfoNV *>( &latencyMarkerInfo ) );
 
-      return latencyMarkerInfo;
+      return timings;
     }
 
     VULKAN_HPP_INLINE void Queue::notifyOutOfBandNV( const VULKAN_HPP_NAMESPACE::OutOfBandQueueTypeInfoNV & queueTypeInfo ) const VULKAN_HPP_NOEXCEPT
