@@ -1,10 +1,10 @@
 --- a/ports/cmake/src/CMakeLists.txt
 +++ b/ports/cmake/src/CMakeLists.txt
-@@ -190,7 +190,7 @@
-     set(NO_ERETURN ON)
- endif()
- 
--if(WIN32)
+@@ -186,7 +186,7 @@
+ check_cpu_arch_arm32(ARCH_IS_ARM32)
+ check_cpu_arch_arm64(ARCH_IS_ARM64)
+
+-if(WIN32 OR (ARCH_IS_ARM64 AND APPLE))
 +if(WIN32 OR APPLE)
      set(HAVE_FPU 1)
  else()
