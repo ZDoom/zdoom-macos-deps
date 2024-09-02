@@ -23,6 +23,7 @@ jobs:
           - GZDoom
           - Raze
           - PrBoom-Plus
+          - quakespasm-exp
 
     steps:
       - uses: actions/checkout@v4
