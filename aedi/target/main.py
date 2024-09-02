@@ -493,5 +493,6 @@ class QuakespasmExpTarget(CMakeMainTarget):
 
             if state.architecture() != machine():
                 opts['MakeQuakePak_DIR'] = state.native_build_path
+                opts['EntFixesGenerator_DIR'] = state.native_build_path
 
         super().configure(state)
