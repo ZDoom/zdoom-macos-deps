@@ -112,6 +112,7 @@ def targets():
         Sdl2TtfTarget(),
         SfmlTarget(),
         TiffTarget(),
+        UsbTarget(),
         WxWidgetsTarget(),
         ZstdTarget(),
 

@@ -367,6 +367,19 @@ class TiffTarget(base.CMakeStaticDependencyTarget):
         return line
 
 
+class UsbTarget(base.ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='usb'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.tar.bz2',
+            'ffaa41d741a8a3bee244ac8e54a72ea05bf2879663c098c82fc5757853441575')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('libusb/libusb.h')
+
+
 class WxWidgetsTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='wxwidgets'):
         super().__init__(name)
