@@ -47,6 +47,20 @@ class AutomakeTarget(base.ConfigureMakeDependencyTarget):
             'f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469')
 
 
+class DfuUtilTarget(base.ConfigureMakeDependencyTarget):
+    # Depends on usb
+    def __init__(self, name='dfu-util'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://dfu-util.sourceforge.net/releases/dfu-util-0.11.tar.gz',
+            'b4b53ba21a82ef7e3d4c47df2952adf5fa494f499b6b0b57c58c5d04ae8ff19e')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('src/dfu_util.h')
+
+
 class DosBoxXTarget(base.ConfigureMakeDependencyTarget):
     # Depends on autoconf, automake, freetype
     # TODO: fix absolute paths in bin/* and share/autoconf/autom4te.cfg
