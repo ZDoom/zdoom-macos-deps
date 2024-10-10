@@ -190,6 +190,8 @@
 /* #undef HAVE_FOPEN64 */
 #define HAVE_FSEEKO 1
 /* #undef HAVE_FSEEKO64 */
+/* #undef HAVE_MEMFD_CREATE */
+/* #undef HAVE_POSIX_FALLOCATE */
 #define HAVE_SIGACTION 1
 #define HAVE_SA_SIGACTION 1
 #define HAVE_SETJMP 1
@@ -199,8 +201,8 @@
 /* #undef HAVE_CLOCK_GETTIME */
 /* #undef HAVE_GETPAGESIZE */
 #define HAVE_MPROTECT 1
-#define HAVE_ICONV 1
-#define SDL_USE_LIBICONV 1
+/* #undef HAVE_ICONV */
+/* #undef SDL_USE_LIBICONV */
 #define HAVE_PTHREAD_SETNAME_NP 1
 /* #undef HAVE_PTHREAD_SET_NAME_NP */
 /* #undef HAVE_SEM_TIMEDWAIT */

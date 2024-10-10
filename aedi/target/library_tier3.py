@@ -272,8 +272,8 @@ class LuaTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.lua.org/ftp/lua-5.4.6.tar.gz',
-            '7d5ea1b9cb6aa0b59ca3dde1c6adcb57ef83a1ba8e5432c0ecd06bf439b3ad88')
+            'https://www.lua.org/ftp/lua-5.4.7.tar.gz',
+            '9fbf5e28ef86c69858f6d3d34eccc32e911c1a28b4120ff3e84aaa70cfbf1e30')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('src/lua.h')
@@ -365,6 +365,19 @@ class TiffTarget(base.CMakeStaticDependencyTarget):
             return libs + ' -L${libdir} -ltiff\n'
 
         return line
+
+
+class UsbTarget(base.ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='usb'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/libusb/libusb/releases/download/v1.0.27/libusb-1.0.27.tar.bz2',
+            'ffaa41d741a8a3bee244ac8e54a72ea05bf2879663c098c82fc5757853441575')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('libusb/libusb.h')
 
 
 class WxWidgetsTarget(base.CMakeStaticDependencyTarget):

@@ -54,8 +54,9 @@ class FluidSynthTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.4.tar.gz',
-            '1529ef5bc3b9ef3adc2a7964505912f7305103e269e50cc0316f500b22053ac9')
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.6.tar.gz',
+            '3340d73286b28fe6e5150fbe12648d4640e86c64c228878b572773bd08cac531',
+            patches='fluidsynth-sf3-support')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -301,8 +302,8 @@ class Sdl2Target(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsdl-org/SDL/releases/download/release-2.30.1/SDL2-2.30.1.tar.gz',
-            '01215ffbc8cfc4ad165ba7573750f15ddda1f971d5a66e9dcaffd37c587f473a')
+            'https://github.com/libsdl-org/SDL/releases/download/release-2.30.8/SDL2-2.30.8.tar.gz',
+            '380c295ea76b9bd72d90075793971c8bcb232ba0a69a9b14da4ae8f603350058')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -397,20 +398,20 @@ class VulkanHeadersTarget(base.CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
-            'https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.3.275.tar.gz',
-            '7161da645dbd33fd4ea61eec08e0d77389a640010acbf4afc00234f84df9b314')
+            'https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.3.296.tar.gz',
+            'e204e0b3c19f622d197df945737f5db913d6621830999b8578d34e80a7c90585')
 
 
 class VulkanLoaderTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='vulkan-loader'):
         super().__init__(name)
-        self.version = '1.3.275'
+        self.version = '1.3.296'
 
     def prepare_source(self, state: BuildState):
         state.download_source(
             # Version should match with the current MoltenVK release
             f'https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/v{self.version}.tar.gz',
-            '96dee7d8ccb08f2518e2b82f7a8ce84ffee511c96b16c83259fff87b6ee45232')
+            '682d5323cf31308402c888599b375ebf15810f95d6d1a08ad2f525766becf99b')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -449,6 +450,31 @@ class WavPackTarget(base.CMakeStaticDependencyTarget):
         super().configure(state)
 
 
+class WebpTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='webp'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.4.0.tar.gz',
+            '61f873ec69e3be1b99535634340d5bde750b2e4447caa1db9f61be3fd49ab1e5')
+
+    def configure(self, state: BuildState):
+        option_suffices = (
+            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'VWEBP', 'WEBPINFO', 'WEBPMUX',
+        )
+
+        for suffix in option_suffices:
+            state.options[f'WEBP_BUILD_{suffix}'] = 'NO'
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        shutil.copytree(state.install_path / 'share/WebP/cmake', state.install_path / 'lib/cmake/WebP')
+
+
 class XmpTarget(base.ConfigureMakeStaticDependencyTarget):
     def __init__(self, name='xmp'):
         super().__init__(name)
@@ -463,4 +489,27 @@ class XmpTarget(base.ConfigureMakeStaticDependencyTarget):
 
     def configure(self, state: BuildState):
         state.options['--enable-static'] = None
+        super().configure(state)
+
+
+class ZlibNgTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='zlib-ng'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.2.tar.gz',
+            'fcb41dd59a3f17002aeb1bb21f04696c9b721404890bb945c5ab39d2cb69654c')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('zlib-ng.h')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['WITH_GTEST'] = 'NO'
+        opts['WITH_SANITIZER'] = 'NO'
+        opts['ZLIB_COMPAT'] = 'YES'
+        opts['ZLIB_ENABLE_TESTS'] = 'NO'
+        opts['ZLIBNG_ENABLE_TESTS'] = 'NO'
+
         super().configure(state)

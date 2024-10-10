@@ -31,7 +31,7 @@ if(NOT ZMusic_FIND_COMPONENTS)
 endif()
 
 include(CMakeFindDependencyMacro)
-foreach(_module ZLIB;SndFile;MPG123)
+foreach(_module SndFile;MPG123)
 	find_dependency(${_module})
 endforeach()
 

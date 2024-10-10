@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -i
+#!/usr/bin/env python3 -i
 #
 # Copyright 2013-2024 The Khronos Group Inc.
 #
@@ -58,9 +58,9 @@ class VulkanConventions(ConventionsBase):
             if version == '1.0':
                 return 'Vulkan SC 1.0'
             else:
-                return f'<<versions-sc-{version}, Version SC {version}>>'
+                return f'<<versions-sc-{version}, Vulkan SC Version {version}>>'
         else:
-            return f'<<versions-{version}, Version {version}>>'
+            return f'<<versions-{version}, Vulkan Version {version}>>'
 
     def formatExtension(self, name):
         """Mark up an extension name as a link in the spec."""
@@ -119,6 +119,7 @@ class VulkanConventions(ConventionsBase):
         # The simple-minded rules need modification for some structure names
         subpats = [
             [ r'_H_(26[45])_',              r'_H\1_' ],
+            [ r'_AV_1_',                    r'_AV1_' ],
             [ r'_VULKAN_([0-9])([0-9])_',   r'_VULKAN_\1_\2_' ],
             [ r'_VULKAN_SC_([0-9])([0-9])_',r'_VULKAN_SC_\1_\2_' ],
             [ r'_DIRECT_FB_',               r'_DIRECTFB_' ],

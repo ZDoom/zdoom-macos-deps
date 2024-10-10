@@ -64,6 +64,20 @@ class BisonTarget(base.ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
 
+class DfuUtilTarget(base.ConfigureMakeDependencyTarget):
+    # Depends on usb
+    def __init__(self, name='dfu-util'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://dfu-util.sourceforge.net/releases/dfu-util-0.11.tar.gz',
+            'b4b53ba21a82ef7e3d4c47df2952adf5fa494f499b6b0b57c58c5d04ae8ff19e')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('src/dfu_util.h')
+
+
 class DosBoxXTarget(base.ConfigureMakeDependencyTarget):
     # Depends on autoconf, automake, freetype
     # TODO: fix absolute paths in bin/* and share/autoconf/autom4te.cfg
@@ -114,23 +128,19 @@ class EricWToolsTarget(base.CMakeStaticDependencyTarget):
 
 
 class GlslangTarget(base.CMakeStaticDependencyTarget):
-    # Build with --os-version-x64=10.15 command line option
-
     def __init__(self, name='glslang'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/glslang/archive/refs/tags/14.1.0.tar.gz',
-            'b5e4c36d60eda7613f36cfee3489c6f507156829c707e1ecd7f48ca45b435322')
+            'https://github.com/KhronosGroup/glslang/archive/refs/tags/15.0.0.tar.gz',
+            'c31c8c2e89af907507c0631273989526ee7d5cdf7df95ececd628fd7b811e064')
 
     def configure(self, state: BuildState):
         args = ('python3', 'update_glslang_sources.py')
         subprocess.run(args, check=True, cwd=state.source, env=state.environment)
 
-        state.validate_minimum_version('10.15')  # SPIRV-Tools uses <filesystem>
         state.options['ENABLE_CTEST'] = 'NO'
-
         super().configure(state)
 
     def post_build(self, state: BuildState):
@@ -175,13 +185,6 @@ class M4Target(base.ConfigureMakeDependencyTarget):
         state.download_source(
             'https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.xz',
             '63aede5c6d33b6d9b13511cd0be2cac046f2e70fd0a07aa9573a04a82783af96')
-
-        def configure(self, state: BuildState):
-            opts = state.options
-            opts['enable_ltdl'] = 'NO'
-            opts['with_gvedit'] = 'NO'
-
-            super().configure(state)
 
 
 class P7ZipTarget(base.CMakeTarget):
@@ -237,8 +240,8 @@ class Radare2Target(base.MesonTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/radareorg/radare2/releases/download/5.8.8/radare2-5.8.8.tar.xz',
-            '070dbc353e8e0d09fb985a73bfee2783690abbd58d4fbbecc3a50480eab9d537')
+            'https://github.com/radareorg/radare2/releases/download/5.9.4/radare2-5.9.4.tar.xz',
+            'edf4fc9255482ef790a85e1e563ecce147c6dc6ef49572586b3bb7fa6f1331b3')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('man/radare2.1')
@@ -248,8 +251,10 @@ class Radare2Target(base.MesonTarget):
         option['blob'] = 'true'
         option['enable_tests'] = 'false'
         option['enable_r2r'] = 'false'
+        option['local'] = 'true'
         option['r2_gittip'] = 'ea7f0356519884715cf1d5fba16042bac72b2df5'
         option['r2_version_commit'] = '1'
+        option['static_runtime'] = 'true'
 
         super().configure(state)
 
@@ -267,8 +272,8 @@ class RizinTarget(base.MesonTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/rizinorg/rizin/releases/download/v0.7.2/rizin-src-v0.7.2.tar.xz',
-            'fcff3fb45ae2b75e3f604bc7a08076e322e6e14def79098186378065ccb3582a')
+            'https://github.com/rizinorg/rizin/releases/download/v0.7.3/rizin-src-v0.7.3.tar.xz',
+            'e0ed25ada6be42098d38da9ccef4befbd549e477e80f8dffa5ca1b8ff9fbda74')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('binrz/man/rizin.1')
@@ -291,9 +296,8 @@ class SeverZipTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://7-zip.org/a/7z2301-src.tar.xz',
-            '356071007360e5a1824d9904993e8b2480b51b570e8c9faf7c0f58ebe4bf9f74',
-            patches='7zip-fix-errors')
+            'https://7-zip.org/a/7z2406-src.tar.xz',
+            '2aa1660c773525b2ed84d6cd7ff0680c786ec0893b87e4db44654dcb7f5ac8b5')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('CPP/7zip/cmpl_mac_arm64.mak')

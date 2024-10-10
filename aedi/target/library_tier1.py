@@ -214,8 +214,8 @@ class MoltenVKTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.2.7.tar.gz',
-            '3166edcfdca886b4be1a24a3c140f11f9a9e8e49878ea999e3580dfbf9fe4bec')
+            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.2.11.tar.gz',
+            'bfa115e283831e52d70ee5e13adf4d152de8f0045996cf2a33f0ac541be238b1')
 
     def initialize(self, state: BuildState):
         super().initialize(state)
@@ -258,7 +258,7 @@ class MoltenVKTarget(base.MakeTarget):
         shutil.copytree(src_path / 'include/MoltenVK', include_path / 'MoltenVK')
         shutil.copy(state.build_path / 'LICENSE', state.install_path / 'apache2.txt')
         shutil.copy(
-            src_path / 'MoltenVK.xcframework/macos-arm64_x86_64/libMoltenVK.a',
+            src_path / 'static/MoltenVK.xcframework/macos-arm64_x86_64/libMoltenVK.a',
             lib_path / 'libMoltenVK-static.a')
 
         self._make_dylib(state)
@@ -280,7 +280,7 @@ class MoltenVKTarget(base.MakeTarget):
                 '-dynamiclib',
                 '-arch', 'arm64',
                 '-arch', 'x86_64',
-                '-mmacosx-version-min=10.13',
+                '-mmacosx-version-min=10.15',
                 '-compatibility_version', '1.0.0',
                 '-current_version', '1.0.0',
                 '-install_name', '@rpath/libMoltenVK.dylib',
@@ -307,9 +307,9 @@ class Mpg123Target(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.mpg123.de/download/mpg123-1.32.5.tar.bz2',
-            'af908cdf6cdb6544b97bc706a799f79894e69468af5881bf454a0ebb9171ed63',
-            patches=('mpg123-arm64-fpu', 'mpg123-no-syn123'))
+            'https://www.mpg123.de/download/mpg123-1.32.7.tar.bz2',
+            '3c8919243707951cac0e3c39bbf28653bcaffc43c98ff16801a27350db8f0f21',
+            patches=('mpg123-have-fpu', 'mpg123-no-syn123'))
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -360,8 +360,8 @@ class OpusTarget(base.CMakeStaticDependencyTarget):
         # LibreSSL 2.8.3 False
         # TODO: remove this workaround when TLSv1.3 will be available in Python shipped with Xcode
         state.download_source(
-            'https://ftp.osuosl.org/pub/xiph/releases/opus/opus-1.5.1.tar.gz',
-            'b84610959b8d417b611aa12a22565e0a3732097c6389d19098d844543e340f85')
+            'https://ftp.osuosl.org/pub/xiph/releases/opus/opus-1.5.2.tar.gz',
+            '65c1d2f78b9f2fb20082c38cbe47c951ad5839345876e46941612ee87f9a7ce1')
 
     def configure(self, state: BuildState):
         state.options['PC_BUILD'] = 'floating-point'
@@ -447,15 +447,15 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/webmproject/libvpx/archive/refs/tags/v1.14.0.tar.gz',
-            '5f21d2db27071c8a46f1725928a10227ae45c5cd1cad3727e4aafbe476e321fa')
+            'https://github.com/webmproject/libvpx/archive/refs/tags/v1.14.1.tar.gz',
+            '901747254d80a7937c933d03bd7c5d41e8e6c883e0665fadcb172542167c7977')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('vpxstats.h')
 
     def configure(self, state: BuildState):
         hosts = {
-            'x86_64': 'x86_64-darwin17-gcc',
+            'x86_64': 'x86_64-darwin19-gcc',
             'arm64': 'arm64-darwin20-gcc',
         }
 
@@ -473,62 +473,14 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
         self.update_text_file(state.build_path / 'vpx_config.c', clean_build_config)
 
 
-class WebpTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='webp'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.3.2.tar.gz',
-            '2a499607df669e40258e53d0ade8035ba4ec0175244869d1025d460562aa09b4')
-
-    def configure(self, state: BuildState):
-        option_suffices = (
-            'ANIM_UTILS', 'CWEBP', 'DWEBP', 'EXTRAS', 'GIF2WEBP', 'IMG2WEBP', 'VWEBP', 'WEBPINFO', 'WEBPMUX',
-        )
-
-        for suffix in option_suffices:
-            state.options[f'WEBP_BUILD_{suffix}'] = 'NO'
-
-        super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-
-        shutil.copytree(state.install_path / 'share/WebP/cmake', state.install_path / 'lib/cmake/WebP')
-
-
-class ZlibNgTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='zlib-ng'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.1.6.tar.gz',
-            'a5d504c0d52e2e2721e7e7d86988dec2e290d723ced2307145dedd06aeb6fef2')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('zlib-ng.h')
-
-    def configure(self, state: BuildState):
-        opts = state.options
-        opts['WITH_GTEST'] = 'NO'
-        opts['WITH_SANITIZER'] = 'NO'
-        opts['ZLIB_COMPAT'] = 'YES'
-        opts['ZLIB_ENABLE_TESTS'] = 'NO'
-        opts['ZLIBNG_ENABLE_TESTS'] = 'NO'
-
-        super().configure(state)
-
-
 class ZMusicTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='zmusic'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/ZDoom/ZMusic/archive/refs/tags/1.1.12.tar.gz',
-            'da818594b395aa9174561a36362332b0ab8e7906d2e556ec47669326e67613d4')
+            'https://github.com/ZDoom/ZMusic/archive/refs/tags/1.1.14.tar.gz',
+            'f04410fe4ea08136f37703e7715c27df4c8532ace1e721cf40c6f303a93acc54')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/zmusic.h')

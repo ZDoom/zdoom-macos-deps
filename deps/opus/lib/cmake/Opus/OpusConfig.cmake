@@ -1,8 +1,8 @@
-set(OPUS_VERSION 1.5.1)
-set(OPUS_VERSION_STRING 1.5.1)
+set(OPUS_VERSION 1.5.2)
+set(OPUS_VERSION_STRING 1.5.2)
 set(OPUS_VERSION_MAJOR 1)
 set(OPUS_VERSION_MINOR 5)
-set(OPUS_VERSION_PATCH 1)
+set(OPUS_VERSION_PATCH 2)
 
 
 ####### Expanded from @PACKAGE_INIT@ by configure_package_config_file() #######

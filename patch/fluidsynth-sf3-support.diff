@@ -1,0 +1,11 @@
+--- a/cmake_admin/FindSndFile.cmake
++++ b/cmake_admin/FindSndFile.cmake
+@@ -70,7 +70,7 @@
+ 
+ # Check the features SndFile was built with
+ # 2024-01-02: Recent versions of libsndfile don't seem to provide a pkgconfig file and older version who did are lacking private libraries like OGG.
+-if(FALSE) #PC_SNDFILE_FOUND
++if(TRUE) #PC_SNDFILE_FOUND
+   if("vorbis" IN_LIST PC_SNDFILE_STATIC_LIBRARIES)
+     set(SndFile_WITH_EXTERNAL_LIBS TRUE)
+   endif()

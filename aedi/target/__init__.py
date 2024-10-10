@@ -72,8 +72,6 @@ def targets():
         SndFileTarget(),
         VorbisTarget(),
         VpxTarget(),
-        WebpTarget(),
-        ZlibNgTarget(),
         ZMusicTarget(),
 
         # Libraries needed for other targets
@@ -97,7 +95,9 @@ def targets():
         VulkanHeadersTarget(),
         VulkanLoaderTarget(),
         WavPackTarget(),
+        WebpTarget(),
         XmpTarget(),
+        ZlibNgTarget(),
 
         # Obsolete libraries without binaries
         BrotliTarget(),
@@ -113,6 +113,7 @@ def targets():
         Sdl2TtfTarget(),
         SfmlTarget(),
         TiffTarget(),
+        UsbTarget(),
         WxWidgetsTarget(),
         ZstdTarget(),
 
@@ -130,6 +131,7 @@ def targets():
         AutoconfTarget(),
         AutomakeTarget(),
         BisonTarget(),
+        DfuUtilTarget(),
         DosBoxXTarget(),
         DzipTarget(),
         EricWToolsTarget(),
