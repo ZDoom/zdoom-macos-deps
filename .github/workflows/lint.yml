@@ -14,18 +14,24 @@ on:
 jobs:
   lint:
     if: "!contains(github.event.head_commit.message, '[skip lint]')"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # super-linter needs the full git history to get the
+          # list of files that changed across commits
+          fetch-depth: 0
 
       - name: Super-Linter
-        uses: super-linter/super-linter/slim@v5
+        uses: super-linter/super-linter/slim@v7
         env:
           FILTER_REGEX_INCLUDE: .*(\.py|\.md|\.yml)$
           FILTER_REGEX_EXCLUDE: .*/deps/.*
           VALIDATE_NATURAL_LANGUAGE: false
           VALIDATE_PYTHON_BLACK: false
+          # To report GitHub Actions status checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Bandit
         run: |
