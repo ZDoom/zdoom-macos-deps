@@ -478,8 +478,8 @@ class ZMusicTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/ZDoom/ZMusic/archive/refs/tags/1.1.13.tar.gz',
-            '564e210837b653013e01d67f04d0d906a9f0a923521e0c305463ec4f4a139ed4')
+            'https://github.com/ZDoom/ZMusic/archive/refs/tags/1.1.14.tar.gz',
+            'f04410fe4ea08136f37703e7715c27df4c8532ace1e721cf40c6f303a93acc54')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('include/zmusic.h')
