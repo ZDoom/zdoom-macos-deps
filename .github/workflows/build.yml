@@ -36,6 +36,12 @@ jobs:
         run: |
           ./build.py --target ${{ matrix.target }} --xcode
 
+      - name: Upload Package
+        uses: actions/upload-artifact@v4
+        with:
+          path: output
+          name: ${{ matrix.target }}
+
       - name: List Build Directory
         if: always()
         shell: bash
