@@ -344,8 +344,16 @@ class XzTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://tukaani.org/xz/xz-5.4.5.tar.gz',
-            '135c90b934aee8fbc0d467de87a05cb70d627da36abe518c357a873709e5b7d6')
+            'https://github.com/tukaani-project/xz/releases/download/v5.6.3/xz-5.6.3.tar.xz',
+            'db0590629b6f0fa36e74aea5f9731dc6f8df068ce7b7bafa45301832a5eebc3a')
+
+    def configure(self, state: BuildState):
+        options = state.options
+        options['BUILD_TESTING'] += 'NO'
+        # Dependencies of libintl are not pulled automatically
+        options['CMAKE_EXE_LINKER_FLAGS'] += '-framework CoreFoundation -liconv'
+
+        super().configure(state)
 
 
 class ZipTarget(base.SingleExeCTarget):
