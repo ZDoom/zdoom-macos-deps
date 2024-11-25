@@ -110,6 +110,24 @@ class EricWToolsTarget(base.CMakeStaticDependencyTarget):
             patches='ericw-tools-hardcode-version')
 
 
+class FFmpegTarget(base.ConfigureMakeDependencyTarget):
+    # TODO: fix absolute paths in bin/* and lib/*
+    def __init__(self, name='ffmpeg'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://ffmpeg.org/releases/ffmpeg-7.1.tar.xz',
+            '40973d44970dbc83ef302b0609f2e74982be2d85916dd2ee7472d30678a7abe6')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('doc/ffmpeg.txt')
+
+    def configure(self, state: BuildState):
+        state.options['--arch'] = state.architecture()
+        super().configure(state)
+
+
 class GlslangTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='glslang'):
         super().__init__(name)

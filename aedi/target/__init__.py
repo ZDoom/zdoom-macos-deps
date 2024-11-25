@@ -132,6 +132,7 @@ def targets():
         DosBoxXTarget(),
         DzipTarget(),
         EricWToolsTarget(),
+        FFmpegTarget(),
         GlslangTarget(),
         M4Target(),
         P7ZipTarget(),
