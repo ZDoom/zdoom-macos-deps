@@ -64,8 +64,8 @@ class FfiTarget(base.ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz',
-            '540fb721619a6aba3bdeef7d940d8e9e0e6d2c193595bc243241b77ff9e93620')
+            'https://github.com/libffi/libffi/releases/download/v3.4.6/libffi-3.4.6.tar.gz',
+            'b0dea9df23c863a7a50e825440f3ebffabd65df1497108e5d437747843895a4e')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('libffi.pc.in')
