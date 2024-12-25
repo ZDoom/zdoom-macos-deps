@@ -483,6 +483,7 @@ class QuakespasmExpTarget(CMakeMainTarget):
     def configure(self, state: BuildState):
         opts = state.options
         opts['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'ogg', 'SDL2')
+        opts['QUAKE_GENERATE_VERSION_HEADER'] = 'ON'
         opts['QUAKE_MACOS_BUNDLE'] = 'OFF'
         opts['QUAKE_MACOS_MOUSE_ACCELERATION'] = 'ON'
 
