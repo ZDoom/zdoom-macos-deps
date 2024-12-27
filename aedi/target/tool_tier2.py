@@ -127,14 +127,33 @@ class EricWToolsTarget(base.CMakeStaticDependencyTarget):
             patches='ericw-tools-hardcode-version')
 
 
+class FFmpegTarget(base.ConfigureMakeDependencyTarget):
+    # TODO: fix absolute paths in bin/* and lib/*
+    def __init__(self, name='ffmpeg'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://ffmpeg.org/releases/ffmpeg-7.1.tar.xz',
+            '40973d44970dbc83ef302b0609f2e74982be2d85916dd2ee7472d30678a7abe6')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('doc/ffmpeg.txt')
+
+    def configure(self, state: BuildState):
+        state.options['--arch'] = state.architecture()
+        super().configure(state)
+
+
 class GlslangTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='glslang'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/glslang/archive/refs/tags/15.0.0.tar.gz',
-            'c31c8c2e89af907507c0631273989526ee7d5cdf7df95ececd628fd7b811e064')
+            'https://github.com/KhronosGroup/glslang/archive/refs/tags/15.1.0.tar.gz',
+            '4bdcd8cdb330313f0d4deed7be527b0ac1c115ff272e492853a6e98add61b4bc',
+            patches='glslang-old-cmake')
 
     def configure(self, state: BuildState):
         args = ('python3', 'update_glslang_sources.py')
@@ -240,8 +259,8 @@ class Radare2Target(base.MesonTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/radareorg/radare2/releases/download/5.9.4/radare2-5.9.4.tar.xz',
-            'edf4fc9255482ef790a85e1e563ecce147c6dc6ef49572586b3bb7fa6f1331b3')
+            'https://github.com/radareorg/radare2/releases/download/5.9.8/radare2-5.9.8.tar.xz',
+            'de061db6089cc1321ba9062b8aa9a0adaaa7a4d25128aab37a2a44e71a939829')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('man/radare2.1')
@@ -272,8 +291,8 @@ class RizinTarget(base.MesonTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/rizinorg/rizin/releases/download/v0.7.3/rizin-src-v0.7.3.tar.xz',
-            'e0ed25ada6be42098d38da9ccef4befbd549e477e80f8dffa5ca1b8ff9fbda74')
+            'https://github.com/rizinorg/rizin/releases/download/v0.7.4/rizin-src-v0.7.4.tar.xz',
+            'f7118910e5dc843c38baa3e00b30ec019a1cdd5c132ba2bc16cf0c7497631201')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('binrz/man/rizin.1')
@@ -296,8 +315,8 @@ class SeverZipTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://7-zip.org/a/7z2406-src.tar.xz',
-            '2aa1660c773525b2ed84d6cd7ff0680c786ec0893b87e4db44654dcb7f5ac8b5')
+            'https://7-zip.org/a/7z2408-src.tar.xz',
+            'aa04aac906a04df59e7301f4c69e9f48808e6c8ecae4eb697703a47bfb0ac042')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('CPP/7zip/cmpl_mac_arm64.mak')
@@ -378,8 +397,16 @@ class XzTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://tukaani.org/xz/xz-5.4.5.tar.gz',
-            '135c90b934aee8fbc0d467de87a05cb70d627da36abe518c357a873709e5b7d6')
+            'https://github.com/tukaani-project/xz/releases/download/v5.6.3/xz-5.6.3.tar.xz',
+            'db0590629b6f0fa36e74aea5f9731dc6f8df068ce7b7bafa45301832a5eebc3a')
+
+    def configure(self, state: BuildState):
+        options = state.options
+        options['BUILD_TESTING'] += 'NO'
+        # Dependencies of libintl are not pulled automatically
+        options['CMAKE_EXE_LINKER_FLAGS'] += '-framework CoreFoundation -liconv'
+
+        super().configure(state)
 
 
 class ZipTarget(base.SingleExeCTarget):

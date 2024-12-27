@@ -65,8 +65,8 @@ class FfiTarget(base.ConfigureMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz',
-            '540fb721619a6aba3bdeef7d940d8e9e0e6d2c193595bc243241b77ff9e93620')
+            'https://github.com/libffi/libffi/releases/download/v3.4.6/libffi-3.4.6.tar.gz',
+            'b0dea9df23c863a7a50e825440f3ebffabd65df1497108e5d437747843895a4e')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('libffi.pc.in')
@@ -307,8 +307,8 @@ class Mpg123Target(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.mpg123.de/download/mpg123-1.32.7.tar.bz2',
-            '3c8919243707951cac0e3c39bbf28653bcaffc43c98ff16801a27350db8f0f21',
+            'https://www.mpg123.de/download/mpg123-1.32.10.tar.bz2',
+            '87b2c17fe0c979d3ef38eeceff6362b35b28ac8589fbf1854b5be75c9ab6557c',
             patches=('mpg123-have-fpu', 'mpg123-no-syn123'))
 
     def configure(self, state: BuildState):
@@ -335,8 +335,8 @@ class OpenALTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://openal-soft.org/openal-releases/openal-soft-1.23.1.tar.bz2',
-            '796f4b89134c4e57270b7f0d755f0fa3435b90da437b745160a49bd41c845b21')
+            'https://openal-soft.org/openal-releases/openal-soft-1.24.1.tar.bz2',
+            '0b9883d2e372d4ce66d37b142ab10b606a8a0ed3e873d1e070b1c878b695425a')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -447,8 +447,8 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/webmproject/libvpx/archive/refs/tags/v1.14.1.tar.gz',
-            '901747254d80a7937c933d03bd7c5d41e8e6c883e0665fadcb172542167c7977')
+            'https://github.com/webmproject/libvpx/archive/refs/tags/v1.15.0.tar.gz',
+            'e935eded7d81631a538bfae703fd1e293aad1c7fd3407ba00440c95105d2011e')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('vpxstats.h')

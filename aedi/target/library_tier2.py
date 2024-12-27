@@ -54,9 +54,8 @@ class FluidSynthTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.3.6.tar.gz',
-            '3340d73286b28fe6e5150fbe12648d4640e86c64c228878b572773bd08cac531',
-            patches='fluidsynth-sf3-support')
+            'https://github.com/FluidSynth/fluidsynth/archive/refs/tags/v2.4.1.tar.gz',
+            'd1e64155ac902116ed3d4dea512719d8c04ab3877db2e8fb160284379f570a2f')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -302,8 +301,8 @@ class Sdl2Target(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsdl-org/SDL/releases/download/release-2.30.8/SDL2-2.30.8.tar.gz',
-            '380c295ea76b9bd72d90075793971c8bcb232ba0a69a9b14da4ae8f603350058')
+            'https://github.com/libsdl-org/SDL/releases/download/release-2.30.10/SDL2-2.30.10.tar.gz',
+            'f59adf36a0fcf4c94198e7d3d776c1b3824211ab7aeebeb31fe19836661196aa')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -319,8 +318,8 @@ class Sdl2ImageTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.2/SDL2_image-2.8.2.tar.gz',
-            '8f486bbfbcf8464dd58c9e5d93394ab0255ce68b51c5a966a918244820a76ddc')
+            'https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.4/SDL2_image-2.8.4.tar.gz',
+            '5a89a01420a192b89dbcc5f5267448181d5dcc81d2f5a1688cb1eac6f557da67')
 
     def configure(self, state: BuildState):
         opts = state.options
@@ -328,11 +327,6 @@ class Sdl2ImageTarget(base.CMakeStaticDependencyTarget):
         opts['SDL2IMAGE_WEBP_SHARED'] = 'NO'
 
         super().configure(state)
-
-    @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
-        # Link with webpdemux library instead of webp
-        return line.replace('\n', 'demux\n') if line.startswith('Requires.private:') else line
 
 
 class Sdl2MixerTarget(base.CMakeStaticDependencyTarget):
@@ -456,8 +450,8 @@ class WebpTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.4.0.tar.gz',
-            '61f873ec69e3be1b99535634340d5bde750b2e4447caa1db9f61be3fd49ab1e5')
+            'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.5.0.tar.gz',
+            '7d6fab70cf844bf6769077bd5d7a74893f8ffd4dfb42861745750c63c2a5c92c')
 
     def configure(self, state: BuildState):
         option_suffices = (
