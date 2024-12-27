@@ -300,8 +300,8 @@ class Sdl2ImageTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.3/SDL2_image-2.8.3.tar.gz',
-            '4b000f2c238ce380807ee0cb68a0ef005871691ece8646dbf4f425a582b1bb22')
+            'https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.4/SDL2_image-2.8.4.tar.gz',
+            '5a89a01420a192b89dbcc5f5267448181d5dcc81d2f5a1688cb1eac6f557da67')
 
     def configure(self, state: BuildState):
         opts = state.options
