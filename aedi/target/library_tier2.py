@@ -151,21 +151,30 @@ class MadTarget(base.ConfigureMakeStaticDependencyTarget):
         self.write_pc_file(state, description='MPEG Audio Decoder', version='0.15.1b')
 
 
-class MikmodTarget(base.ConfigureMakeStaticDependencyTarget):
+class MikmodTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='mikmod'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.sourceforge.net/project/mikmod/libmikmod/3.3.11.1/libmikmod-3.3.11.1.tar.gz',
-            'ad9d64dfc8f83684876419ea7cd4ff4a41d8bcd8c23ef37ecb3a200a16b46d19')
+            'https://downloads.sourceforge.net/project/mikmod/libmikmod/3.3.12/libmikmod-3.3.12.tar.gz',
+            'adef6214863516a4a5b44ebf2c71ef84ecdfeb3444973dacbac70911c9bc67e9')
 
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('libmikmod.pc.in')
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['ENABLE_DOC'] = 'NO'
+        opts['ENABLE_SHARED'] = 'NO'
+
+        super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
-        self.update_config_script(state.install_path / 'bin/libmikmod-config')
+
+        def fix_path(_, line):
+            return line.replace(str(state.install_path), '${exec_prefix}') \
+                if line.startswith('\t\techo -L') else line
+
+        self.update_config_script(state.install_path / 'bin/libmikmod-config', fix_path)
 
 
 class ModPlugTarget(base.ConfigureMakeStaticDependencyTarget):
