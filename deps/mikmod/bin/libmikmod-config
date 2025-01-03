@@ -1,10 +1,10 @@
 #! /bin/sh
 
 prefix="$(cd "${0%/*}/.."; pwd)"
-exec_prefix=${prefix}
+exec_prefix="${prefix}"
 exec_prefix_set=no
-libdir=${exec_prefix}/lib
-includedir=${prefix}/include
+libdir="${exec_prefix}/lib"
+includedir="${prefix}/include"
 
 usage="\
 Usage: libmikmod-config [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--libs] [--cflags] [--ldadd]"
@@ -38,7 +38,7 @@ while test $# -gt 0 ; do
 		echo $exec_prefix
 	;;
 	--version)
-		echo 3.3.11
+		echo 3.3.12
 	;;
 	--cflags)
 		if test $includedir != /usr/include ; then
@@ -50,7 +50,7 @@ while test $# -gt 0 ; do
 		echo 
 	;;
 	--libs)
-		echo -L${exec_prefix}/lib -lmikmod  -framework CoreAudio -lm 
+		echo -L${exec_prefix}/lib -lmikmod -framework AudioToolbox -framework AudioUnit -framework CoreServices
 	;;
 	*)
 		echo "${usage}" 1>&2

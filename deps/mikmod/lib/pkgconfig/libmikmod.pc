@@ -5,8 +5,8 @@ includedir=${prefix}/include
 
 Name: libmikmod
 Description: Library for playing Module Files and for Sound Effects
-Version: 3.3.11
+Version: 3.3.12
 URL: http://mikmod.sourceforge.net/
 Libs: -L${libdir} -lmikmod
-Libs.private: -lm
+Libs.private: -framework AudioToolbox -framework AudioUnit -framework CoreServices
 Cflags: -I${includedir}
