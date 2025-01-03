@@ -461,20 +461,20 @@ class WebpTarget(base.CMakeStaticDependencyTarget):
         shutil.copytree(state.install_path / 'share/WebP/cmake', state.install_path / 'lib/cmake/WebP')
 
 
-class XmpTarget(base.ConfigureMakeStaticDependencyTarget):
+class XmpTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='xmp'):
         super().__init__(name)
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://sourceforge.net/projects/xmp/files/libxmp/4.5.0/libxmp-4.5.0.tar.gz',
-            '7847d262112d14e8442f44e5ac6ed9ddbca54c251284720b563c852b31f26e75')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('libxmp.pc.in')
+            'https://github.com/libxmp/libxmp/releases/download/libxmp-4.6.1/libxmp-4.6.1.tar.gz',
+            'af605e72c83b24abaf03269347e24ebc3fc06cd7b495652a2c619c1f514bc5cb')
 
     def configure(self, state: BuildState):
-        state.options['--enable-static'] = None
+        opts = state.options
+        opts['BUILD_SHARED'] = 'NO'
+        opts['LIBXMP_PIC'] = 'YES'
+
         super().configure(state)
 
 
