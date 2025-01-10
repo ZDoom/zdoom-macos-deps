@@ -281,8 +281,8 @@ class SeverZipTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://7-zip.org/a/7z2408-src.tar.xz',
-            'aa04aac906a04df59e7301f4c69e9f48808e6c8ecae4eb697703a47bfb0ac042')
+            'https://7-zip.org/a/7z2409-src.tar.xz',
+            '49c05169f49572c1128453579af1632a952409ced028259381dac30726b6133a')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('CPP/7zip/cmpl_mac_arm64.mak')
