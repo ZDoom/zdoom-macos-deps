@@ -32,8 +32,8 @@ class CMakeTarget(base.CMakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1.tar.gz',
-            '1c511d09516af493694ed9baf13c55947a36389674d657a2d5e0ccedc6b291d8')
+            'https://github.com/Kitware/CMake/releases/download/v3.31.4/cmake-3.31.4.tar.gz',
+            'a6130bfe75f5ba5c73e672e34359f7c0a1931521957e8393a5c2922c8b0f7f25')
 
     def configure(self, state: BuildState):
         # Bootstrap native CMake binary
@@ -49,11 +49,6 @@ class CMakeTarget(base.CMakeTarget):
                 subprocess.run(args, check=True, cwd=boostrap_path, env=state.environment)
 
                 assert boostrap_cmake.exists()
-
-        # The following variables are needed for cross-compilation
-        opts = state.options
-        opts['HAVE_POLL_FINE_EXITCODE'] = '0'
-        opts['HAVE_POLL_FINE_EXITCODE__TRYRUN_OUTPUT'] = '0'
 
         env = state.environment
         env['PATH'] = os.pathsep.join([str(boostrap_cmk_path), env['PATH']])
