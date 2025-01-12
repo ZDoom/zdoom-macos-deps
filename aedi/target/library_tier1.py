@@ -334,8 +334,8 @@ class OpenALTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://openal-soft.org/openal-releases/openal-soft-1.24.1.tar.bz2',
-            '0b9883d2e372d4ce66d37b142ab10b606a8a0ed3e873d1e070b1c878b695425a')
+            'https://openal-soft.org/openal-releases/openal-soft-1.24.2.tar.bz2',
+            'cd4c88c9b7311cb6785db71c0ed64f5430c9d5b3454e0158314b2ef25ace3e61')
 
     def configure(self, state: BuildState):
         opts = state.options
