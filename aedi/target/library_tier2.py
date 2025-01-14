@@ -222,24 +222,20 @@ class PngTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.sourceforge.net/libpng/libpng-1.6.37.tar.xz',
-            '505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca')
+            'https://sourceforge.net/projects/libpng/files/libpng16/1.6.45/libpng-1.6.45.tar.xz',
+            '926485350139ffb51ef69760db35f78846c805fef3d59bfdcb2fba704663f370')
 
     def configure(self, state: BuildState):
         opts = state.options
-        opts['PNG_ARM_NEON'] = 'on'
-        opts['PNG_SHARED'] = 'OFF'
+        opts['PNG_FRAMEWORK'] = 'NO'
+        opts['PNG_SHARED'] = 'NO'
+        opts['PNG_TESTS'] = 'NO'
+        opts['PNG_TOOLS'] = 'NO'
 
         super().configure(state)
 
     def post_build(self, state: BuildState):
         super().post_build(state)
-
-        def update_cmake_libs(line: str):
-            link_libs = '  INTERFACE_LINK_LIBRARIES '
-            return f'{link_libs}"ZLIB::ZLIB"\n' if line.startswith(link_libs) else line
-
-        self.update_text_file(state.install_path / 'lib/libpng/libpng16.cmake', update_cmake_libs)
         self.update_config_script(state.install_path / 'bin/libpng16-config')
 
 
