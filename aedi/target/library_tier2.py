@@ -229,8 +229,6 @@ class PngTarget(base.CMakeStaticDependencyTarget):
         opts = state.options
         opts['PNG_FRAMEWORK'] = 'NO'
         opts['PNG_SHARED'] = 'NO'
-        opts['PNG_TESTS'] = 'NO'
-        opts['PNG_TOOLS'] = 'NO'
 
         super().configure(state)
 
