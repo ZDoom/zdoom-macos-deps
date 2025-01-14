@@ -1,12 +1,12 @@
 prefix=
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
-includedir=${prefix}/include/libpng16
+includedir=${prefix}/include
 
 Name: libpng
 Description: Loads and saves PNG files
-Version: 1.6.37
-Requires: zlib
+Version: 1.6.45
+Requires.private: zlib
 Libs: -L${libdir} -lpng16
-Libs.private: -lz 
+Libs.private: -lz -lm
 Cflags: -I${includedir}

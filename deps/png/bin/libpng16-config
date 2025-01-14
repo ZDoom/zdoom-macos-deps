@@ -11,13 +11,13 @@
 
 # Modeled after libxml-config.
 
-version="1.6.37"
+version="1.6.45"
 prefix="$(cd "${0%/*}/.."; pwd)"
 exec_prefix="${prefix}"
 libdir="${exec_prefix}/lib"
-includedir="${prefix}/include/libpng16"
+includedir="${prefix}/include"
 libs="-lpng16"
-all_libs="-lpng16 -lz "
+all_libs="-lpng16 -lz -lm"
 I_opts="-I${includedir}"
 L_opts="-L${libdir}"
 R_opts=""
