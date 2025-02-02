@@ -18,6 +18,7 @@
 
 import os
 import subprocess
+from pathlib import Path
 
 from ..state import BuildState
 from . import base
@@ -45,6 +46,24 @@ class AutomakeTarget(base.ConfigureMakeDependencyTarget):
         state.download_source(
             'https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.xz',
             'f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469')
+
+
+class Bzip3Target(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='bzip3'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/kspalaiologos/bzip3/releases/download/1.5.1/bzip3-1.5.1.tar.xz',
+            '53b844f9d9fb1d75faa4d3a9d9026017caaf50bb200b320d1685c6506b8f3b37')
+
+    def configure(self, state: BuildState):
+        state.options['CMAKE_SKIP_INSTALL_RPATH'] = 'YES'
+        super().configure(state)
+
+    @staticmethod
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
+        return '' if line.startswith('bindir=') else line
 
 
 class DfuUtilTarget(base.ConfigureMakeDependencyTarget):

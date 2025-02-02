@@ -128,6 +128,7 @@ def targets():
         # Tools without binaries stored in the repo, can be outdated
         AutoconfTarget(),
         AutomakeTarget(),
+        Bzip3Target(),
         DfuUtilTarget(),
         DosBoxXTarget(),
         DzipTarget(),
