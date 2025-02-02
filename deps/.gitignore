@@ -24,8 +24,6 @@
 /iconv/bin/
 /iconv/include/*charset.h
 /iconv/lib/libcharset.a
-/jpeg-turbo/bin/
-/jpeg-turbo/lib/pkgconfig/libturbojpeg.pc
 /lame/bin/
 /moltenvk/lib/libMoltenVK.dylib
 /mpg123/lib/pkgconfig/libsyn123.pc
