@@ -255,8 +255,8 @@ class JpegTurboTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://downloads.sourceforge.net/project/libjpeg-turbo/3.0.1/libjpeg-turbo-3.0.1.tar.gz',
-            '22429507714ae147b3acacd299e82099fce5d9f456882fc28e252e4579ba2a75')
+            'https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.1.0/libjpeg-turbo-3.1.0.tar.gz',
+            '9564c72b1dfd1d6fe6274c5f95a8d989b59854575d4bbee44ade7bc17aa9bc93')
 
     def configure(self, state: BuildState):
         state.options['ENABLE_SHARED'] = 'NO'
