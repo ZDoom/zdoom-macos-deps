@@ -62,7 +62,7 @@ set_target_properties(SDL2::SDL2-static PROPERTIES
   COMPATIBLE_INTERFACE_BOOL "SDL2_SHARED"
   COMPATIBLE_INTERFACE_STRING "SDL_VERSION"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include/SDL2"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:m>;-Wl,-framework,CoreVideo;-Wl,-framework,Cocoa;-Wl,-framework,IOKit;-Wl,-framework,ForceFeedback;-Wl,-framework,Carbon;-Wl,-framework,CoreAudio;-Wl,-framework,AudioToolbox;-Wl,-framework,AVFoundation;-Wl,-framework,Foundation;-Wl,-weak_framework,GameController;-Wl,-weak_framework,Metal;-Wl,-weak_framework,QuartzCore;-Wl,-weak_framework,CoreHaptics;\$<LINK_ONLY:>"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:m>;\$<LINK_ONLY:\$<LINK_LIBRARY:FRAMEWORK,CoreVideo>>;\$<LINK_ONLY:\$<LINK_LIBRARY:FRAMEWORK,Cocoa>>;\$<LINK_ONLY:\$<LINK_LIBRARY:FRAMEWORK,IOKit>>;\$<LINK_ONLY:\$<LINK_LIBRARY:FRAMEWORK,ForceFeedback>>;\$<LINK_ONLY:\$<LINK_LIBRARY:FRAMEWORK,Carbon>>;\$<LINK_ONLY:\$<LINK_LIBRARY:FRAMEWORK,CoreAudio>>;\$<LINK_ONLY:\$<LINK_LIBRARY:FRAMEWORK,AudioToolbox>>;\$<LINK_ONLY:\$<LINK_LIBRARY:FRAMEWORK,AVFoundation>>;\$<LINK_ONLY:\$<LINK_LIBRARY:FRAMEWORK,Foundation>>;\$<LINK_ONLY:\$<LINK_LIBRARY:WEAK_FRAMEWORK,GameController>>;\$<LINK_ONLY:\$<LINK_LIBRARY:WEAK_FRAMEWORK,Metal>>;\$<LINK_ONLY:\$<LINK_LIBRARY:WEAK_FRAMEWORK,QuartzCore>>;\$<LINK_ONLY:\$<LINK_LIBRARY:WEAK_FRAMEWORK,CoreHaptics>>;\$<LINK_ONLY:>"
   INTERFACE_SDL2_SHARED "FALSE"
   INTERFACE_SDL_VERSION "SDL2"
 )
