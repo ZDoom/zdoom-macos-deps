@@ -5,8 +5,8 @@ includedir=${prefix}/include
 
 Name: FLAC
 Description: Free Lossless Audio Codec Library
-Version: 1.4.3
+Version: 1.5.0
 Requires.private: ogg
 Libs: -L${libdir} -lFLAC
-Libs.private: -lm
+Libs.private: -lm 
 Cflags: -I${includedir}
