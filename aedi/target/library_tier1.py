@@ -83,8 +83,8 @@ class FlacTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/xiph/flac/releases/download/1.4.3/flac-1.4.3.tar.xz',
-            '6c58e69cd22348f441b861092b825e591d0b822e106de6eb0ee4d05d27205b70')
+            'https://github.com/xiph/flac/releases/download/1.5.0/flac-1.5.0.tar.xz',
+            'f2c1c76592a82ffff8413ba3c4a1299b6c7ab06c734dee03fd88630485c2b920')
 
     def configure(self, state: BuildState):
         opts = state.options
