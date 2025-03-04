@@ -83,6 +83,7 @@ class FftwTarget(base.CMakeStaticDependencyTarget):
         opts = state.options
         opts['BUILD_TESTS'] = 'NO'
         opts['DISABLE_FORTRAN'] = 'YES'
+        opts['ENABLE_FLOAT'] = 'YES'
         opts['ENABLE_THREADS'] = 'YES'
 
         if state.architecture() == 'x86_64':
@@ -95,15 +96,19 @@ class FftwTarget(base.CMakeStaticDependencyTarget):
     def post_build(self, state: BuildState):
         super().post_build(state)
 
+        replacements = {
+            'set (FFTW3f_INCLUDE_DIRS ': '"${CMAKE_CURRENT_LIST_DIR}/../../../include")\n',
+            'set (FFTW3f_LIBRARY_DIRS ': '"${CMAKE_CURRENT_LIST_DIR}/../../")\n'
+        }
+
         def update_dirs(line: str):
-            if line.startswith('set (FFTW3_INCLUDE_DIRS '):
-                return 'set (FFTW3_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../../../include")\n'
-            elif line.startswith('set (FFTW3_LIBRARY_DIRS '):
-                return 'set (FFTW3_LIBRARY_DIRS "${CMAKE_CURRENT_LIST_DIR}/../../")\n'
+            for prefix in replacements:
+                if line.startswith(prefix):
+                    return prefix + replacements[prefix]
 
             return line
 
-        cmake_module = state.install_path / 'lib/cmake/fftw3/FFTW3Config.cmake'
+        cmake_module = state.install_path / 'lib/cmake/fftw3f/FFTW3fConfig.cmake'
         self.update_text_file(cmake_module, update_dirs)
 
 
