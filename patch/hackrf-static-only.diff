@@ -1,0 +1,35 @@
+--- a/host/libhackrf/src/CMakeLists.txt
++++ b/host/libhackrf/src/CMakeLists.txt
+@@ -26,20 +26,8 @@
+ set(c_sources ${CMAKE_CURRENT_SOURCE_DIR}/hackrf.c CACHE INTERNAL "List of C sources")
+ set(c_headers ${CMAKE_CURRENT_SOURCE_DIR}/hackrf.h CACHE INTERNAL "List of C headers")
+ 
+-# Dynamic library
+-add_library(hackrf SHARED ${c_sources})
+-set_target_properties(hackrf PROPERTIES VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.0 SOVERSION 0)
+-
+-# Static library
+-add_library(hackrf-static STATIC ${c_sources})
+-if(MSVC)
+-	set_target_properties(hackrf-static PROPERTIES OUTPUT_NAME "hackrf_static")
+-else()
+-	set_target_properties(hackrf-static PROPERTIES OUTPUT_NAME "hackrf")
+-endif()
+-
++add_library(hackrf STATIC ${c_sources})
+ set_target_properties(hackrf PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+-set_target_properties(hackrf-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+ 
+ # Dependencies
+ target_link_libraries(hackrf ${LIBUSB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+@@ -55,10 +43,6 @@
+            LIBRARY DESTINATION lib${LIB_SUFFIX}
+            COMPONENT sharedlibs
+            )
+-   install(TARGETS hackrf-static
+-           ARCHIVE DESTINATION lib${LIB_SUFFIX}
+-           COMPONENT staticlibs
+-           )
+    install(FILES ${c_headers}
+            DESTINATION include/${PROJECT_NAME}
+            COMPONENT headers

@@ -190,7 +190,8 @@ class HackRFTarget(base.CMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://github.com/greatscottgadgets/hackrf/releases/download/v2024.02.1/hackrf-2024.02.1.tar.xz',
-            'd9ced67e6b801cd02c18d0c4654ed18a4bcb36c24a64330c347dfccbd859ad16')
+            'd9ced67e6b801cd02c18d0c4654ed18a4bcb36c24a64330c347dfccbd859ad16',
+            patches='hackrf-static-only')
 
     def configure(self, state: BuildState):
         state.options['CMAKE_EXE_LINKER_FLAGS'] += '-framework CoreFoundation -framework IOKit -framework Security'
