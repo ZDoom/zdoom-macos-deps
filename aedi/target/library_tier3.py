@@ -70,6 +70,43 @@ class ExpatTarget(base.CMakeStaticDependencyTarget):
         super().configure(state)
 
 
+class FftwTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='fftw'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://fftw.org/fftw-3.3.10.tar.gz',
+            '56c932549852cddcfafdab3820b0200c7742675be92179e59e6215b340e26467')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['BUILD_TESTS'] = 'NO'
+        opts['DISABLE_FORTRAN'] = 'YES'
+        opts['ENABLE_THREADS'] = 'YES'
+
+        if state.architecture() == 'x86_64':
+            opts['ENABLE_SSE2'] = 'YES'
+            opts['ENABLE_AVX'] = 'YES'
+            opts['ENABLE_AVX2'] = 'YES'
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        super().post_build(state)
+
+        def update_dirs(line: str):
+            if line.startswith('set (FFTW3_INCLUDE_DIRS '):
+                return 'set (FFTW3_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../../../include")\n'
+            elif line.startswith('set (FFTW3_LIBRARY_DIRS '):
+                return 'set (FFTW3_LIBRARY_DIRS "${CMAKE_CURRENT_LIST_DIR}/../../")\n'
+
+            return line
+
+        cmake_module = state.install_path / 'lib/cmake/fftw3/FFTW3Config.cmake'
+        self.update_text_file(cmake_module, update_dirs)
+
+
 class FreeImageTarget(base.MakeTarget):
     def __init__(self, name='freeimage'):
         super().__init__(name)

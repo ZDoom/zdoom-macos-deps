@@ -101,6 +101,7 @@ def targets():
         # Obsolete libraries without binaries
         BrotliTarget(),
         ExpatTarget(),
+        FftwTarget(),
         FreeImageTarget(),
         FreeTypeTarget(),
         FtglTarget(),
