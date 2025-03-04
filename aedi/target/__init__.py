@@ -136,6 +136,7 @@ def targets():
         EricWToolsTarget(),
         FFmpegTarget(),
         GlslangTarget(),
+        HackRFTarget(),
         M4Target(),
         P7ZipTarget(),
         PbzxTarget(),

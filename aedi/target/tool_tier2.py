@@ -181,6 +181,27 @@ class GlslangTarget(base.CMakeStaticDependencyTarget):
                 os.unlink(lib_cmake_path / entry)
 
 
+class HackRFTarget(base.CMakeStaticDependencyTarget):
+    # Depends on fftw and usb
+    def __init__(self, name='hackrf'):
+        super().__init__(name)
+        self.src_root = 'host'
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/greatscottgadgets/hackrf/releases/download/v2024.02.1/hackrf-2024.02.1.tar.xz',
+            'd9ced67e6b801cd02c18d0c4654ed18a4bcb36c24a64330c347dfccbd859ad16')
+
+    def configure(self, state: BuildState):
+        state.options['CMAKE_EXE_LINKER_FLAGS'] += '-framework CoreFoundation -framework IOKit -framework Security'
+        super().configure(state)
+
+    @staticmethod
+    def _process_pkg_config(pcfile: Path, line: str) -> str:
+        cflags = 'Cflags:'
+        return cflags + ' -I${includedir} -I${includedir}/libhackrf\n' if line.startswith(cflags) else line
+
+
 class M4Target(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='m4'):
         super().__init__(name)
