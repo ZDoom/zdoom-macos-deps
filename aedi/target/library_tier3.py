@@ -239,6 +239,24 @@ class GlewTarget(base.CMakeStaticDependencyTarget):
         return line
 
 
+class GlfwTarget(base.CMakeStaticDependencyTarget):
+    def __init__(self, name='glfw'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz',
+            'c038d34200234d071fae9345bc455e4a8f2f544ab60150765d7704e08f3dac01',
+            patches='glfw-fix-vsync')
+
+    def configure(self, state: BuildState):
+        opts = state.options
+        opts['GLFW_BUILD_EXAMPLES'] = 'NO'
+        opts['GLFW_BUILD_TESTS'] = 'NO'
+
+        super().configure(state)
+
+
 class HarfBuzzTarget(base.CMakeStaticDependencyTarget):
     def __init__(self, name='harfbuzz'):
         super().__init__(name)

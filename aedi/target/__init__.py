@@ -106,6 +106,7 @@ def targets():
         FreeTypeTarget(),
         FtglTarget(),
         GlewTarget(),
+        GlfwTarget(),
         HarfBuzzTarget(),
         HighwayTarget(),
         JpegTurboTarget(),
