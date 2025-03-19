@@ -1,0 +1,30 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 903931e..b60f629 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -86,11 +86,11 @@ endif()
+ ########################################################################
+ # Install udev rules
+ ########################################################################
+-install(
+-    FILES fobos-sdr.rules
+-    DESTINATION "/etc/udev/rules.d"
+-    COMPONENT "udev"
+-    )
++#install(
++#    FILES fobos-sdr.rules
++#    DESTINATION "/etc/udev/rules.d"
++#    COMPONENT "udev"
++#    )
+ ########################################################################
+ 
+ ########################################################################
+@@ -106,7 +106,7 @@ message(>>> "PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR})
+ ########################################################################
+ # Fobos SDR library
+ ########################################################################
+-add_library(libfobos SHARED fobos/fobos.c)
++add_library(libfobos STATIC fobos/fobos.c)
+ 
+ target_compile_options(libfobos PUBLIC -std=c99)
+ 

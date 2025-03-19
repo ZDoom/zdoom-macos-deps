@@ -102,6 +102,7 @@ def targets():
         BrotliTarget(),
         ExpatTarget(),
         FftwTarget(),
+        FobosTarget(),
         FreeImageTarget(),
         FreeTypeTarget(),
         FtglTarget(),

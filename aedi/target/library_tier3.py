@@ -112,6 +112,23 @@ class FftwTarget(base.CMakeStaticDependencyTarget):
         self.update_text_file(cmake_module, update_dirs)
 
 
+class FobosTarget(base.CMakeStaticDependencyTarget):
+    # Depends on usb
+    def __init__(self, name='fobos'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://github.com/rigexpert/libfobos/archive/refs/tags/v.2.3.2.tar.gz',
+            '4ad2f1268fd4f61796673fff0c6abe3e718dc80f8e3c14e649f6b15c9a8bd0f1',
+            patches='fobos-static-install'
+        )
+
+    def configure(self, state: BuildState):
+        state.options['CMAKE_EXE_LINKER_FLAGS'] += state.run_pkg_config('--libs', 'libusb-1.0')
+        super().configure(state)
+
+
 class FreeImageTarget(base.MakeTarget):
     def __init__(self, name='freeimage'):
         super().__init__(name)
