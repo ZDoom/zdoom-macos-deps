@@ -43,7 +43,7 @@ while test $# -gt 0; do
       echo $exec_prefix
       ;;
     --version)
-      echo 2.32.2
+      echo 2.32.4
       ;;
     --cflags)
       echo -I${prefix}/include/SDL2  -D_THREAD_SAFE
