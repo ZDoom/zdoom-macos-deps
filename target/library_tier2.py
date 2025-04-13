@@ -20,8 +20,8 @@ import os
 import shutil
 from pathlib import Path
 
-from ..state import BuildState
-from . import base
+import aedi.target.base as base
+from aedi.state import BuildState
 
 
 class DumbTarget(base.CMakeStaticDependencyTarget):

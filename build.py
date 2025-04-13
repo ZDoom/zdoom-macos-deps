@@ -28,11 +28,13 @@ if sys.version_info < _min_version:
 
 sys.dont_write_bytecode = True
 
-from aedi import Builder  # noqa: E402
+import aedi  # noqa: E402
+import target  # noqa: E402
 
 
 def _main():
-    builder = Builder()
+    builder = aedi.Builder()
+    builder.targets += target.targets()
 
     group = builder.argparser.add_argument_group('Hacks')
     group.add_argument('--static-moltenvk', action='store_true', help='link with static MoltenVK library')

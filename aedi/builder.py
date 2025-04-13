@@ -41,9 +41,10 @@ from .utility import (
 class Builder(object):
     def __init__(self):
         self.argparser = argparse.ArgumentParser()
+        self.targets = targets()
 
     def _create_state(self, args: list):
-        self._targets = CaseInsensitiveDict({target.name: target for target in targets()})
+        self._targets = CaseInsensitiveDict({target.name: target for target in self.targets})
 
         state = self._state = BuildState()
         state.arguments = arguments = self._parse_arguments(args)
@@ -81,6 +82,7 @@ class Builder(object):
                 target.initialize(state)
 
         del self._targets
+        del self.targets
 
         if arguments.build_path:
             state.build_path = Path(arguments.build_path).absolute()

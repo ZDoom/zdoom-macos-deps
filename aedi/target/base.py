@@ -592,3 +592,43 @@ cpu_family = '{cpu_family}'
 cpu = '{cpu}'
 endian = 'little'
 ''')
+
+
+class MakeMainTarget(MakeTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+        self.destination = self.DESTINATION_OUTPUT
+
+
+class CMakeMainTarget(CMakeTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+        self.destination = self.DESTINATION_OUTPUT
+        self.outputs = (self.name + '.app',)
+
+    def post_build(self, state: BuildState):
+        if state.xcode:
+            return
+
+        if state.install_path.exists():
+            shutil.rmtree(state.install_path)
+
+        os.makedirs(state.install_path)
+
+        for output in self.outputs:
+            src = state.build_path / output
+            dst_sep_pos = output.rfind(os.sep)
+            dst = state.install_path / (output if dst_sep_pos == -1 else output[dst_sep_pos + 1:])
+
+            if src.is_dir():
+                shutil.copytree(src, dst)
+            else:
+                shutil.copy(src, dst)
+
+
+class CMakeSingleExeMainTarget(CMakeMainTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+        self.outputs = (name,)
