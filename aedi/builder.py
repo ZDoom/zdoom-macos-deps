@@ -39,12 +39,14 @@ from .utility import (
 
 
 class Builder(object):
-    def __init__(self, args: list):
+    def __init__(self):
+        self.argparser = argparse.ArgumentParser()
+
+    def _create_state(self, args: list):
         self._targets = CaseInsensitiveDict({target.name: target for target in targets()})
 
-        arguments = self._parse_arguments(args)
-
         state = self._state = BuildState()
+        state.arguments = arguments = self._parse_arguments(args)
         state.xcode = arguments.xcode
         state.verbose = arguments.verbose
 
@@ -92,8 +94,6 @@ class Builder(object):
 
         self._environment = state.environment
 
-        state.static_moltenvk = arguments.static_moltenvk
-        state.quasi_glib = arguments.quasi_glib
         state.jobs = arguments.jobs and arguments.jobs or self._get_default_job_count()
 
     def _get_default_job_count(self):
@@ -138,7 +138,9 @@ class Builder(object):
                 self._platforms.insert(0, native_platform)
                 break
 
-    def run(self):
+    def run(self, args: list):
+        self._create_state(args)
+
         state = self._state
         target = self._target
         target.prepare_source(state)
@@ -330,7 +332,7 @@ class Builder(object):
     def _parse_arguments(self, args: list):
         assert self._targets
 
-        parser = argparse.ArgumentParser(description='*ZDoom binary dependencies for macOS')
+        parser = self.argparser
 
         excl_group = parser.add_mutually_exclusive_group(required=True)
         excl_group.add_argument('--target', choices=self._targets.keys(), help='target to build')
@@ -355,9 +357,5 @@ class Builder(object):
         group.add_argument('--temp-path', metavar='path', help='path to temporary files directory')
         group.add_argument('--sdk-path-x64', metavar='path', help='path to macOS SDK for x86_64')
         group.add_argument('--sdk-path-arm', metavar='path', help='path to macOS SDK for ARM64')
-
-        group = parser.add_argument_group('Hacks')
-        group.add_argument('--static-moltenvk', action='store_true', help='link with static MoltenVK library')
-        group.add_argument('--quasi-glib', action='store_true', help='link with QuasiGlib library')
 
         return parser.parse_args(args)

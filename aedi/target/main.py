@@ -89,7 +89,7 @@ class ZDoomBaseTarget(CMakeMainTarget):
         pkg_config_args = ['--libs', 'openal', 'sndfile']
         linker_flags = f'{state.lib_path}/libz.a '
 
-        if state.quasi_glib:
+        if state.arguments.quasi_glib:
             linker_flags += '-lquasi-glib '
         else:
             pkg_config_args.append('glib-2.0')
@@ -110,7 +110,7 @@ class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
         super().__init__(name)
 
     def configure(self, state: BuildState):
-        if state.static_moltenvk:
+        if state.arguments.static_moltenvk:
             state.options['CMAKE_EXE_LINKER_FLAGS'] += '-framework Metal -framework IOSurface -lMoltenVK-static'
 
             # Unset SDK because MoltenVK usually requires the latest one shipped with Xcode
@@ -156,7 +156,7 @@ class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
         super().configure(state)
 
     def post_build(self, state: BuildState):
-        if not state.static_moltenvk:
+        if not state.arguments.static_moltenvk:
             # Put MoltenVK library into application bundle
             molten_lib = 'libMoltenVK.dylib'
             src_path = state.lib_path / molten_lib

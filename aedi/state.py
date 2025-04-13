@@ -59,9 +59,7 @@ class BuildState:
         self.verbose = False
         self.jobs = 1
 
-        self.static_moltenvk = False
-        self.quasi_glib = False
-
+        self.arguments = None
         self.environment = os.environ.copy()
         self.options = CommandLineOptions()
 

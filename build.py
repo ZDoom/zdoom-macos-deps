@@ -30,5 +30,16 @@ sys.dont_write_bytecode = True
 
 from aedi import Builder  # noqa: E402
 
+
+def _main():
+    builder = Builder()
+
+    group = builder.argparser.add_argument_group('Hacks')
+    group.add_argument('--static-moltenvk', action='store_true', help='link with static MoltenVK library')
+    group.add_argument('--quasi-glib', action='store_true', help='link with QuasiGlib library')
+
+    builder.run(sys.argv[1:])
+
+
 if __name__ == '__main__':
-    Builder(sys.argv[1:]).run()
+    _main()
