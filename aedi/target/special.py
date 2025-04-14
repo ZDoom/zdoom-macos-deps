@@ -55,27 +55,6 @@ class CleanDepsTarget(CleanAllTarget):
         self.args += (state.deps_path,)
 
 
-class DownloadCMakeTarget(base.Target):
-    def __init__(self, name='download-cmake'):
-        super().__init__(name)
-
-    def build(self, state: BuildState):
-        cmake_version = '3.21.1'
-        cmake_basename = f'cmake-{cmake_version}-macos10.10-universal'
-        cmake_url = f'https://github.com/Kitware/CMake/releases/download/v{cmake_version}/{cmake_basename}.tar.gz'
-        state.download_source(cmake_url, '20dbede1d80c1ac80be2966172f8838c3d899951ac4467372f806b386d42ad3c')
-
-        target_path = state.deps_path / 'cmake'
-        if target_path.exists():
-            shutil.rmtree(target_path)
-        target_path.mkdir()
-
-        source_path = state.source / 'CMake.app' / 'Contents'
-        shutil.move(str(source_path / 'bin'), target_path)
-        shutil.move(str(source_path / 'share'), target_path)
-        shutil.rmtree(state.source)
-
-
 class TestDepsTarget(base.BuildTarget):
     def __init__(self, name='test-deps'):
         super().__init__(name)

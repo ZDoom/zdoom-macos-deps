@@ -35,6 +35,5 @@ def targets():
         BuildPrefix(),
         CleanAllTarget(),
         CleanDepsTarget(),
-        DownloadCMakeTarget(),
         TestDepsTarget(),
     )
