@@ -101,7 +101,7 @@ class BuildTarget(Target):
         # Avoid timestamp only differences in static libraries
         env['ZERO_AR_DATE'] = '1'
 
-    def install(self, state: BuildState, options: typing.Optional[CommandLineOptions] = None, tool: str = 'gmake'):
+    def install(self, state: BuildState, options: typing.Optional[CommandLineOptions] = None, tool: str = 'make'):
         if state.xcode:
             return
 
@@ -263,7 +263,7 @@ Cflags: -I${{includedir}} {cflags}
 class MakeTarget(BuildTarget):
     def __init__(self, name=None):
         super().__init__(name)
-        self.tool = 'gmake'
+        self.tool = 'make'
 
     def configure(self, state: BuildState):
         super().configure(state)
@@ -428,7 +428,7 @@ class CMakeTarget(BuildTarget):
         if state.xcode:
             args = ['cmake', '--open', '.']
         else:
-            args = ['gmake', '-j', state.jobs]
+            args = ['make', '-j', state.jobs]
 
             if state.verbose:
                 args.append('VERBOSE=1')

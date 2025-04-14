@@ -63,10 +63,6 @@ class GmakeTarget(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='gmake'):
         super().__init__(name)
 
-        # Target's directory is removed before configuration step
-        # gmake cannot be used to build itself, use system's make instead
-        self.tool = 'make'
-
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://ftp.gnu.org/gnu/make/make-4.4.1.tar.lz',
