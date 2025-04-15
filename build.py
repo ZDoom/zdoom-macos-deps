@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import os
 import sys
 
 _min_version = (3, 8, 0, 'final', 0)
@@ -27,6 +28,9 @@ if sys.version_info < _min_version:
     exit(1)
 
 sys.dont_write_bytecode = True
+
+root_path = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(f'{root_path}{os.sep}core')
 
 import aedi  # noqa: E402
 import target  # noqa: E402
