@@ -17,7 +17,6 @@
 #
 
 import shlex
-import shutil
 import subprocess
 
 from ..state import BuildState
