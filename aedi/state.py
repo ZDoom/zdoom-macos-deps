@@ -21,6 +21,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import typing
 import urllib.request
 from pathlib import Path
@@ -31,8 +32,8 @@ from .utility import CommandLineOptions
 
 class BuildState:
     def __init__(self):
-        self_path = Path(__file__)
-        self.root_path = self_path.parent.parent
+        entry_script = Path(sys.argv[0]).absolute()
+        self.root_path = entry_script.parent
         self.deps_path = self.root_path / 'deps'
         self.prefix_path = self.root_path / 'prefix'
         self.bin_path = self.prefix_path / 'bin'
