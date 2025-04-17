@@ -149,7 +149,7 @@ class PkgConfigTarget(base.ConfigureMakeDependencyTarget):
         return state.has_source_file('pkg-config.1')
 
     def post_build(self, state: BuildState):
-        self.copy_to_bin(state, new_filename=self.name + '.exe')
+        self.copy_to_bin(state, new_filename=self.name)
 
 
 class YasmTarget(base.ConfigureMakeDependencyTarget):

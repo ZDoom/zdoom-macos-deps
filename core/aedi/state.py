@@ -62,6 +62,7 @@ class BuildState:
 
         self.arguments = None
         self.environment = os.environ.copy()
+        self.environment['PKG_CONFIG_PATH'] = str(self.lib_path / 'pkgconfig')
         self.options = CommandLineOptions()
 
     def architecture(self) -> str:
@@ -259,7 +260,11 @@ class BuildState:
     def run_pkg_config(self, *args) -> str:
         os.makedirs(self.build_path, exist_ok=True)
 
-        args = (self.bin_path / 'pkg-config',) + args
+        args = (
+            self.bin_path / 'pkg-config',
+            f'--define-variable=prefix={self.prefix_path}',
+            '--static',
+        ) + args
         result = subprocess.run(args, check=True, cwd=self.build_path, env=self.environment, stdout=subprocess.PIPE)
 
         return result.stdout.decode('utf-8').rstrip('\n')
