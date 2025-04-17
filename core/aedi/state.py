@@ -1,5 +1,5 @@
 #
-#    Helper module to build macOS version of various source ports
+#    Module to build various libraries and tools for macOS
 #    Copyright (C) 2020-2025 Alexey Lysiuk
 #
 #    This program is free software: you can redistribute it and/or modify
