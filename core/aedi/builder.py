@@ -38,6 +38,15 @@ from .utility import (
 )
 
 
+def _symlink_dep(deps_path: Path, prefix_path: Path, cleanup: bool):
+    for dep in deps_path.iterdir():
+        if dep.is_dir():
+            symlink_directory(dep, prefix_path, cleanup)
+
+            # Do symlink cleanup only once
+            cleanup = False
+
+
 class Builder(object):
     def __init__(self):
         self.argparser = argparse.ArgumentParser()
@@ -292,18 +301,18 @@ class Builder(object):
 
     def _create_prefix_directory(self):
         state = self._state
-        os.makedirs(state.prefix_path, exist_ok=True)
+        prefix_path = state.prefix_path
+        core_deps_path = state.core_deps_path
+        deps_path = state.deps_path
 
-        cleanup = True
+        os.makedirs(prefix_path, exist_ok=True)
 
-        for dep in state.deps_path.iterdir():
-            if dep.is_dir():
-                symlink_directory(dep, state.prefix_path, cleanup)
+        _symlink_dep(core_deps_path, prefix_path, cleanup=True)
 
-                # Do symlink cleanup only once
-                cleanup = False
+        if core_deps_path != deps_path:
+            _symlink_dep(deps_path, prefix_path, cleanup=False)
 
-        Builder._remove_empty_directories(state.prefix_path)
+        Builder._remove_empty_directories(prefix_path)
 
     @staticmethod
     def _remove_empty_directories(path: Path) -> int:

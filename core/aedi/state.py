@@ -34,6 +34,7 @@ class BuildState:
     def __init__(self):
         entry_script = Path(sys.argv[0]).absolute()
         self.root_path = entry_script.parent
+        self.core_deps_path = Path(__file__).parent.parent.absolute() / 'deps'
         self.deps_path = self.root_path / 'deps'
         self.prefix_path = self.root_path / 'prefix'
         self.bin_path = self.prefix_path / 'bin'
