@@ -10,6 +10,13 @@
       <excludeFolder url="file://$MODULE_DIR$/sdk" />
       <excludeFolder url="file://$MODULE_DIR$/source" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
+      <excludeFolder url="file://$MODULE_DIR$/core/build" />
+      <excludeFolder url="file://$MODULE_DIR$/core/deps" />
+      <excludeFolder url="file://$MODULE_DIR$/core/output" />
+      <excludeFolder url="file://$MODULE_DIR$/core/prefix" />
+      <excludeFolder url="file://$MODULE_DIR$/core/sdk" />
+      <excludeFolder url="file://$MODULE_DIR$/core/source" />
+      <excludeFolder url="file://$MODULE_DIR$/core/temp" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
