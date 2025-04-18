@@ -90,8 +90,8 @@ class MesonTarget(base.BuildTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/mesonbuild/meson/releases/download/1.3.0/meson-1.3.0.tar.gz',
-            '4ba253ef60e454e23234696119cbafa082a0aead0bd3bbf6991295054795f5dc')
+            'https://github.com/mesonbuild/meson/releases/download/1.7.2/meson-1.7.2.tar.gz',
+            '4d40d63aa748a9c139cc41ab9bffe43edd113c5639d78bde81544ca955aea890')
 
     def detect(self, state: BuildState) -> bool:
         return state.has_source_file('meson.py')
