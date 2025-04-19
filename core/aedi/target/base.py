@@ -451,7 +451,15 @@ class ConfigureMakeStaticDependencyTarget(ConfigureMakeDependencyTarget):
         super().configure(state)
 
 
-class CMakeStaticDependencyTarget(CMakeTarget):
+class CMakeDependencyTarget(CMakeTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+    def post_build(self, state: BuildState):
+        self.install(state)
+
+
+class CMakeStaticDependencyTarget(CMakeDependencyTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
