@@ -308,3 +308,7 @@ class BuildState:
             version = git_describe.stdout.decode('ascii')
 
         return version
+
+    def delete_install_directory(self):
+        if not self.xcode and self.install_path.exists():
+            shutil.rmtree(self.install_path)
