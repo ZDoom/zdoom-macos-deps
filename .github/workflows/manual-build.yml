@@ -18,13 +18,12 @@ on:
           - ARM
       runner-os:
         description: 'Runner macOS version'
-        default: macos-13
+        default: macos-15
         type: choice
         options:
-          - macos-11
-          - macos-12
           - macos-13
           - macos-14
+          - macos-15
       min-os-ver-intel:
         description: 'macOS deployment version for Intel'
         type: string
