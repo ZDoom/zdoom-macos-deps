@@ -28,6 +28,7 @@ def targets():
         MesonTarget(),
         NasmTarget(),
         NinjaTarget(),
+        PkgconfTarget(),
         PkgConfigTarget(),
         YasmTarget(),
 

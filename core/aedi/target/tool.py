@@ -136,6 +136,35 @@ class NinjaTarget(base.CMakeStaticDependencyTarget):
         super().configure(state)
 
 
+class PkgconfTarget(base.ConfigureMakeStaticDependencyTarget):
+    def __init__(self, name='pkgconf'):
+        super().__init__(name)
+
+    def prepare_source(self, state: BuildState):
+        state.download_source(
+            'https://distfiles.ariadne.space/pkgconf/pkgconf-2.4.3.tar.xz',
+            '51203d99ed573fa7344bf07ca626f10c7cc094e0846ac4aa0023bd0c83c25a41')
+
+    def detect(self, state: BuildState) -> bool:
+        return state.has_source_file('libpkgconf/libpkgconf.h')
+
+    def configure(self, state: BuildState):
+        hardcoded_prefix = '/usr/local'
+        hardcoded_libdir = hardcoded_prefix + '/lib'
+        hardcoded_pkgdir = hardcoded_libdir + '/pkgconfig'
+
+        opts = state.options
+        opts['--with-personality-dir'] = hardcoded_pkgdir + '/personality.d'
+        opts['--with-pkg-config-dir'] = hardcoded_pkgdir
+        opts['--with-system-includedir'] = hardcoded_prefix + '/include'
+        opts['--with-system-libdir'] = hardcoded_libdir
+
+        super().configure(state)
+
+    def post_build(self, state: BuildState):
+        self.copy_to_bin(state, new_filename='pkg-config')
+
+
 class PkgConfigTarget(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='pkg-config'):
         super().__init__(name)
