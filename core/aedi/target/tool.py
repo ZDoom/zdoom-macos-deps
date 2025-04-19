@@ -165,22 +165,6 @@ class PkgconfTarget(base.ConfigureMakeStaticDependencyTarget):
         self.copy_to_bin(state, new_filename='pkg-config')
 
 
-class PkgConfigTarget(base.ConfigureMakeDependencyTarget):
-    def __init__(self, name='pkg-config'):
-        super().__init__(name)
-
-    def prepare_source(self, state: BuildState):
-        state.download_source(
-            'https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz',
-            '6fc69c01688c9458a57eb9a1664c9aba372ccda420a02bf4429fe610e7e7d591')
-
-    def detect(self, state: BuildState) -> bool:
-        return state.has_source_file('pkg-config.1')
-
-    def post_build(self, state: BuildState):
-        self.copy_to_bin(state, new_filename=self.name)
-
-
 class YasmTarget(base.ConfigureMakeDependencyTarget):
     def __init__(self, name='yasm'):
         super().__init__(name)

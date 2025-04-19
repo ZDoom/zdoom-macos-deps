@@ -29,7 +29,6 @@ def targets():
         NasmTarget(),
         NinjaTarget(),
         PkgconfTarget(),
-        PkgConfigTarget(),
         YasmTarget(),
 
         # Special
