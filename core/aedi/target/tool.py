@@ -163,7 +163,7 @@ class PkgconfTarget(base.ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
     def post_build(self, state: BuildState):
-        self.copy_to_bin(state, new_filename='pkg-config')
+        self.copy_to_bin(state)
 
 
 class YasmTarget(base.ConfigureMakeDependencyTarget):
