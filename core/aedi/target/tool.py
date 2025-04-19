@@ -114,8 +114,8 @@ class NasmTarget(base.ConfigureMakeDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://www.nasm.us/pub/nasm/releasebuilds/2.16.02/nasm-2.16.02.tar.xz',
-            '1e1b942ea88f22edae89659e15be26fa027eae0747f51413540f52d4eac4790d',
+            'https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/nasm-2.16.03.tar.xz',
+            '1412a1c760bbd05db026b6c0d1657affd6631cd0a63cddb6f73cc6d4aa616148',
             patches='nasm-deterministic-date')
 
     def detect(self, state: BuildState) -> bool:
