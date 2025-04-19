@@ -105,9 +105,6 @@ class BuildTarget(Target):
         if state.xcode:
             return
 
-        if state.install_path.exists():
-            shutil.rmtree(state.install_path)
-
         args = [tool]
         args += options and options.to_list() or ['install']
 
@@ -462,9 +459,6 @@ class CMakeStaticDependencyTarget(CMakeTarget):
         state.options['BUILD_SHARED_LIBS'] = 'NO'
         super().configure(state)
 
-    def post_build(self, state: BuildState):
-        self.install(state)
-
     def keep_module_target(self, state: BuildState, target: str, module_paths: typing.Sequence[Path] = ()):
         import_patterns = (
             r'list\s*\(APPEND\s+_cmake_import_check_targets\s+(?P<target>[\w:-]+)[\s)]',
@@ -611,9 +605,6 @@ class CMakeMainTarget(CMakeTarget):
     def post_build(self, state: BuildState):
         if state.xcode:
             return
-
-        if state.install_path.exists():
-            shutil.rmtree(state.install_path)
 
         os.makedirs(state.install_path)
 

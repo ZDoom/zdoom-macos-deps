@@ -244,9 +244,6 @@ class MoltenVKTarget(base.MakeTarget):
         if state.xcode:
             return
 
-        if state.install_path.exists():
-            shutil.rmtree(state.install_path)
-
         include_path = state.install_path / 'include'
         os.makedirs(include_path)
 
