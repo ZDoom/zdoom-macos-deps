@@ -32,14 +32,16 @@ from .utility import CommandLineOptions
 
 class BuildState:
     def __init__(self):
+        core_path = Path(__file__).parent.parent.absolute()
         entry_script = Path(sys.argv[0]).absolute()
         self.root_path = entry_script.parent
-        self.core_deps_path = Path(__file__).parent.parent.absolute() / 'deps'
+        self.core_deps_path = core_path / 'deps'
         self.deps_path = self.root_path / 'deps'
         self.prefix_path = self.root_path / 'prefix'
         self.bin_path = self.prefix_path / 'bin'
         self.include_path = self.prefix_path / 'include'
         self.lib_path = self.prefix_path / 'lib'
+        self.core_patch_path = core_path / 'patch'
         self.patch_path = self.root_path / 'patch'
         self.source_path = self.root_path / 'source'
         self.temp_path = self.root_path / 'temp'
@@ -244,7 +246,12 @@ class BuildState:
         return first_path_component, extract_path
 
     def _apply_source_patch(self, extract_path: Path, patch: str):
-        patch_path = self.patch_path / (patch + '.diff')
+        patch_filename = patch + '.diff'
+        patch_path = self.patch_path / patch_filename
+
+        if not patch_path.exists():
+            patch_path = self.core_patch_path / patch_filename
+
         assert patch_path.exists()
 
         args = ['patch', '--strip=1', '--input=' + str(patch_path)]
