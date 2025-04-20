@@ -105,9 +105,6 @@ class BuildTarget(Target):
         if state.xcode:
             return
 
-        if state.install_path.exists():
-            shutil.rmtree(state.install_path)
-
         args = [tool]
         args += options and options.to_list() or ['install']
 
@@ -616,9 +613,6 @@ class CMakeMainTarget(CMakeTarget):
     def post_build(self, state: BuildState):
         if state.xcode:
             return
-
-        if state.install_path.exists():
-            shutil.rmtree(state.install_path)
 
         os.makedirs(state.install_path)
 

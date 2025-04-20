@@ -248,9 +248,6 @@ class PortMidiTarget(base.CMakeTarget):
             patches='portmidi-modernize-cmake')
 
     def post_build(self, state: BuildState):
-        if state.install_path.exists():
-            shutil.rmtree(state.install_path)
-
         include_path = state.install_path / 'include'
         os.makedirs(include_path)
         shutil.copy(state.source / 'pm_common/portmidi.h', include_path)

@@ -162,9 +162,7 @@ class Builder(object):
             state.install_path = state.output_path / target.name
 
         assert state.install_path
-
-        if not state.xcode and state.install_path.exists():
-            shutil.rmtree(state.install_path)
+        state.delete_install_directory()
 
         self._create_prefix_directory()
 
@@ -205,6 +203,7 @@ class Builder(object):
                 state.native_build_path = state.build_path
 
             state.install_path = base_build_path / ('install_' + platform.architecture)
+            state.delete_install_directory()
 
             self._build(target)
 
