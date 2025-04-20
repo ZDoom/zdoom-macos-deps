@@ -454,16 +454,21 @@ class ConfigureMakeStaticDependencyTarget(ConfigureMakeDependencyTarget):
         super().configure(state)
 
 
-class CMakeStaticDependencyTarget(CMakeTarget):
+class CMakeDependencyTarget(CMakeTarget):
+    def __init__(self, name=None):
+        super().__init__(name)
+
+    def post_build(self, state: BuildState):
+        self.install(state)
+
+
+class CMakeStaticDependencyTarget(CMakeDependencyTarget):
     def __init__(self, name=None):
         super().__init__(name)
 
     def configure(self, state: BuildState):
         state.options['BUILD_SHARED_LIBS'] = 'NO'
         super().configure(state)
-
-    def post_build(self, state: BuildState):
-        self.install(state)
 
     def keep_module_target(self, state: BuildState, target: str, module_paths: typing.Sequence[Path] = ()):
         import_patterns = (
