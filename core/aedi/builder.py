@@ -35,7 +35,7 @@ from .utility import (
     CaseInsensitiveDict,
     CommandLineOptions,
     TargetPlatform,
-    symlink_directory,
+    hardlink_directories,
 )
 
 _MACHO_MAGIC = b'\xcf\xfa\xed\xfe'
@@ -128,15 +128,6 @@ class MachOFixer:
                 self._fix_dir(subpath)
             else:
                 self._fix_file(subpath)
-
-
-def _symlink_dep(deps_path: Path, prefix_path: Path, cleanup: bool):
-    for dep in deps_path.iterdir():
-        if dep.is_dir():
-            symlink_directory(dep, prefix_path, cleanup)
-
-            # Do symlink cleanup only once
-            cleanup = False
 
 
 class Builder(object):
@@ -401,30 +392,15 @@ class Builder(object):
 
         os.makedirs(prefix_path, exist_ok=True)
 
-        _symlink_dep(core_deps_path, prefix_path, cleanup=True)
+        def list_dir(path: Path):
+            return [e for e in path.iterdir() if not str(e).endswith('.gitignore')]
+
+        entries = list_dir(core_deps_path)
 
         if core_deps_path != deps_path:
-            _symlink_dep(deps_path, prefix_path, cleanup=False)
+            entries += list_dir(deps_path)
 
-        Builder._remove_empty_directories(prefix_path)
-
-    @staticmethod
-    def _remove_empty_directories(path: Path) -> int:
-        content: typing.List[str] = os.listdir(path)
-        count = len(content)
-        removed = 0
-
-        for entry in content:
-            abspath = path / entry
-
-            if os.path.isdir(abspath):
-                removed += Builder._remove_empty_directories(abspath)
-
-        if count == removed:
-            os.rmdir(path)
-            removed = 1
-
-        return removed
+        hardlink_directories(entries, prefix_path)
 
     def _detect_target(self):
         for name, target in self._targets.items():
