@@ -18,6 +18,7 @@
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import typing
@@ -36,6 +37,97 @@ from .utility import (
     TargetPlatform,
     symlink_directory,
 )
+
+_MACHO_MAGIC = b'\xcf\xfa\xed\xfe'
+
+
+class MachOFixer:
+    _DESIRED_RPATH = '@loader_path/../lib'
+
+    def __init__(self, state: BuildState):
+        self.state = state
+        self.is_rpath_set = False
+
+    def run(self):
+        self._fix_dir(self.state.install_path)
+
+    @staticmethod
+    def _get_path(line: str) -> str:
+        match = re.match(r'\s*(name|path) (.+) \(offset \d+\)', line)
+        return match.group(2) if match else ''
+
+    def _run_install_name_tool(self, *args):
+        args = ('install_name_tool',) + args
+        subprocess.run(args, check=True, env=self.state.environment)
+
+    def _update_id_dylib(self, macho: Path, line: str):
+        if path := self._get_path(line):
+            if not path.startswith('@rpath/'):
+                path = os.path.basename(path)
+                self._run_install_name_tool('-id', f'@rpath/{path}', macho)
+
+    def _update_load_dylib(self, macho: Path, line: str):
+        if path := self._get_path(line):
+            for prefix in ('/System/', '/usr/lib/', '@rpath/'):
+                if path.startswith(prefix):
+                    return
+
+            new_path = os.path.basename(path)
+            self._run_install_name_tool('-change', path, f'@rpath/{new_path}', macho)
+
+    def _update_rpath(self, macho: Path, line: str):
+        if path := self._get_path(line):
+            if path != self._DESIRED_RPATH:
+                args = ('-delete_rpath', path) if self.is_rpath_set \
+                    else ('-rpath', path, self._DESIRED_RPATH)
+                self._run_install_name_tool(*args, macho)
+
+            self.is_rpath_set = True
+
+    def _fix_file(self, path: Path):
+        with open(path, 'rb') as f:
+            header = f.read(8)
+
+        if header[:4] != _MACHO_MAGIC:
+            return
+
+        otool_args = ('otool', '-l', path)
+        otool_result = subprocess.run(otool_args, check=True, env=self.state.environment, stdout=subprocess.PIPE)
+        otool_output = otool_result.stdout.decode('utf-8')
+
+        commands = re.split(r'Load command \d+\n', otool_output)[1:]
+        commands = [command.split('\n') for command in commands]
+
+        self.is_rpath_set = False
+
+        for command in commands:
+            if len(command) < 3:
+                continue
+
+            command_id = command[0].lstrip()
+            command_path = command[2]
+
+            if command_id == 'cmd LC_ID_DYLIB':
+                self._update_id_dylib(path, command_path)
+            elif command_id == 'cmd LC_LOAD_DYLIB':
+                self._update_load_dylib(path, command_path)
+            elif command_id == 'cmd LC_RPATH':
+                self._update_rpath(path, command_path)
+
+        if not self.is_rpath_set:
+            args = ('install_name_tool', '-add_rpath', self._DESIRED_RPATH, path)
+            subprocess.run(args, check=True, env=self.state.environment)
+
+    def _fix_dir(self, path: Path):
+        for name in path.iterdir():
+            subpath = path / name
+
+            if name.is_symlink():
+                continue
+            elif name.is_dir():
+                self._fix_dir(subpath)
+            else:
+                self._fix_file(subpath)
 
 
 def _symlink_dep(deps_path: Path, prefix_path: Path, cleanup: bool):
@@ -184,6 +276,9 @@ class Builder(object):
         target.build(state)
         target.post_build(state)
 
+        if state.install_path.exists():
+            MachOFixer(state).run()
+
     def _build_multiple_platforms(self, target: Target):
         assert target.multi_platform
 
@@ -236,7 +331,7 @@ class Builder(object):
         with open(src, 'rb') as f:
             header = f.read(8)
 
-        is_executable = header[:4] == b'\xcf\xfa\xed\xfe'
+        is_executable = header[:4] == _MACHO_MAGIC
         is_library = header == b'!<arch>\n'
 
         if is_executable or is_library:
