@@ -47,6 +47,8 @@ jobs:
     runs-on: ${{ inputs.runner-os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
 
       - name: Build target
         run: |
