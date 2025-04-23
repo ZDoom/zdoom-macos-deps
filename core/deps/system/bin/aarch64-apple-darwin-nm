@@ -1,2 +1,0 @@
-#!/bin/sh
-nm -arch arm64 "$@"
