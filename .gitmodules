@@ -1,3 +1,3 @@
 [submodule "core"]
 	path = core
-	url = https://github.com/alexey-lysiuk/aedi-core.git
+	url = https://github.com/aedi-org/core.git
