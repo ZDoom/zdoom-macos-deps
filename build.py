@@ -27,6 +27,7 @@ if sys.version_info < _min_version:
     print(f'This module requires Python {_min_version[0]}.{_min_version[1]}.{_min_version[2]} or newer')
     exit(1)
 
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 sys.dont_write_bytecode = True
 
 root_path = os.path.abspath(os.path.dirname(__file__))
