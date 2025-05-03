@@ -213,8 +213,8 @@ class MoltenVKTarget(base.MakeTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.3.0.tar.gz',
-            '9476033d49ef02776ebab288fffae3e28fd627a3e29b7ae5975a1e1c785bf912')
+            'https://github.com/KhronosGroup/MoltenVK/archive/refs/tags/v1.2.6.tar.gz',
+            'b6a3d179aa9c41275ed0e35e502e5e3fd347dbe5117a0435a26868b231cd6246')
 
     def initialize(self, state: BuildState):
         super().initialize(state)
@@ -254,7 +254,7 @@ class MoltenVKTarget(base.MakeTarget):
         shutil.copytree(src_path / 'include/MoltenVK', include_path / 'MoltenVK')
         shutil.copy(state.build_path / 'LICENSE', state.install_path / 'apache2.txt')
         shutil.copy(
-            src_path / 'static/MoltenVK.xcframework/macos-arm64_x86_64/libMoltenVK.a',
+            src_path / 'MoltenVK.xcframework/macos-arm64_x86_64/libMoltenVK.a',
             lib_path / 'libMoltenVK-static.a')
 
         self._make_dylib(state)
