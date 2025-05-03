@@ -47,7 +47,7 @@ class ZDoomBaseTarget(CMakeMainTarget):
 
     def configure(self, state: BuildState):
         pkg_config_args = ['--libs', 'openal', 'sndfile']
-        linker_flags = f'{state.lib_path}/libz.a '
+        linker_flags = ''
 
         if state.arguments.quasi_glib:
             linker_flags += '-lquasi-glib '
