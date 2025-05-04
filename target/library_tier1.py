@@ -117,7 +117,7 @@ class GettextTarget(base.ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class GlibTarget(base.MesonTarget):
+class GlibTarget(base.MesonStaticTarget):
     def __init__(self, name='glib'):
         super().__init__(name)
 
