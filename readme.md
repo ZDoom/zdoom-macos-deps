@@ -1,6 +1,6 @@
 # *ZDoom binary dependencies for macOS
 
-This repository contains all binary dependencies required to build macOS application bundles of [ZDoom-derived](https://zdoom.org) source ports. A few other projects are supported as well, with lesser priority though.
+This repository contains all binary dependencies required to build macOS application bundles of [ZDoom-derived](https://zdoom.org) source ports.
 
 [![Build Targets](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/build.yml/badge.svg)](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/build.yml)
 [![Lint Code](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/lint.yml/badge.svg)](https://github.com/ZDoom/zdoom-macos-deps/actions/workflows/lint.yml)
