@@ -321,8 +321,8 @@ class OggTarget(base.CMakeStaticDependencyTarget):
 
     def prepare_source(self, state: BuildState):
         state.download_source(
-            'https://github.com/xiph/ogg/releases/download/v1.3.5/libogg-1.3.5.tar.xz',
-            'c4d91be36fc8e54deae7575241e03f4211eb102afb3fc0775fbbc1b740016705')
+            'https://github.com/xiph/ogg/releases/download/v1.3.6/libogg-1.3.6.tar.xz',
+            '5c8253428e181840cd20d41f3ca16557a9cc04bad4a3d04cce84808677fa1061')
 
 
 class OpenALTarget(base.CMakeStaticDependencyTarget):
