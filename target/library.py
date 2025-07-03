@@ -458,6 +458,8 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
         opts = state.options
         opts['--disable-examples'] = None
         opts['--disable-unit-tests'] = None
+        # Post-processing is enabled by default for Intel only
+        opts['--enable-postproc'] = None
         opts['--target'] = hosts[state.architecture()]
 
         super().configure(state)
