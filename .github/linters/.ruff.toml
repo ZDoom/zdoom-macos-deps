@@ -1,4 +1,0 @@
-[lint]
-# F403 'from ... import *' used; unable to detect undefined names
-# F405 '...' may be undefined, or defined from star imports
-ignore = ["F403", "F405"]
