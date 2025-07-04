@@ -20,10 +20,9 @@ import os
 import shlex
 import shutil
 import subprocess
-from pathlib import Path
 
-import aedi.target.base as base
 from aedi.state import BuildState
+from aedi.target import base
 
 
 class Bzip2Target(base.MakeTarget):
@@ -144,7 +143,7 @@ class GlibTarget(base.MesonStaticTarget):
         self.make_platform_header(state, '../lib/glib-2.0/include/glibconfig.h')
 
     @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
+    def _process_pkg_config(_, line: str) -> str:
         return 'exec_prefix=${prefix}\n' + line if line.startswith('libdir=') else line
 
 
@@ -364,13 +363,13 @@ class OpusTarget(base.CMakeStaticDependencyTarget):
         super().configure(state)
 
     @staticmethod
-    def _process_pkg_config(pcfile: Path, line: str) -> str:
+    def _process_pkg_config(_, line: str) -> str:
         cflags = 'Cflags:'
         libs = 'Libs:'
 
         if line.startswith(cflags):
             return cflags + ' -I${includedir}/opus\n'
-        elif line.startswith(libs):
+        if line.startswith(libs):
             return libs + ' -L${libdir} -lopus\n'
 
         return line
@@ -394,10 +393,6 @@ class PcreTarget(base.ConfigureMakeStaticDependencyTarget):
         opts['--enable-cpp'] = 'no'
 
         super().configure(state)
-
-    def post_build(self, state: BuildState):
-        super().post_build(state)
-        self.update_config_script(state.install_path / 'bin/pcre-config')
 
 
 class QuasiGlibTarget(base.CMakeStaticDependencyTarget):
