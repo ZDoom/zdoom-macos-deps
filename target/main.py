@@ -42,9 +42,6 @@ def _force_openal_soft(state: BuildState):
 
 
 class ZDoomBaseTarget(CMakeMainTarget):
-    def __init__(self, name=None):
-        super().__init__(name)
-
     def configure(self, state: BuildState):
         pkg_config_args = ['--libs', 'openal', 'sndfile']
         linker_flags = ''
@@ -66,9 +63,6 @@ class ZDoomBaseTarget(CMakeMainTarget):
 
 
 class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
-    def __init__(self, name=None):
-        super().__init__(name)
-
     def configure(self, state: BuildState):
         if state.arguments.static_moltenvk:
             state.options['CMAKE_EXE_LINKER_FLAGS'] += '-framework Metal -framework IOSurface -lMoltenVK-static'
@@ -139,32 +133,32 @@ class ZDoomVulkanBaseTarget(ZDoomBaseTarget):
 
 
 class GZDoomTarget(ZDoomVulkanBaseTarget):
-    def __init__(self, name='gzdoom'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('gzdoom')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/ZDoom/gzdoom.git')
 
 
 class QZDoomTarget(ZDoomVulkanBaseTarget):
-    def __init__(self, name='qzdoom'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('qzdoom')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/ZDoom/qzdoom.git')
 
 
 class VkDoomTarget(ZDoomVulkanBaseTarget):
-    def __init__(self, name='vkdoom'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('vkdoom')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/dpjudas/VkDoom.git')
 
 
 class LZDoomTarget(ZDoomBaseTarget):
-    def __init__(self, name='lzdoom'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('lzdoom')
         self.unsupported_architectures = ('arm64',)
 
     def configure(self, state: BuildState):
@@ -183,64 +177,64 @@ class LZDoomTarget(ZDoomBaseTarget):
 
 
 class RazeTarget(ZDoomVulkanBaseTarget):
-    def __init__(self, name='raze'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('raze')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/ZDoom/Raze.git')
 
 
 class HandsOfNecromancyTarget(ZDoomVulkanBaseTarget):
-    def __init__(self, name='handsofnecromancy'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('handsofnecromancy')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/HandsOfNecromancy/HandsOfNecromancy-Engine.git')
 
 
 class RedemptionTarget(ZDoomVulkanBaseTarget):
-    def __init__(self, name='redemption'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('redemption')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/RedemptionEngine/redemption.git')
 
 
 class DisdainTarget(ZDoomVulkanBaseTarget):
-    def __init__(self, name='disdain'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('disdain')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/MischiefDonut/disdain-src.git')
 
 
 class AccTarget(CMakeSingleExeMainTarget):
-    def __init__(self, name='acc'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('acc')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/ZDoom/acc.git')
 
 
 class WadExtTarget(CMakeSingleExeMainTarget):
-    def __init__(self, name='wadext'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('wadext')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/ZDoom/wadext.git')
 
 
 class ZdbspTarget(CMakeSingleExeMainTarget):
-    def __init__(self, name='zdbsp'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('zdbsp')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/ZDoom/zdbsp.git')
 
 
 class ZDRayTarget(CMakeSingleExeMainTarget):
-    def __init__(self, name='zdray'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('zdray')
 
     def prepare_source(self, state: BuildState):
         state.checkout_git('https://github.com/ZDoom/ZDRay.git')

@@ -26,8 +26,8 @@ from aedi.target import base
 
 
 class Bzip2Target(base.MakeTarget):
-    def __init__(self, name='bzip2'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('bzip2')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -58,8 +58,8 @@ class Bzip2Target(base.MakeTarget):
 
 
 class FfiTarget(base.ConfigureMakeStaticDependencyTarget):
-    def __init__(self, name='ffi'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('ffi')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -77,8 +77,8 @@ class FfiTarget(base.ConfigureMakeStaticDependencyTarget):
 
 
 class FlacTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='flac'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('flac')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -95,10 +95,7 @@ class FlacTarget(base.CMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class GettextTarget(base.ConfigureMakeStaticDependencyTarget):
-    def __init__(self, name='gettext'):
-        super().__init__(name)
-
+class GettextBaseTarget(base.ConfigureMakeStaticDependencyTarget):
     def prepare_source(self, state: BuildState):
         state.download_source(
             'https://ftp.gnu.org/gnu/gettext/gettext-0.21.tar.xz',
@@ -116,9 +113,14 @@ class GettextTarget(base.ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
 
+class GettextTarget(base.ConfigureMakeStaticDependencyTarget):
+    def __init__(self):
+        super().__init__('gettext')
+
+
 class GlibTarget(base.MesonStaticTarget):
-    def __init__(self, name='glib'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('glib')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -148,8 +150,8 @@ class GlibTarget(base.MesonStaticTarget):
 
 
 class IconvTarget(base.ConfigureMakeStaticDependencyTarget):
-    def __init__(self, name='iconv'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('iconv')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -164,15 +166,15 @@ class IconvTarget(base.ConfigureMakeStaticDependencyTarget):
         super().configure(state)
 
 
-class IntlTarget(GettextTarget):
-    def __init__(self, name='intl'):
-        super().__init__(name)
-
-    def configure(self, state: BuildState):
-        state.options['--localedir'] = '/usr/local/share/locale'
+class IntlTarget(GettextBaseTarget):
+    def __init__(self):
+        super().__init__('intl')
 
         # There is no way to configure intl only, do this for the runtime
         self.src_root = 'gettext-runtime'
+
+    def configure(self, state: BuildState):
+        state.options['--localedir'] = '/usr/local/share/locale'
         super().configure(state)
 
     def build(self, state: BuildState):
@@ -191,8 +193,8 @@ class IntlTarget(GettextTarget):
 
 
 class LameTarget(base.ConfigureMakeStaticDependencyTarget):
-    def __init__(self, name='lame'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('lame')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -204,8 +206,8 @@ class LameTarget(base.ConfigureMakeStaticDependencyTarget):
 
 
 class MoltenVKTarget(base.MakeTarget):
-    def __init__(self, name='moltenvk'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('moltenvk')
 
         # Building for multiple architectures is handled internally
         self.multi_platform = False
@@ -296,8 +298,8 @@ class MoltenVKTarget(base.MakeTarget):
 
 
 class Mpg123Target(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='mpg123'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('mpg123')
         self.src_root = 'ports/cmake'
 
     def prepare_source(self, state: BuildState):
@@ -315,8 +317,8 @@ class Mpg123Target(base.CMakeStaticDependencyTarget):
 
 
 class OggTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='ogg'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('ogg')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -325,8 +327,8 @@ class OggTarget(base.CMakeStaticDependencyTarget):
 
 
 class OpenALTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='openal'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('openal')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -343,8 +345,8 @@ class OpenALTarget(base.CMakeStaticDependencyTarget):
 
 
 class OpusTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='opus'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('opus')
 
     def prepare_source(self, state: BuildState):
         # Temporary solution for lack of TLSv1.3 support in Apple Python
@@ -376,8 +378,8 @@ class OpusTarget(base.CMakeStaticDependencyTarget):
 
 
 class PcreTarget(base.ConfigureMakeStaticDependencyTarget):
-    def __init__(self, name='pcre'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('pcre')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -396,16 +398,16 @@ class PcreTarget(base.ConfigureMakeStaticDependencyTarget):
 
 
 class QuasiGlibTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='quasi-glib'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('quasi-glib')
 
     def prepare_source(self, state: BuildState):
         state.source = state.patch_path / self.name
 
 
 class SndFileTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='sndfile'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('sndfile')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -423,8 +425,8 @@ class SndFileTarget(base.CMakeStaticDependencyTarget):
 
 
 class VorbisTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='vorbis'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('vorbis')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -433,8 +435,8 @@ class VorbisTarget(base.CMakeStaticDependencyTarget):
 
 
 class VpxTarget(base.ConfigureMakeDependencyTarget):
-    def __init__(self, name='vpx'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('vpx')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
@@ -467,8 +469,8 @@ class VpxTarget(base.ConfigureMakeDependencyTarget):
 
 
 class ZMusicTarget(base.CMakeStaticDependencyTarget):
-    def __init__(self, name='zmusic'):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__('zmusic')
 
     def prepare_source(self, state: BuildState):
         state.download_source(
