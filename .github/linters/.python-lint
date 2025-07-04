@@ -1,0 +1,15 @@
+[MESSAGES CONTROL]
+# C0103: Module name "..." doesn't conform to snake_case naming style (invalid-name)
+# C0114: Missing module docstring (missing-module-docstring)
+# C0115: Missing class docstring (missing-class-docstring)
+# C0116: Missing function or method docstring (missing-function-docstring)
+# C0301: Line too long (.../100) (line-too-long)
+# R0902: Too many instance attributes (.../7) (too-many-instance-attributes)
+# R0903: Too few public methods (.../2) (too-few-public-methods)
+# R0913: Too many arguments (.../5) (too-many-arguments)
+# R0914: Too many local variables (.../15) (too-many-locals)
+# R0917: Too many positional arguments (.../5) (too-many-positional-arguments)
+# W1510: 'subprocess.run' used without explicitly defining the value for 'check'. (subprocess-run-check)
+# W0511: TODO ... (fixme)
+# W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+disable=C0103, C0114, C0115, C0116, C0301, R0902, R0903, R0913, R0914, R0917, W1510, W0511, W1514

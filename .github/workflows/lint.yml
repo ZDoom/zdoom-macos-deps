@@ -1,31 +1,34 @@
 ---
 name: Lint Code
 
-on:
-  push:
-    paths-ignore:
-      - '**.md'
-      - '.gitignore'
-  pull_request:
-    paths-ignore:
-      - '**.md'
-      - '.gitignore'
+on: [push, pull_request]
 
 jobs:
   lint:
     if: "!contains(github.event.head_commit.message, '[skip lint]')"
     runs-on: ubuntu-24.04
+    permissions:
+      statuses: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Super-Linter
-        uses: super-linter/super-linter/slim@v5
+        uses: super-linter/super-linter/slim@v7
         env:
-          FILTER_REGEX_INCLUDE: .*(\.py|\.md|\.yml)$
-          FILTER_REGEX_EXCLUDE: .*/deps/.*
+          FILTER_REGEX_EXCLUDE: /aedi/packaging/|/core/build\.py$|/deps/|/patch/|/test/
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USE_FIND_ALGORITHM: true
+          VALIDATE_CHECKOV: false
+          VALIDATE_GIT_COMMITLINT: false
+          VALIDATE_MARKDOWN_PRETTIER: false
           VALIDATE_NATURAL_LANGUAGE: false
           VALIDATE_PYTHON_BLACK: false
+          VALIDATE_PYTHON_PYINK: false
+          VALIDATE_YAML_PRETTIER: false
 
       - name: Bandit
         run: |
@@ -40,6 +43,5 @@ jobs:
           #   for execution of untrusted input.
           # [B607:start_process_with_partial_path] Starting a process with a
           #   partial executable path
-          bandit --skip B101,B310,B404,B603,B607 --recursive . --exclude \
-          ./deps/vulkan-headers/share/vulkan/registry
+          bandit --skip B101,B310,B404,B603,B607 --recursive . --exclude ./deps
 ...
