@@ -25,7 +25,7 @@ _min_version = (3, 8, 0, 'final', 0)
 
 if sys.version_info < _min_version:
     print(f'This module requires Python {_min_version[0]}.{_min_version[1]}.{_min_version[2]} or newer')
-    exit(1)
+    sys.exit(1)
 
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 sys.dont_write_bytecode = True
@@ -33,7 +33,10 @@ sys.dont_write_bytecode = True
 root_path = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(f'{root_path}{os.sep}core')
 
+# pylint: disable=wrong-import-position
 import aedi  # noqa: E402
+
+# pylint: disable=wrong-import-position
 import target  # noqa: E402
 
 
