@@ -21,7 +21,7 @@ jobs:
       matrix:
         target:
           - GZDoom
-          - Raze
+#          - Raze
 
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,10 @@ jobs:
 
       - name: Build target
         run: |
-          ./build.py --target ${{ matrix.target }}
+#          ./build.py --target ${{ matrix.target }}
+          git clone https://github.com/alexey-lysiuk/gzdoom.git
+          git -C gzdoom switch zmusic-system
+          ./build.py --source=gzdoom
 
       - name: Generate Xcode project
         run: |
