@@ -30,7 +30,7 @@ jobs:
 
       - name: Build target
         run: |
-#          ./build.py --target ${{ matrix.target }}
+          # ./build.py --target ${{ matrix.target }}
           git clone https://github.com/alexey-lysiuk/gzdoom.git
           git -C gzdoom switch zmusic-system
           ./build.py --source=gzdoom
